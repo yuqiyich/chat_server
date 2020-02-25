@@ -79,9 +79,16 @@
 			<version>2.9.2</version>
 		</dependency>
   
+		<!-- json -->
+		<dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
+        </dependency>
 	</dependencies>
 
 	<build>
+		<finalName>ruqi-mobile-manager-0.0.1-SNAPSHOT</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
