@@ -7,7 +7,9 @@ import com.ruqi.appserver.ruqi.bean.WechatTemplateMsgBean;
 import com.ruqi.appserver.ruqi.network.BaseHttpClient;
 import com.ruqi.appserver.ruqi.network.UrlConstant;
 import com.ruqi.appserver.ruqi.network.WechatConstant;
+import com.ruqi.appserver.ruqi.service.WechatService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +25,9 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(value = "/wechat")
 public class WechatController {
 
+	@Autowired
+	private WechatService wechatService;
+	
 	/**
 	 * 扫码，打开网址后内部调用微信的authorize接口得到对应的CODE，会触发打开回调URL，里面能拿到CODE。这个接口可做一些判断校验处理，如过期失效等。
 	 * 
@@ -85,28 +90,32 @@ public class WechatController {
 	@RequestMapping(value = "/template/sendTo/{touser}", method = RequestMethod.GET)
 	// @ResponseBody
     public String sendTemplateMsg(@PathVariable("touser") String touser) {
+		String accessToken = wechatService.queryAccessToken();
+		System.out.println("--->accessToken=" + accessToken);
 		// 数据库读取accessToken，如果已过期则先获取accessToken
-		String accessToken = "30_aXa90XlI7gNTSBKSDwPjN02SXWaQxF80E3I9UGlRtVxUcE8srWbiR1QxLfkw7W7LSIwFdjUYoxe3KsyOdx4DQcqa88GG7hKBkIjPKK5PDUAsf78rplmKpvrQ0_pp3j_XiNokveS5fXp8_3e7UQHeACADZQ";
+		accessToken = "30_aXa90XlI7gNTSBKSDwPjN02SXWaQxF80E3I9UGlRtVxUcE8srWbiR1QxLfkw7W7LSIwFdjUYoxe3KsyOdx4DQcqa88GG7hKBkIjPKK5PDUAsf78rplmKpvrQ0_pp3j_XiNokveS5fXp8_3e7UQHeACADZQ";
 
-		WechatTemplateMsgBean wechatTemplateMsgBean = new WechatTemplateMsgBean();
-		wechatTemplateMsgBean.touser = touser;
-		wechatTemplateMsgBean.template_id = WechatConstant.TEMPLATE_ID;
-		wechatTemplateMsgBean.data = new WechatTemplateMsgBean.TemplateData();
-		wechatTemplateMsgBean.data.first = new WechatTemplateMsgBean.TemplateItemData();
-		wechatTemplateMsgBean.data.first.value = "安全报警1";
-		wechatTemplateMsgBean.data.keyword1 = new WechatTemplateMsgBean.TemplateItemData();
-		wechatTemplateMsgBean.data.keyword1.value = "keyword1";
-		wechatTemplateMsgBean.data.keyword2 = new WechatTemplateMsgBean.TemplateItemData();
-		wechatTemplateMsgBean.data.keyword2.value = "keyword2";
-		wechatTemplateMsgBean.data.keyword3 = new WechatTemplateMsgBean.TemplateItemData();
-		wechatTemplateMsgBean.data.keyword3.value = "keyword3";
-		wechatTemplateMsgBean.data.remark = new WechatTemplateMsgBean.TemplateItemData();
-		wechatTemplateMsgBean.data.remark.value = "remark1";
-		String result = BaseHttpClient.doPost(UrlConstant.WeChatUrl.TEMPLATE_MSG_SEND + accessToken, wechatTemplateMsgBean);
+		return accessToken;
 
-		// 如果接口返回token失效则获取token再重试
+		// WechatTemplateMsgBean wechatTemplateMsgBean = new WechatTemplateMsgBean();
+		// wechatTemplateMsgBean.touser = touser;
+		// wechatTemplateMsgBean.template_id = WechatConstant.TEMPLATE_ID;
+		// wechatTemplateMsgBean.data = new WechatTemplateMsgBean.TemplateData();
+		// wechatTemplateMsgBean.data.first = new WechatTemplateMsgBean.TemplateItemData();
+		// wechatTemplateMsgBean.data.first.value = "安全报警1";
+		// wechatTemplateMsgBean.data.keyword1 = new WechatTemplateMsgBean.TemplateItemData();
+		// wechatTemplateMsgBean.data.keyword1.value = "keyword1";
+		// wechatTemplateMsgBean.data.keyword2 = new WechatTemplateMsgBean.TemplateItemData();
+		// wechatTemplateMsgBean.data.keyword2.value = "keyword2";
+		// wechatTemplateMsgBean.data.keyword3 = new WechatTemplateMsgBean.TemplateItemData();
+		// wechatTemplateMsgBean.data.keyword3.value = "keyword3";
+		// wechatTemplateMsgBean.data.remark = new WechatTemplateMsgBean.TemplateItemData();
+		// wechatTemplateMsgBean.data.remark.value = "remark1";
+		// String result = BaseHttpClient.doPost(UrlConstant.WeChatUrl.TEMPLATE_MSG_SEND + accessToken, wechatTemplateMsgBean);
 
-		return result;
+		// // 如果接口返回token失效则获取token再重试
+
+		// return result;
 	}
 
 	// 写一个回调接口，接收xml返回记录模板消息发送结果
