@@ -3,7 +3,6 @@ package com.ruqi.appserver.ruqi.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import com.ruqi.appserver.ruqi.bean.WechatTemplateMsgBean;
 import com.ruqi.appserver.ruqi.network.BaseHttpClient;
 import com.ruqi.appserver.ruqi.network.UrlConstant;
 import com.ruqi.appserver.ruqi.network.WechatConstant;
@@ -23,7 +22,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "微信模块")
 @RequestMapping(value = "/wechat")
-public class WechatController {
+public class WeChatController {
 
 	@Autowired
 	private WechatService wechatService;
