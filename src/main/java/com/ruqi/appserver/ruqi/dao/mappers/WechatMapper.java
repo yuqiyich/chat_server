@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WechatMapper {
 	List<WechatAccessTokenEntity> queryWechatAccessToken();
+
+	void clearDatas();
+
+	void insertData(WechatAccessTokenEntity entity);
 }

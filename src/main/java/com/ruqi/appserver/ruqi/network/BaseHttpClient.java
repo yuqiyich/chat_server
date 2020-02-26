@@ -139,15 +139,15 @@ public class BaseHttpClient {
 		CloseableHttpResponse response = null;
 		try {
 			// 由客户端执行(发送)Post请求
-		response = httpClient.execute(posturl);
+			response = httpClient.execute(posturl);
 			// 从响应模型中获取响应实体
 			HttpEntity responseEntity = response.getEntity();
 
 			System.out.println("响应状态为:" + response.getStatusLine());
 			if (responseEntity != null) {
-				System.out.println("响应内容长度为:" + responseEntity.getContentLength());
-				System.out.println("响应内容为:" + EntityUtils.toString(responseEntity));
 				result = EntityUtils.toString(responseEntity);
+				System.out.println("响应内容长度为:" + responseEntity.getContentLength());
+				System.out.println("响应内容为:" + result);
 			}
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
