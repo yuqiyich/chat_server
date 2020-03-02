@@ -13,11 +13,4 @@ public class MainController {
 		return modelAndView;
 	}
 	
-	@RequestMapping(value = "/main")
-    public ModelAndView main() {
-		ModelAndView modelAndView = new ModelAndView("layuiAdmin");
-		// modelAndView.addObject("attributeName", attributeValue);
-		return modelAndView;
-	}
-	
 }

@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace= "com.ruqi.appserver.ruqi.dao.mappers.WechatMapper" >
+    <!-- token -->
     <resultMap id ="WechatAccessTokenBean" type="com.ruqi.appserver.ruqi.dao.entity.WechatAccessTokenEntity">
         <result column="access_token" property="accessToken"/>
         <result column="expires_time" property="expiresTime"/>
@@ -26,5 +27,59 @@
             wechat_token(access_token, expires_time) 
         values 
             (#{accessToken}, #{expiresTime})
-      </insert>
+    </insert>
+
+    <!-- receiver -->
+    <resultMap id ="WechatMsgReceiverEntity" type="com.ruqi.appserver.ruqi.dao.entity.WechatMsgReceiverEntity">
+        <result column="id" property="id"/>
+        <result column="openid" property="openid"/>
+        <result column="nickname" property="nickname"/>
+        <result column="user_status" property="userStatus"/>
+    </resultMap>
+
+    <select id = "queryReceivers" resultMap="WechatMsgReceiverEntity">
+        select
+            id,
+            openid,
+            nickname,
+            user_status
+        from
+            wechat_msg_receiver
+    </select>
+    
+    <select id = "queryAvailableReceivers" resultMap="WechatMsgReceiverEntity">
+        select
+            id,
+            openid,
+            nickname
+        from
+            wechat_msg_receiver
+        where 
+            user_status = 1
+    </select>
+
+    <select id = "queryReceiverByOpenid" parameterType="String" resultMap="WechatMsgReceiverEntity">
+        select
+            user_status,
+            nickname,
+            id,
+            openid
+        from
+            wechat_msg_receiver
+        where
+            openid = #{openid}
+    </select>
+
+    <update id="updateReceiver" parameterType="WechatMsgReceiverEntity">
+        UPDATE wechat_msg_receiver
+        SET nickname = #{nickname}, user_status = #{userStatus}, modify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+        WHERE openid = #{openid}
+    </update>
+
+    <insert id="insertReceiver" parameterType="WechatMsgReceiverEntity">
+        insert into 
+            wechat_msg_receiver(openid, nickname, user_status, create_time) 
+        values 
+            (#{openid}, #{nickname}, 1, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))
+    </insert>
 </mapper>
