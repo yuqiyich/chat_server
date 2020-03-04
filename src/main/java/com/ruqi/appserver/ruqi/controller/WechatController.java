@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ruqi.appserver.ruqi.bean.BaseBean;
+import com.ruqi.appserver.ruqi.bean.BasePageBean;
 import com.ruqi.appserver.ruqi.bean.WechatTemplateMsgBean;
 import com.ruqi.appserver.ruqi.dao.entity.WechatAccessTokenEntity;
 import com.ruqi.appserver.ruqi.dao.entity.WechatMsgReceiverEntity;
@@ -16,11 +18,16 @@ import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -122,4 +129,29 @@ public class WechatController {
 	}
 
 	// 写一个回调接口，接收xml返回记录模板消息发送结果
+
+	/**
+	 * 查询获取微信公众号消息接收者列表
+	 * @return
+	 */
+	@ApiOperation(value = "查询获取微信公众号消息接收者列表", notes = "")
+	@ApiImplicitParams({
+		@ApiImplicitParam (dataType = "Integer", name = "pageIndex", value = "页码，如0", defaultValue = "0", required = false)
+		,@ApiImplicitParam (dataType = "Integer", name = "pageSize", value = "size，如10", defaultValue = "10" ,required = false)
+		,@ApiImplicitParam (dataType = "string", name = "nickname", value = "微信昵称", required = false)
+		,@ApiImplicitParam (dataType = "string", name = "remarks", value = "备注名", required = false)
+		,@ApiImplicitParam (dataType = "string", name = "userStatus", value = "不传表示查询所有。1:启用，0:停用", required = false)
+	})
+	@RequestMapping(value = "/receiver/list", method = RequestMethod.GET)
+	@ResponseBody
+	public BaseBean<BasePageBean<WechatMsgReceiverEntity>> getReceiverList(Integer  pageIndex,
+		Integer pageSize, String nickname, String remarks, String userStatus) {
+		BaseBean<BasePageBean<WechatMsgReceiverEntity>> result = new BaseBean<BasePageBean<WechatMsgReceiverEntity>>();
+		
+		List<WechatMsgReceiverEntity> receiverEntities = wechatService.queryReceivers(pageIndex, pageSize, nickname, remarks, userStatus);
+		long totalSize = wechatService.queryReceiverSize(nickname, remarks, userStatus);
+		result.data = new BasePageBean<WechatMsgReceiverEntity>(pageIndex, pageSize, totalSize, receiverEntities);
+		
+		return result;
+	}
 }

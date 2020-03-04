@@ -102,6 +102,11 @@ public class WechatWebController {
 		return "error";
 	}
 
+	@RequestMapping(value = "/home")
+    public String home(Model model) {
+		return "home";
+	}
+
 	/**
 	 * 查看微信公众号消息接收者列表
 	 */

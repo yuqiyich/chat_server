@@ -84,8 +84,12 @@ public class WechatService {
         }
     }
     
-    public List<WechatMsgReceiverEntity> queryReceivers() {
-        return wechatMapper.queryReceivers();
+    public long queryReceiverSize(String nickname, String remarks, String userStatus) {
+        return wechatMapper.queryReceiverSize(nickname, remarks, userStatus);
+    }
+
+    public List<WechatMsgReceiverEntity> queryReceivers(int pageIndex, int pageSize, String nickname, String remarks, String userStatus) {
+        return wechatMapper.queryReceivers(pageIndex, pageSize, nickname, remarks, userStatus);
     }
 
     public List<WechatMsgReceiverEntity> queryAvailableReceivers() {
