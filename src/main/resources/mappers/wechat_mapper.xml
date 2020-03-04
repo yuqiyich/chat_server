@@ -34,17 +34,53 @@
         <result column="id" property="id"/>
         <result column="openid" property="openid"/>
         <result column="nickname" property="nickname"/>
+        <result column="remark" property="remark"/>
         <result column="user_status" property="userStatus"/>
     </resultMap>
 
-    <select id = "queryReceivers" resultMap="WechatMsgReceiverEntity">
+    <!--统计总数-->
+    <select id="queryReceiverSize" resultType="long">
+        select count(*)
+        from wechat_msg_receiver
+        <where>
+            <if test=" nickname != null and nickname != '' ">
+                <bind name="pnickName" value=" '%' + nickname + '%' "></bind>
+                nickname like #{pnickName}
+            </if>
+            <if test=" remarks != null and remarks != '' ">
+                <bind name="premarks" value=" '%' + remarks + '%' "></bind>
+                AND remark like #{premarks}
+            </if>
+            <if test=" userStatus != null and userStatus != '' ">
+                <bind name="puserstatus" value=" userStatus "></bind>
+                AND user_status = #{puserstatus}
+            </if>
+        </where>
+    </select>
+
+    <select id = "queryReceivers" parameterType="String" resultMap="WechatMsgReceiverEntity">
         select
             id,
             openid,
             nickname,
+            remark,
             user_status
         from
             wechat_msg_receiver
+        <where>
+            <if test="nickname != null">
+                nickname like "%"#{nickname}"%"
+            </if>
+            <if test=" remarks != null and remarks != '' ">
+                <bind name="premarks" value=" '%' + remarks + '%' "></bind>
+                AND remark like #{premarks}
+            </if>
+            <if test=" userStatus != null and userStatus != '' ">
+                <bind name="puserstatus" value=" userStatus "></bind>
+                AND user_status = #{puserstatus}
+            </if>
+        </where>
+        limit #{pageIndex}, #{pageSize}
     </select>
     
     <select id = "queryAvailableReceivers" resultMap="WechatMsgReceiverEntity">
