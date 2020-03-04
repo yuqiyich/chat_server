@@ -7,20 +7,20 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface UserMapper {
-    @Select("SELECT * FROM user")
+    @Select("SELECT * FROM risk_user")
     @Results({@Result(property = "nickName", column = "nick_name") })
     List<UserEntity> getAll();
 
-    @Select("SELECT * FROM users WHERE id = #{id}")
+    @Select("SELECT * FROM risk_user WHERE user_id = #{userId}")
     @Results({@Result(property = "nickName", column = "nick_name") })
     UserEntity getOne(Long id);
 
-    @Insert("insert into user(nick_name) values(#{nickName})")
+    @Insert("insert into risk_user(user_id,user_phone,nick_name,user_name) values(#{userId},#{userPhone},#{nickName},#{userName})")
     int insert(UserEntity user);
 
-    @Update("UPDATE user SET userName=#{nick_name},nick_name=#{nickName} WHERE id =#{id}")
+    @Update("UPDATE risk_user SET user_name=#{userName},nick_name=#{nickName} WHERE user_id =#{userId}")
     void update(UserEntity user);
 
-    @Delete("DELETE FROM user WHERE id =#{id}")
+    @Delete("DELETE FROM risk_user WHERE user_id =#{id}")
     void delete(Long id);
 }
