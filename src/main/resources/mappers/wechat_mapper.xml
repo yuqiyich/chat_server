@@ -40,7 +40,7 @@
 
     <!--统计总数-->
     <select id="queryReceiverSize" resultType="long">
-        select count(*)
+        select count(*) as totalSize
         from wechat_msg_receiver
         <where>
             <if test=" nickname != null and nickname != '' ">
