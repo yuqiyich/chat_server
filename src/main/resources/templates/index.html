@@ -8,14 +8,12 @@
 	<link rel="stylesheet" href="css/index.css" />
 	<script>
 		//iframe高度自适应
-		function setIframeHeight(iframe) {
-			if (iframe) {
-				var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
-				if (iframeWin.document.body) {
-					iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
-				}
-			}
+		function setIframeHeight(ifm) {
+			ifm.height = document.documentElement.clientHeight - 170; //56是头顶的高度，和网友估计不一样。
 		};
+		// $(function(){ window.onresize=function(){
+        //     setIframeHeight(); }
+		// }); //这里不知道是否还要 $(function(){}) 这个闭包吗？后证实不需要
 	</script>
 </head>
 
@@ -111,7 +109,7 @@
 					</ul>
 					<div class="layui-tab-content">
 						<div class="layui-tab-item layui-show">
-							<iframe src="wechatH5/home" class="layui-admin-iframe" scrolling="no" frameborder="0"
+							<iframe src="wechatH5/home" id="mainiframe" class="layui-admin-iframe" scrolling="no" frameborder="0"
 								onload="setIframeHeight(this);"></iframe>
 						</div>
 					</div>
@@ -234,7 +232,7 @@
 							//新增选项卡
 							element.tabAdd('pagetabs', {
 								title: elem[0].innerText
-								, content: '<iframe src="' + url + '" class="layui-admin-iframe" scrolling="no" frameborder="0" onload="setIframeHeight(this)"></iframe>'
+								, content: '<iframe src="' + url + '" class="layui-admin-iframe" scrolling="no" frameborder="0" id="mainiframe" onload="setIframeHeight(this)"></iframe>'
 								, id: url
 							});
 							//切换选项卡

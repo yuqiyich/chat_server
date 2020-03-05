@@ -13,27 +13,41 @@
 <body>
 	<table id="test" lay-filter="test"></table>
 
+	<script type="text/html" id="toolbarDemo">
+		<div class="layui-btn-container">
+		  <button id="btn_showQrcodeView" class="layui-btn layui-btn-sm" lay-event="showQrcodeView">添加绑定</button>
+		  <button id="btn_showQrcodeView" class="layui-btn layui-btn-sm" lay-event="testSendMsg">测试全量通知</button>
+		</div>
+	</script>
 	<script src="/js/layui2.5.6/layui.js" charset="utf-8"></script>
+	<script type="text/html" id="tpl_user_status">
+		{{#  if(d.userStatus == '1'){ }}
+		启用
+		{{#  } else { }}
+		禁用
+		{{#  } }}
+	</script>
 	<script>
 		layui.use('table', function(){
 		var table = layui.table;
 		
 		table.render({
 			elem: '#test'
-			,height: 600
+			// ,height:400
+			// ,height: 'full - 20'
 			//,width: 600
-			,title: '用户数据表'
-			,url: 'demo1.json'
+			,title: '微信公众号消息通知接收者表'
+			,url: '/wechat/receiver/list'
+			// ,text: '无数据'
 			//,size: 'lg'
-			,page: {
-			
-			}
-			
-			,autoSort: false
-			//,loading: false
-			,totalRow: true
-			,limit: 30
+			,page: {curr: 1}
+			// ,autoSort: false
+			// ,loading: false
+			// ,totalRow: true
+			,limit: 10
+			,limits: [10, 30, 50, 100]
 			,toolbar: '#toolbarDemo'
+			// ,toolbar: true
 			// 右上角工具条
 			,defaultToolbar: ['filter', 'exports', 'print'
 				// , {
@@ -42,30 +56,37 @@
 				// ,icon: 'layui-icon-tips'
 				// }
 				, {
-				title: '添加'
-				,layEvent: 'showQrcodeView'
-				,icon: 'layui-icon-add-1'
+				title: '刷新'
+				,layEvent: 'reloadData'
+				,icon: 'layui-icon-refresh'
 				}
+				// , {
+				// title: '添加'
+				// ,layEvent: 'showQrcodeView'
+				// ,icon: 'layui-icon-add-1'
+				// }
 			]
 			,cols: [
 				[
-				{field:'nickname', title:'微信昵称', width:80, fixed:'left', unresize:true, sort:false, totalRowText:'合计：'}
+				{field:'id', title:'ID', fixed:'left', width:60, unresize:true, sort:true, align: 'center'}
+				,{field:'openid', title:'openid', sort:false, align: 'center'}
+				,{field:'nickname', title:'微信昵称', sort:false, align: 'center'}
+				,{field:'remark', title:'备注名', sort:false, align: 'center'}
+				,{field:'userStatus', templet: '#tpl_user_status', title:'状态', width:60, unresize:true, sort:false, align: 'center'}
 				]
 			]
-			/*
-			,response: {
-			statusName: 'status'
-			,statusCode: 200
-			}
+			// ,response: {
+			// 	statusName: 'errorCode'
+			// 	,statusCode: 0
+			// }
 			,parseData: function(res){
-			return {
-				"status": res.status
-				,"msg": res.message
-				,"count": res.total
-				,"data": res.data.list
-			};
+				return {
+					"code": res.errorCode
+					,"msg": res.errorMsg
+					,"count": res.data.totalSize
+					,"data": res.data.list
+				};
 			}
-			*/
 		});
 
 		//工具栏事件
@@ -73,43 +94,60 @@
 			var checkStatus = table.checkStatus(obj.config.id);
 			switch(obj.event){
 				case 'showQrcodeView':
-				layer.open({
-					type: 4, 
-					content: ["<div style='text-align: center;'><p style='margin-top: 10%;'>扫码绑定微信账号</p><img style='width:30%; height: 30%;' src='/img/wechat_bind.png' /></div>" //这里content是一个普通的String
-						, '#test']
-				});
-				// layer.alert('扫码绑定新的微信接收者', {icon: '/img/wechat_bind.png'});
+					layer.open({
+						type: 1, 
+						// content: ["<div style='text-align: center;background-color: white;width:100;'><p style='margin-top: 20;color: black;'>扫码绑定微信账号（绑定后还需关注公众号才能接收消息）</p><img style='width:30%; height: 30%;' src='/img/wechat_bind.png' /></div>" //这里content是一个普通的String
+						// 	, '#btn_showQrcodeView']
+						content: "<div style='text-align: center;'><p>扫码绑定微信账号<br>（还需关注公众号才能接收消息）</p><img style='width:120px; height: 120px;' src='/img/wechat_bind.png' /></div>"
+					});
+					// layer.alert('扫码绑定新的微信接收者', {icon: '/img/wechat_bind.png'});
 				break;
-			case 'add':
-				layer.msg('添加');
-			break;
-			case 'update':
-				layer.msg('编辑');
-			break;
-			case 'delete':
-				layer.msg('删除');
-			break;
-			case 'getCheckData':
-				var data = checkStatus.data;
-				layer.alert(JSON.stringify(data));
-			break;
-			case 'getCheckLength':
-				var data = checkStatus.data;
-				layer.msg('选中了：'+ data.length + ' 个');
-			break;
-			case 'isAll':
-				layer.msg(checkStatus.isAll ? '全选': '未全选')
-			break;
-			// case 'LAYTABLE_TIPS':
-			// 	layer.alert('Table for layui-v'+ layui.v);
-			break;
-			case 'reload':
-				table.reload('test', {
-				page: {curr: 5}
-				//,height: 300
-				//,url: 'x'
-				}, 'data');
-			break;
+				case 'testSendMsg':
+					$.ajax({
+						type: "POST",
+						url: "/wechat/template/send",
+						// data: {username:$("#username").val(), content:$("#content").val()},//请求的参数
+						dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+						success: function(dataResult){
+							if (null != dataResult) {
+								if (dataResult.errorCode == 0) {
+									console.log("--->result dataResult.size:" + dataResult.data.size);
+									layer.msg('发送成功，size:' + dataResult.data.size);
+								} else {
+									console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
+									layer.msg('发送失败:' + dataResult.errorMsg);
+								}
+							}
+						}
+					});
+				break;
+				case 'update':
+					layer.msg('编辑');
+				break;
+				case 'delete':
+					layer.msg('删除');
+				break;
+				case 'getCheckData':
+					var data = checkStatus.data;
+					layer.alert(JSON.stringify(data));
+				break;
+				case 'getCheckLength':
+					var data = checkStatus.data;
+					layer.msg('选中了：'+ data.length + ' 个');
+				break;
+				case 'isAll':
+					layer.msg(checkStatus.isAll ? '全选': '未全选')
+				break;
+				// case 'LAYTABLE_TIPS':
+				// 	layer.alert('Table for layui-v'+ layui.v);
+				// break;
+				case 'reloadData':
+					table.reload('test', {
+					page: {curr: 1}
+					//,height: 300
+					//,url: 'x'
+					}, 'data');
+				break;
 			};
 		});
 
@@ -169,24 +207,18 @@
 		// 	}
 		// });
 		
-		// //监听排序
-		// table.on('sort(test)', function(obj){
-		// 	console.log(this)
-			
-		// 	//return;
-		// 	layer.msg('服务端排序。order by '+ obj.field + ' ' + obj.type);
-		// 	//服务端排序
-		// 	table.reload('test', {
-		// 	initSort: obj
-		// 	//,page: {curr: 1} //重新从第一页开始
-		// 	,where: { //重新请求服务端
-		// 		key: obj.field //排序字段
-		// 		,order: obj.type //排序方式
-		// 	}
-		// 	});
-		// });
-		
-		// //return;
+		//监听排序
+		table.on('sort(test)', function(obj){
+			// 本地该页数据排序
+			table.reload('test', {
+			initSort: obj
+				//,page: {curr: 1} //重新从第一页开始
+			// ,where: { //重新请求服务端
+			// 	key: obj.field //排序字段
+			// 	,order: obj.type //排序方式
+			// }
+			});
+		});
 		
 		var $ = layui.jquery, active = {
 			parseTable: function(){

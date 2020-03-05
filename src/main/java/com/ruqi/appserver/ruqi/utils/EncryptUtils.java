@@ -13,15 +13,15 @@ import sun.misc.BASE64Encoder;
 public class EncryptUtils {
     private static final String KEY_DES_DEFAULT = "ruqi!@#2020";
 
-    private final byte[] DESIV = new byte[] { 0x12, 0x34, 0x56, 120, (byte) 0x90, (byte) 0xab, (byte) 0xcd, (byte) 0xef };// 向量  
+    private static final byte[] DESIV = new byte[] { 0x12, 0x34, 0x56, 120, (byte) 0x90, (byte) 0xab, (byte) 0xcd, (byte) 0xef };// 向量  
     private static AlgorithmParameterSpec iv = null;// 加密算法的参数接口  
     private static Key key = null;  
   
-    private String charset = "utf-8";  
+    private static String charset = "utf-8";  
   
-    {
+    static {
         try {
-            DESKeySpec keySpec = new DESKeySpec(KEY_DES_DEFAULT.getBytes(this.charset));// 设置密钥参数  
+            DESKeySpec keySpec = new DESKeySpec(KEY_DES_DEFAULT.getBytes(charset));// 设置密钥参数  
             iv = new IvParameterSpec(DESIV);// 设置向量  
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");// 获得密钥工厂  
             key = keyFactory.generateSecret(keySpec);// 得到密钥对象  
