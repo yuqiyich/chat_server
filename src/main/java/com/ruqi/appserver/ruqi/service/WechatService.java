@@ -39,7 +39,8 @@ public class WechatService {
         if (null != mWechatAccessTokenEntity && 
             mWechatAccessTokenEntity.expiresTime.getTime() > System.currentTimeMillis()) {
             System.out.println("--->数据库token");
-            return EncryptUtils.decode(mWechatAccessTokenEntity.accessToken);
+            mWechatAccessTokenEntity.accessToken = EncryptUtils.decode(mWechatAccessTokenEntity.accessToken);
+            return mWechatAccessTokenEntity.accessToken;
         } else {
             return "";
         }
@@ -82,6 +83,18 @@ public class WechatService {
             receiverEntity.nickname = nickname;
             wechatMapper.insertReceiver(receiverEntity);
         }
+    }
+
+    /**
+     * 更新
+     */
+    public void updateReceiver(WechatMsgReceiverEntity receiverEntity) {
+        if (null == receiverEntity || receiverEntity.id <= 0) {
+            System.out.println("--->updateReceiver receiverEntity is null or id invalid");
+            return;
+        }
+
+        wechatMapper.updateReceiver(receiverEntity);
     }
     
     public long queryReceiverSize(String nickname, String remarks, String userStatus) {
