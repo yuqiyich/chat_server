@@ -11,8 +11,25 @@
 </head>
 
 <body>
-	<table id="test" lay-filter="test"></table>
+	<table id="developerTable" lay-filter="developerTable"></table>
 
+	<div hidden="true" type="text/html" id="itemEditView">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+				<label class="layui-form-label">单行输入框</label>
+				<div class="layui-input-block">
+				<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+				<button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	
 	<script type="text/html" id="toolbarDemo">
 		<div class="layui-btn-container">
 		  <button id="btn_showQrcodeView" class="layui-btn layui-btn-sm" lay-event="showQrcodeView">添加绑定</button>
@@ -27,12 +44,22 @@
 		禁用
 		{{#  } }}
 	</script>
+	<script type="text/html" id="barOperator">
+		{{#  if(d.userStatus == '1'){ }}
+		<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="user_disable">禁用</a>
+		{{#  } else { }}
+		<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="user_enable">启用</a>
+		{{#  } }}
+		
+		<a class="layui-btn layui-btn-xs" lay-event="user_edit">编辑</a>
+		<!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
+	</script>
 	<script>
 		layui.use('table', function(){
 		var table = layui.table;
 		
 		table.render({
-			elem: '#test'
+			elem: '#developerTable'
 			// ,height:400
 			// ,height: 'full - 20'
 			//,width: 600
@@ -72,7 +99,8 @@
 				,{field:'openid', title:'openid', sort:false, align: 'center'}
 				,{field:'nickname', title:'微信昵称', sort:false, align: 'center'}
 				,{field:'remark', title:'备注名', sort:false, align: 'center'}
-				,{field:'userStatus', templet: '#tpl_user_status', title:'状态', width:60, unresize:true, sort:false, align: 'center'}
+				,{field:'userStatus', templet: '#tpl_user_status', fixed:'right', title:'状态', width:60, unresize:true, sort:false, align: 'center'}
+				,{toolbar: '#barOperator', fixed:'right', title:'操作', width:120, unresize:false, sort:false, align: 'center'}
 				]
 			]
 			// ,response: {
@@ -89,8 +117,57 @@
 			}
 		});
 
+		//监听工具条
+		table.on('tool(developerTable)', function(obj){
+			var itemData = obj.data;
+			// layer.alert(JSON.stringify(itemData));
+			switch(obj.event){
+				case 'user_edit':
+					layer.open({
+						type: 1,
+						btnAlign: 'c',
+						area: ['400px', '300px'],
+						title: '个人微信号信息',
+						content: $("#itemEditView"), 
+						// btn:['提交','取消'],
+						// btn1: function() {
+							
+						// },
+						// btn2:function() {
+						// }
+                    })
+				break;
+				case 'user_enable':
+				case 'user_disable':
+					if (obj.event == 'user_enable') {
+						itemData.userStatus = 1;
+					} else {
+						itemData.userStatus = 0;
+					}
+					$.ajax({
+						type: "POST",
+						url: "/wechat/receiver/update",
+						data: JSON.stringify(itemData),//请求的参数
+						contentType: 'application/json;charset=utf-8',
+						dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+						success: function(dataResult){
+							if (null != dataResult) {
+								if (dataResult.errorCode == 0) {
+									layer.msg('更改成功');
+									// 更改了，需要刷新数据
+									table.reload('developerTable', {}, 'data');
+								} else {
+									layer.msg('更改失败');
+								}
+							}
+						}
+					});
+				break;
+			}
+		});
+
 		//工具栏事件
-		table.on('toolbar(test)', function(obj){
+		table.on('toolbar(developerTable)', function(obj){
 			var checkStatus = table.checkStatus(obj.config.id);
 			switch(obj.event){
 				case 'showQrcodeView':
@@ -108,11 +185,12 @@
 						url: "/wechat/template/send",
 						// data: {username:$("#username").val(), content:$("#content").val()},//请求的参数
 						dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+						contentType: 'application/json;charset=utf-8',
 						success: function(dataResult){
 							if (null != dataResult) {
 								if (dataResult.errorCode == 0) {
 									console.log("--->result dataResult.size:" + dataResult.data.size);
-									layer.msg('发送成功，size:' + dataResult.data.size);
+									layer.msg('已发送至' + dataResult.data.size + '个微信号');
 								} else {
 									console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
 									layer.msg('发送失败:' + dataResult.errorMsg);
@@ -142,7 +220,7 @@
 				// 	layer.alert('Table for layui-v'+ layui.v);
 				// break;
 				case 'reloadData':
-					table.reload('test', {
+					table.reload('developerTable', {
 					page: {curr: 1}
 					//,height: 300
 					//,url: 'x'
@@ -185,32 +263,10 @@
 		// 	console.log(obj)
 		// });
 		
-		// //监听行工具事件
-		// table.on('tool(test)', function(obj){
-		// 	var data = obj.data;
-		// 	//console.log(obj)
-		// 	if(obj.event === 'del'){
-		// 	layer.confirm('真的删除行么', function(index){
-		// 		obj.del();
-		// 		layer.close(index);
-		// 	});
-		// 	} else if(obj.event === 'edit'){
-		// 	layer.prompt({
-		// 		formType: 2
-		// 		,value: data.email
-		// 	}, function(value, index){
-		// 		obj.update({
-		// 		email: value
-		// 		});
-		// 		layer.close(index);
-		// 	});
-		// 	}
-		// });
-		
 		//监听排序
-		table.on('sort(test)', function(obj){
+		table.on('sort(developerTable)', function(obj){
 			// 本地该页数据排序
-			table.reload('test', {
+			table.reload('developerTable', {
 			initSort: obj
 				//,page: {curr: 1} //重新从第一页开始
 			// ,where: { //重新请求服务端
@@ -227,7 +283,7 @@
 			});
 			}
 			,add: function(){
-			table.addRow('test')
+			table.addRow('developerTable')
 			}
 		};
 		$('i').on('click', function(){

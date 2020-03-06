@@ -108,7 +108,7 @@
 
     <update id="updateReceiver" parameterType="WechatMsgReceiverEntity">
         UPDATE wechat_msg_receiver
-        SET nickname = #{nickname}, user_status = #{userStatus}, modify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+        SET nickname = #{nickname}, user_status = #{userStatus}, remark = #{remark}, modify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
         WHERE openid = #{openid}
     </update>
 
