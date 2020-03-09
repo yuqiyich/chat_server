@@ -11,20 +11,24 @@
 </head>
 
 <body>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
 	<table id="developerTable" lay-filter="developerTable"></table>
 
-	<div hidden="true" type="text/html" id="itemEditView">
-		<form class="layui-form" action="">
+	<div hidden="true" type="text/html" id="itemEditView" onload="">
+		<form id="updateForm" name="updateForm" class="layui-form" style="margin-top: 10%;" action="" lay-filter="wechat_info">
 			<div class="layui-form-item">
-				<label class="layui-form-label">单行输入框</label>
-				<div class="layui-input-block">
-				<input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+				<div class="layui-inline">
+					<label class="layui-form-label">备注名</label>
+					<div class="layui-input-inline">
+						<input maxlength="10" type="text" id="remarkName" name="remarkName" lay-verify="remarkName" autocomplete="off" placeholder="请输入备注名" class="layui-input">
+					</div>
 				</div>
 			</div>
-			<div class="layui-form-item">
+			<div class="layui-form-item" style="margin-top: 10%;">
 				<div class="layui-input-block">
-				<button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
-				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					<button type="submit" class="layui-btn" lay-submit="" lay-filter="updateRemarkName">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 				</div>
 			</div>
 		</form>
@@ -55,6 +59,63 @@
 		<!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
 	</script>
 	<script>
+		var updateUserInfo = function(itemData) {
+			$.ajax({
+				type: "POST",
+				url: "/wechat/receiver/update",
+				data: JSON.stringify(itemData),//请求的参数
+				contentType: 'application/json;charset=utf-8',
+				dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+				success: function(dataResult){
+					if (null != dataResult) {
+						if (dataResult.errorCode == 0) {
+							layer.msg('更改成功');
+							// 更改了，需要刷新数据
+							layui.use('table', function(){
+								var table = layui.table;
+								table.reload('developerTable', {}, 'data');
+							});
+							return true;
+						} else {
+							layer.msg('更改失败');
+							return false;
+						}
+					}
+				}
+			});
+		}
+	</script>
+	<script>
+		layui.use(['form', 'layedit', 'laydate'], function(){
+			var form = layui.form
+			,layer = layui.layer
+			,layedit = layui.layedit
+			,laydate = layui.laydate;
+
+			// var data = form.val("wechat_info");
+
+			//监听提交
+			form.on('submit(updateRemarkName)', function(data){
+				var newName = data.field.remarkName;
+				
+				layer.msg(JSON.stringify(selectedData));
+
+				if (null != selectedData) {
+					if (newName == selectedData.remark) {
+						return true;
+					} else {
+						selectedData.remark = newName;
+						return updateUserInfo(selectedData);
+					}
+				} 
+				layui.msg("发生异常错误，请刷新重试");
+				return false;
+			});
+		});
+	</script>
+	<script>
+		var selectedData = null;
+
 		layui.use('table', function(){
 		var table = layui.table;
 		
@@ -119,10 +180,13 @@
 
 		//监听工具条
 		table.on('tool(developerTable)', function(obj){
+			selectedData = obj.data;
 			var itemData = obj.data;
 			// layer.alert(JSON.stringify(itemData));
 			switch(obj.event){
 				case 'user_edit':
+					// 先进行reset，否则上一次输入的数据还会显示出来
+					document.getElementById("updateForm").reset();
 					layer.open({
 						type: 1,
 						btnAlign: 'c',
@@ -135,6 +199,19 @@
 						// },
 						// btn2:function() {
 						// }
+						// cancel: function(index, layero){ 
+						// 	// layer.close(index);
+						// 	layer.msg($('input[name=remarkName]').get('value').value);
+						// 	// $('input[name=remarkName]').attr('value', "111111");
+						// 	return false;
+						// },
+						success: function(layero, index){
+							$('input[name=remarkName]').attr('value', itemData.remark);
+							// $('form[name=updateForm]').attr('value', itemData);
+						},
+						// end: function() {
+						// 	$("#itemEditView").reload();
+						// },
                     })
 				break;
 				case 'user_enable':
@@ -144,24 +221,7 @@
 					} else {
 						itemData.userStatus = 0;
 					}
-					$.ajax({
-						type: "POST",
-						url: "/wechat/receiver/update",
-						data: JSON.stringify(itemData),//请求的参数
-						contentType: 'application/json;charset=utf-8',
-						dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-						success: function(dataResult){
-							if (null != dataResult) {
-								if (dataResult.errorCode == 0) {
-									layer.msg('更改成功');
-									// 更改了，需要刷新数据
-									table.reload('developerTable', {}, 'data');
-								} else {
-									layer.msg('更改失败');
-								}
-							}
-						}
-					});
+					updateUserInfo(itemData);
 				break;
 			}
 		});
