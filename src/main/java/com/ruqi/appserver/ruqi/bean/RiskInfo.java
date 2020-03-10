@@ -21,8 +21,8 @@ public class RiskInfo {
     //status info
     public Date createTime;
     public long userId;
-    public BigDecimal locationLat;
-    public BigDecimal locationLng;
+    public float locationLat;
+    public float locationLng;
     public String locationName;
     public String netState;
     //risk info
@@ -118,19 +118,19 @@ public class RiskInfo {
         this.channel = channel;
     }
 
-    public BigDecimal getLocationLat() {
+    public float getLocationLat() {
         return locationLat;
     }
 
-    public void setLocationLat(BigDecimal locationLat) {
+    public void setLocationLat(float locationLat) {
         this.locationLat = locationLat;
     }
 
-    public BigDecimal getLocationLng() {
+    public float getLocationLng() {
         return locationLng;
     }
 
-    public void setLocationLng(BigDecimal locationLng) {
+    public void setLocationLng(float locationLng) {
         this.locationLng = locationLng;
     }
 
