@@ -12,7 +12,7 @@ public interface UserMapper {
     List<UserEntity> getAll();
 
     @Select("SELECT * FROM risk_user WHERE user_id = #{userId}")
-    @Results({@Result(property = "nickName", column = "nick_name") })
+    @Results({@Result(property = "userId", column = "user_id"),@Result(property = "userName", column = "user_name")})
     UserEntity getOne(Long id);
 
     @Insert("insert into risk_user(user_id,user_phone,nick_name,user_name) values(#{userId},#{userPhone},#{nickName},#{userName})")

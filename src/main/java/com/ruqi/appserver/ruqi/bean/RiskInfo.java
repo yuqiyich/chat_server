@@ -9,22 +9,41 @@ import java.util.Date;
  * @author yich
  */
 public class RiskInfo {
-    //base info
+    //device info
     public String deviceId;
-    public long userId;
     public String deviceBrand;
+    public String deviceModel;
     public String systemVersion;
-    public String netState;
-    public String appVersion;
-    public String locationName;
+    public String appVersionName;
+    public int appVersionCode;
     public int appId;
-    public Date createTime;
     public String channel;
+    //status info
+    public Date createTime;
+    public long userId;
     public BigDecimal locationLat;
     public BigDecimal locationLng;
-    //riskinfo
+    public String locationName;
+    public String netState;
+    //risk info
+    public String scene;//使用的场景
     public String riskType;
+    public String ext;//使用额外字段标识
     public String riskDetail;
+
+    public String getScene() {
+        return scene;
+    }
+
+    public void setScene(String sence) {
+        this.scene = sence;
+    }
+    public String getExt() {
+        return ext;
+    }
+    public void setExt(String ext) {
+        this.ext = ext;
+    }
 
     public String getDeviceId() {
         return deviceId;
@@ -66,13 +85,6 @@ public class RiskInfo {
         this.netState = netState;
     }
 
-    public String getAppVersion() {
-        return appVersion;
-    }
-
-    public void setAppVersion(String appVersion) {
-        this.appVersion = appVersion;
-    }
 
     public String getLocationName() {
         return locationName;
@@ -136,5 +148,29 @@ public class RiskInfo {
 
     public void setRiskDetail(String riskDetail) {
         this.riskDetail = riskDetail;
+    }
+
+    public String getDeviceModel() {
+        return deviceModel;
+    }
+
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public String getAppVersionName() {
+        return appVersionName;
+    }
+
+    public void setAppVersionName(String appVersionName) {
+        this.appVersionName = appVersionName;
+    }
+
+    public int getAppVersionCode() {
+        return appVersionCode;
+    }
+
+    public void setAppVersionCode(int appVersionCode) {
+        this.appVersionCode = appVersionCode;
     }
 }
