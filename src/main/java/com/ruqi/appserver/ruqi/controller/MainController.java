@@ -1,16 +1,20 @@
 package com.ruqi.appserver.ruqi.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import springfox.documentation.annotations.ApiIgnore;
 
+@ApiIgnore
 @Controller
 public class MainController {
-	@RequestMapping(value = "/")
-    public ModelAndView index() {
-		ModelAndView modelAndView = new ModelAndView("index");
-		// modelAndView.addObject("attributeName", attributeValue);
-		return modelAndView;
-	}
-	
+    @Value("${spring.profiles.active}")
+    private String mEnv = "";
+
+    @RequestMapping(value = "/")
+    public String index(Model model) {
+        model.addAttribute("env", mEnv);
+        return "index";
+    }
 }

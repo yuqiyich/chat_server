@@ -18,7 +18,7 @@ import java.util.Date;
  * @author yich
  */
 @RestController
-@Api(value = "记录埋点数据的入口")
+@Api(tags = "记录埋点数据的入口")
 @RequestMapping(value = "/record")
 public class RecordController {
 

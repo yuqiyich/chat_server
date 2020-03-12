@@ -16,10 +16,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.swagger.annotations.Api;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
-@Api(value = "微信H5模块")
+@ApiIgnore
+@Api(tags = "微信H5模块")
 @RequestMapping(value = "/wechatH5")
+
 // 在html页面并没有办法获取的到控制器ModelAndView里面数据的方法
 public class WechatWebController {
 
