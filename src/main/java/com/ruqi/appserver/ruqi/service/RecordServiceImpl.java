@@ -37,7 +37,7 @@ public class RecordServiceImpl implements IRecordService {
         // TODO: 2020/3/12 暂时测试每一个上报都进行微信通知
         mWechatController.sendSecurityTemplateMsg(data.getAppInfo().getAppName(), data.getContent().riskType,
                 String.format("版本号：%s，uid：%s，deviceId：%s", data.getContent().appVersionName,
-                        data.getUserInfo().userId, data.getContent().deviceId), "请至APP记录平台查看完整详细信息");
+                        data.getUserInfo().userId, data.getContent().deviceId), "请至APP记录平台查看完整详细信息", null);
 
         if (data.getRecordType() == RiskEnum.RUNTIME_RISK.getId()
                 && data.getAppInfo() != null

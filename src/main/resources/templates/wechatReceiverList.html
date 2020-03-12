@@ -22,14 +22,16 @@
         <div class="layui-inline">
             <label class="layui-form-label">微信昵称</label>
             <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="20" id="filterNickName" name="filterNickName" lay-verify="filterNickName" autocomplete="off"
+                <input type="text" maxlength="20" id="filterNickName" name="filterNickName" lay-verify="filterNickName"
+                       autocomplete="off"
                        class="layui-input">
             </div>
         </div>
         <div class="layui-inline">
             <label class="layui-form-label">备注名</label>
             <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="10" id="filterRemarkName" name="filterRemarkName" lay-verify="filterRemarkName"
+                <input type="text" maxlength="10" id="filterRemarkName" name="filterRemarkName"
+                       lay-verify="filterRemarkName"
                        autocomplete="off"
                        class="layui-input">
             </div>
@@ -49,7 +51,8 @@
         <div class="layui-inline">
             <div class="layui-input-block">
                 <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
-                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="resetSearch">重置</button>
+                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="resetSearch">重置
+                </button>
             </div>
         </div>
     </div>
@@ -81,7 +84,7 @@
 <script type="text/html" id="toolbarDemo">
     <div class="layui-btn-container">
         <button id="btn_showQrcodeView" class="layui-btn layui-btn-sm" lay-event="showQrcodeView">添加绑定</button>
-        <button class="layui-btn layui-btn-sm" lay-event="testSendMsg">测试全量通知</button>
+        <button class="layui-btn layui-btn-sm" lay-event="testSendAllMsg">测试全量通知</button>
     </div>
 </script>
 <script src="/js/layui2.5.6/layui.js" charset="utf-8"></script>
@@ -100,6 +103,7 @@
     {{#  } }}
 
     <a class="layui-btn layui-btn-xs" lay-event="user_edit">编辑</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="user_send_msg_test">测试推送</a>
     <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
 </script>
 <script>
@@ -162,11 +166,12 @@
                 var table = layui.table;
                 table.reload('developerTable', {
                     page: {curr: 1}
-                    ,where: {
+                    , where: {
                         nickname: $("#filterNickName").val()
                         , remarks: $("#filterRemarkName").val()
                         , userStatus: $("#statusSelect").val()
-                    }}, 'data');
+                    }
+                }, 'data');
             });
             return false;
         });
@@ -177,11 +182,12 @@
                 var table = layui.table;
                 table.reload('developerTable', {
                     page: {curr: 1}
-                    ,where: {
+                    , where: {
                         nickname: $("#filterNickName").val()
                         , remarks: $("#filterRemarkName").val()
                         , userStatus: $("#statusSelect").val()
-                    }}, 'data');
+                    }
+                }, 'data');
             });
             return false;
         });
@@ -248,7 +254,7 @@
                     toolbar: '#barOperator',
                     fixed: 'right',
                     title: '操作',
-                    width: 120,
+                    width: 200,
                     unresize: false,
                     sort: false,
                     align: 'center'
@@ -314,6 +320,27 @@
                     }
                     updateUserInfo(itemData);
                     break;
+                case 'user_send_msg_test':
+                    var jsonStr = itemData.openid;
+                    $.ajax({
+                        type: "POST",
+                        url: "/wechat/template/testSend",
+                        data: jsonStr,//请求的参数
+                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+                        contentType: 'application/json;charset=utf-8',
+                        success: function (dataResult) {
+                            if (null != dataResult) {
+                                if (dataResult.errorCode == 0) {
+                                    console.log("--->result dataResult.size:" + dataResult.data.size);
+                                    layer.msg('已成功发送');
+                                } else {
+                                    console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
+                                    layer.msg('发送失败:' + dataResult.errorMsg);
+                                }
+                            }
+                        }
+                    });
+                    break;
             }
         });
 
@@ -330,10 +357,10 @@
                     });
                     // layer.alert('扫码绑定新的微信接收者', {icon: '/img/wechat_bind.png'});
                     break;
-                case 'testSendMsg':
+                case 'testSendAllMsg':
                     $.ajax({
                         type: "POST",
-                        url: "/wechat/template/send",
+                        url: "/wechat/template/testSendAll",
                         // data: {username:$("#username").val(), content:$("#content").val()},//请求的参数
                         dataType: "json",//以json格式返回的数据，不是json就把此行去掉
                         contentType: 'application/json;charset=utf-8',
