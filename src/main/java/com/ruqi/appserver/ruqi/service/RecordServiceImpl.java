@@ -26,12 +26,12 @@ public class RecordServiceImpl implements IRecordService {
     UserMapper userWrapper;
     @Autowired
     RiskInfoWrapper riskInfoWrapper;
-
-    private WechatController mWechatController = new WechatController();
+    @Autowired
+    WechatController mWechatController;
 
     @Override
     @Async("taskExecutor")
-    public void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime) {
+    public void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime,String requestIp) {
         logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime() + ";curThread:" + Thread.currentThread().getName());
 
         // TODO: 2020/3/12 暂时测试每一个上报都进行微信通知
@@ -50,6 +50,7 @@ public class RecordServiceImpl implements IRecordService {
             if (appId > 0) {
                 RiskInfo riskInfo = data.getContent();
                 riskInfo.setAppId(appId);
+                riskInfo.setRequestIp(requestIp);
                 saveRiskUserInfo(data.getUserInfo());
                 saveRiskInfo(data.getContent());
             } else {
