@@ -12,5 +12,5 @@ import java.util.Date;
  */
 public interface IRecordService {
 
-    void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime);
+    void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime,String requestIp);
 }

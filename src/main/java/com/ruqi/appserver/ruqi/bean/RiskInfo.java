@@ -25,6 +25,7 @@ public class RiskInfo {
     public float locationLng;
     public String locationName;
     public String netState;
+    public String requestIp;
     //risk info
     public String scene;//使用的场景
     public String riskType;
@@ -172,5 +173,13 @@ public class RiskInfo {
 
     public void setAppVersionCode(int appVersionCode) {
         this.appVersionCode = appVersionCode;
+    }
+
+    public String getRequestIp() {
+        return requestIp;
+    }
+
+    public void setRequestIp(String requestIp) {
+        this.requestIp = requestIp;
     }
 }
