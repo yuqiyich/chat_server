@@ -94,8 +94,13 @@ public class WechatController {
 	@RequestMapping(value = "/template/send", method = RequestMethod.POST)
 	@ResponseBody
     public BaseMapBean sendTemplateMsg() {
+		return sendSecurityTemplateMsg("test司机端APP", "test报警类型",
+				"test详细信息", "test请判断安全风险等级，由对应负责人进行相应处理。");
+	}
+
+	public BaseMapBean sendSecurityTemplateMsg(String msgTitle, String msgType, String msgDetail, String msgRemark) {
 		String accessToken = getAccessToken();
-		
+
 		BaseMapBean baseBean = new BaseMapBean();
 
 		if (MyStringUtils.isEmpty(accessToken)) {
@@ -111,19 +116,19 @@ public class WechatController {
 			wechatTemplateMsgBean.template_id = WechatConstant.TEMPLATE_ID;
 			wechatTemplateMsgBean.data = new WechatTemplateMsgBean.TemplateData();
 			wechatTemplateMsgBean.data.first = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.first.value = "test司机端APP"; // 标题
+			wechatTemplateMsgBean.data.first.value = msgTitle; // 标题
 			wechatTemplateMsgBean.data.first.color = "#498be7";
 			wechatTemplateMsgBean.data.keyword1 = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.keyword1.value = "test报警类型"; // 报警类型
+			wechatTemplateMsgBean.data.keyword1.value = msgType; // 报警类型
 			wechatTemplateMsgBean.data.keyword1.color = "#498be7";
 			wechatTemplateMsgBean.data.keyword2 = new WechatTemplateMsgBean.TemplateItemData();
 			wechatTemplateMsgBean.data.keyword2.value = DateTimeUtils.getCurrentTime(); // 报警时间
 			wechatTemplateMsgBean.data.keyword2.color = "#498be7";
 			wechatTemplateMsgBean.data.keyword3 = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.keyword3.value = "test详细信息"; // 详细信息
+			wechatTemplateMsgBean.data.keyword3.value = msgDetail; // 详细信息
 			wechatTemplateMsgBean.data.keyword3.color = "#498be7";
 			wechatTemplateMsgBean.data.remark = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.remark.value = "test请判断安全风险等级，由对应负责人进行相应处理。"; // 备注
+			wechatTemplateMsgBean.data.remark.value = msgRemark; // 备注
 			// wechatTemplateMsgBean.data.remark.color = "#FFBF13";
 			String result = BaseHttpClient.doPost(UrlConstant.WeChatUrl.TEMPLATE_MSG_SEND + accessToken, wechatTemplateMsgBean);
 
