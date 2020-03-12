@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@Api(value = "用户访问模块")
+@Api(tags = "用户访问模块")
 @RequestMapping(value = "/user")
 public class UserController {
     @Autowired

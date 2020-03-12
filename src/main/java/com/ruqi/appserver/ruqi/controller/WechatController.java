@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@Api(value = "微信API模块")
+@Api(tags = "微信API模块")
 @RequestMapping(value = "/wechat")
 public class WechatController {
 
@@ -179,7 +179,7 @@ public class WechatController {
 	 */
 	@ApiOperation(value = "更新微信公众号消息接收者信息", notes = "备注名、状态")
 	@ApiImplicitParams({
-		@ApiImplicitParam (dataType = "com.ruqi.appserver.ruqi.dao.entity.WechatMsgReceiverEntity", 
+		@ApiImplicitParam (dataType = "WechatMsgReceiverEntity",
 			name = "receiverEntity", value = "微信接收消息者bean", required = true, paramType = "body")
 	})
 	@RequestMapping(value = "/receiver/update", method = RequestMethod.POST)
