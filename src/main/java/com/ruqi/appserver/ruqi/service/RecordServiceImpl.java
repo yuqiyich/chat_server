@@ -1,7 +1,10 @@
 package com.ruqi.appserver.ruqi.service;
 
-import com.aliyuncs.utils.StringUtils;
-import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.RecordInfo;
+import com.ruqi.appserver.ruqi.bean.RiskEnum;
+import com.ruqi.appserver.ruqi.bean.RiskInfo;
+import com.ruqi.appserver.ruqi.bean.UserEntity;
+import com.ruqi.appserver.ruqi.controller.WechatController;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
@@ -24,10 +27,18 @@ public class RecordServiceImpl implements IRecordService {
     @Autowired
     RiskInfoWrapper riskInfoWrapper;
 
+    private WechatController mWechatController = new WechatController();
+
     @Override
     @Async("taskExecutor")
     public void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime) {
         logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime() + ";curThread:" + Thread.currentThread().getName());
+
+        // TODO: 2020/3/12 暂时测试每一个上报都进行微信通知
+        mWechatController.sendSecurityTemplateMsg(data.getAppInfo().getAppName(), data.getContent().riskType,
+                String.format("版本号：%s，uid：%s，deviceId：%s", data.getContent().appVersionName,
+                        data.getUserInfo().userId, data.getContent().deviceId), "请至APP记录平台查看完整详细信息", null);
+
         if (data.getRecordType() == RiskEnum.RUNTIME_RISK.getId()
                 && data.getAppInfo() != null
                 && data.getContent() != null
@@ -35,7 +46,7 @@ public class RecordServiceImpl implements IRecordService {
 //           int appId=appInfoWrapper.getAppIdByKey("BB392D26CF521EFD");
 
             int appId = appInfoWrapper.getAppIdByKey(data.getAppInfo().getAppKey());
-            logger.info("appId："+ appId);
+            logger.info("appId：" + appId);
             if (appId > 0) {
                 RiskInfo riskInfo = data.getContent();
                 riskInfo.setAppId(appId);

@@ -1,10 +1,5 @@
 package com.ruqi.appserver.ruqi.controller;
 
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ruqi.appserver.ruqi.bean.BaseBean;
@@ -20,175 +15,212 @@ import com.ruqi.appserver.ruqi.service.WechatService;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @Api(tags = "微信API模块")
 @RequestMapping(value = "/wechat")
 public class WechatController {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private WechatService wechatService;
-	
-	/**
-	 * 本地、数据库、网络，获取token。
-	 * @return
-	 */
+    @Autowired
+    private WechatService wechatService;
+
+    /**
+     * 本地、数据库、网络，获取token。
+     *
+     * @return
+     */
     private String getAccessToken() {
-		String accessToken = wechatService.queryAccessToken();
+        String accessToken = wechatService.queryAccessToken();
 
-		if (MyStringUtils.isEmpty(accessToken)) {
-			// api调用获取token，且保存到数据库
-			String paramGetToken = String.format("grant_type=client_credential&appid=%s&secret=%s", WechatConstant.APP_ID, WechatConstant.SECRET);
-			String result = BaseHttpClient.sendGet(UrlConstant.WeChatUrl.TOKEN_GET, paramGetToken);
+        if (MyStringUtils.isEmpty(accessToken)) {
+            // api调用获取token，且保存到数据库
+            String paramGetToken = String.format("grant_type=client_credential&appid=%s&secret=%s", WechatConstant.APP_ID, WechatConstant.SECRET);
+            String result = BaseHttpClient.sendGet(UrlConstant.WeChatUrl.TOKEN_GET, paramGetToken);
 
-			if (!MyStringUtils.isEmpty(result)) {
-				try {
-					JSONObject json = JSONObject.parseObject(result);
-					if (json.containsKey("access_token")) {
-						accessToken = json.getString("access_token");
-						WechatAccessTokenEntity entity = new WechatAccessTokenEntity();
-						entity.accessToken = accessToken;
-						entity.expiresTime = new Timestamp(System.currentTimeMillis() 
-							+ json.getLong("expires_in").longValue() * 1000 - 600000); // 过期时间，减少10分钟
-						wechatService.updateAccessToken(entity);
-					} else {
-						System.out.println("--->获取accessToken失败，result: " + result);
-					}
-					// {"access_token":"ACCESS_TOKEN","expires_in":7200}
-					// {"errcode":40013,"errmsg":"invalid appid"}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+            if (!MyStringUtils.isEmpty(result)) {
+                try {
+                    JSONObject json = JSONObject.parseObject(result);
+                    if (json.containsKey("access_token")) {
+                        accessToken = json.getString("access_token");
+                        WechatAccessTokenEntity entity = new WechatAccessTokenEntity();
+                        entity.accessToken = accessToken;
+                        entity.expiresTime = new Timestamp(System.currentTimeMillis()
+                                + json.getLong("expires_in").longValue() * 1000 - 600000); // 过期时间，减少10分钟
+                        wechatService.updateAccessToken(entity);
+                    } else {
+                        System.out.println("--->获取accessToken失败，result: " + result);
+                    }
+                    // {"access_token":"ACCESS_TOKEN","expires_in":7200}
+                    // {"errcode":40013,"errmsg":"invalid appid"}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
-		if (MyStringUtils.isEmpty(accessToken)) {
-			System.out.println("--->获取accessToken失败，请检查具体原因");
-		} else {
-			System.out.println("--->获取到了accessToken");
-		}
+        if (MyStringUtils.isEmpty(accessToken)) {
+            System.out.println("--->获取accessToken失败，请检查具体原因");
+        } else {
+            System.out.println("--->获取到了accessToken");
+        }
 
-		return accessToken;
-	}
+        return accessToken;
+    }
 
-	/**
-	 * TODO：暂时可以通过 api调用。后续应该只能由其他逻辑调用。
-	 * @return
-	 */
-	@ApiOperation(value = "微信公众号模板消息发送", notes = "报警通知")
-	@RequestMapping(value = "/template/send", method = RequestMethod.POST)
-	@ResponseBody
-    public BaseMapBean sendTemplateMsg() {
-		String accessToken = getAccessToken();
-		
-		BaseMapBean baseBean = new BaseMapBean();
+    /**
+     * 全量测试推送
+     *
+     * @return
+     */
+    @ApiOperation(value = "微信公众号模板消息全量测试发送", notes = "报警通知")
+    @RequestMapping(value = "/template/testSendAll", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseMapBean testSendAllTemplateMsg() {
+        return sendSecurityTemplateMsg("test司机端APP", "test报警类型",
+                "test详细信息", "test请判断安全风险等级，由对应负责人进行相应处理。", null);
+    }
 
-		if (MyStringUtils.isEmpty(accessToken)) {
-			baseBean.errorCode = 10001;
-			baseBean.errorMsg = "获取token失败，无法进行发送消息操作";
-			return baseBean;
-		}
+    /**
+     * 单个测试推送
+     *
+     * @param openId
+     * @return
+     */
+    @ApiOperation(value = "微信公众号模板消息指定发送", notes = "报警通知")
+    @RequestMapping(value = "/template/testSend", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "String", name = "openId", value = "微信openId", required = true)
+    })
+    @ResponseBody
+    public BaseMapBean testSendTemplateMsg(@RequestBody String openId) {
+        List<WechatMsgReceiverEntity> receiverEntityList = new ArrayList<>();
+        WechatMsgReceiverEntity receiverEntity = new WechatMsgReceiverEntity();
+        receiverEntity.openid = openId;
+        logger.info("--->发送微信消息，openId:" + openId);
+        receiverEntityList.add(receiverEntity);
+        return sendSecurityTemplateMsg("test司机端APP", "test报警类型",
+                "test详细信息", "test请判断安全风险等级，由对应负责人进行相应处理。", receiverEntityList);
+    }
 
-		List<WechatMsgReceiverEntity> userList = wechatService.queryAvailableReceivers();
-		for (WechatMsgReceiverEntity entity : userList) {
-			WechatTemplateMsgBean wechatTemplateMsgBean = new WechatTemplateMsgBean();
-			wechatTemplateMsgBean.touser = EncryptUtils.decode(entity.openid);
-			wechatTemplateMsgBean.template_id = WechatConstant.TEMPLATE_ID;
-			wechatTemplateMsgBean.data = new WechatTemplateMsgBean.TemplateData();
-			wechatTemplateMsgBean.data.first = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.first.value = "test司机端APP"; // 标题
-			wechatTemplateMsgBean.data.first.color = "#498be7";
-			wechatTemplateMsgBean.data.keyword1 = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.keyword1.value = "test报警类型"; // 报警类型
-			wechatTemplateMsgBean.data.keyword1.color = "#498be7";
-			wechatTemplateMsgBean.data.keyword2 = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.keyword2.value = DateTimeUtils.getCurrentTime(); // 报警时间
-			wechatTemplateMsgBean.data.keyword2.color = "#498be7";
-			wechatTemplateMsgBean.data.keyword3 = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.keyword3.value = "test详细信息"; // 详细信息
-			wechatTemplateMsgBean.data.keyword3.color = "#498be7";
-			wechatTemplateMsgBean.data.remark = new WechatTemplateMsgBean.TemplateItemData();
-			wechatTemplateMsgBean.data.remark.value = "test请判断安全风险等级，由对应负责人进行相应处理。"; // 备注
-			// wechatTemplateMsgBean.data.remark.color = "#FFBF13";
-			String result = BaseHttpClient.doPost(UrlConstant.WeChatUrl.TEMPLATE_MSG_SEND + accessToken, wechatTemplateMsgBean);
+    public BaseMapBean sendSecurityTemplateMsg(String msgTitle, String msgType, String msgDetail,
+                                               String msgRemark, List<WechatMsgReceiverEntity> receiverEntityList) {
+        String accessToken = getAccessToken();
 
-			// {"errcode":0,"errmsg":"ok","msgid":1226691075109289985}
+        BaseMapBean baseBean = new BaseMapBean();
 
-			System.out.println("--->发消息result=" + result);
-			// 如果接口返回token失效则获取token再重试
+        if (MyStringUtils.isEmpty(accessToken)) {
+            baseBean.errorCode = 10001;
+            baseBean.errorMsg = "获取token失败，无法进行发送消息操作";
+            return baseBean;
+        }
 
-			// TODO：保存消息id、安全报警id、微信用户的对应id、发送结果、备注
-		}
+        if (null == receiverEntityList || receiverEntityList.size() == 0) {
+            logger.info("--->发送微信消息，未给定用户，全量启用账号推送");
+            receiverEntityList = wechatService.queryAvailableReceivers();
+        } else {
+            logger.info("--->发送微信消息，给定用户：" + JSON.toJSONString(receiverEntityList));
+        }
+        for (WechatMsgReceiverEntity entity : receiverEntityList) {
+            WechatTemplateMsgBean wechatTemplateMsgBean = new WechatTemplateMsgBean();
+            wechatTemplateMsgBean.touser = EncryptUtils.decode(entity.openid);
+            wechatTemplateMsgBean.template_id = WechatConstant.TEMPLATE_ID;
+            wechatTemplateMsgBean.data = new WechatTemplateMsgBean.TemplateData();
+            wechatTemplateMsgBean.data.first = new WechatTemplateMsgBean.TemplateItemData();
+            wechatTemplateMsgBean.data.first.value = msgTitle; // 标题
+            wechatTemplateMsgBean.data.first.color = "#498be7";
+            wechatTemplateMsgBean.data.keyword1 = new WechatTemplateMsgBean.TemplateItemData();
+            wechatTemplateMsgBean.data.keyword1.value = msgType; // 报警类型
+            wechatTemplateMsgBean.data.keyword1.color = "#498be7";
+            wechatTemplateMsgBean.data.keyword2 = new WechatTemplateMsgBean.TemplateItemData();
+            wechatTemplateMsgBean.data.keyword2.value = DateTimeUtils.getCurrentTime(); // 报警时间
+            wechatTemplateMsgBean.data.keyword2.color = "#498be7";
+            wechatTemplateMsgBean.data.keyword3 = new WechatTemplateMsgBean.TemplateItemData();
+            wechatTemplateMsgBean.data.keyword3.value = msgDetail; // 详细信息
+            wechatTemplateMsgBean.data.keyword3.color = "#498be7";
+            wechatTemplateMsgBean.data.remark = new WechatTemplateMsgBean.TemplateItemData();
+            wechatTemplateMsgBean.data.remark.value = msgRemark; // 备注
+            // wechatTemplateMsgBean.data.remark.color = "#FFBF13";
+            String result = BaseHttpClient.doPost(UrlConstant.WeChatUrl.TEMPLATE_MSG_SEND + accessToken, wechatTemplateMsgBean);
 
-		int size = null == userList ? 0 : userList.size();
-		Map<String, Object> map = new HashMap<>();
-		map.put("size", size);
-		baseBean.data = map;
+            // {"errcode":0,"errmsg":"ok","msgid":1226691075109289985}
 
-		System.out.println("--->result:" + JSON.toJSONString(baseBean));
+            System.out.println("--->发消息result=" + result);
+            // 如果接口返回token失效则获取token再重试
 
-		return baseBean;
-	}
+            // TODO：保存消息id、安全报警id、微信用户的对应id、发送结果、备注
+        }
 
-	// 写一个回调接口，接收xml返回记录模板消息发送结果
+        int size = null == receiverEntityList ? 0 : receiverEntityList.size();
+        Map<String, Object> map = new HashMap<>();
+        map.put("size", size);
+        baseBean.data = map;
 
-	/**
-	 * 查询获取微信公众号消息接收者列表
-	 * @return
-	 */
-	@ApiOperation(value = "查询获取微信公众号消息接收者列表", notes = "")
-	@ApiImplicitParams({
-		@ApiImplicitParam (dataType = "Integer", name = "page", value = "页码，从1开始", required = false)
-		,@ApiImplicitParam (dataType = "Integer", name = "limit", value = "size，如10", required = false)
-		,@ApiImplicitParam (dataType = "string", name = "nickname", value = "微信昵称", required = false)
-		,@ApiImplicitParam (dataType = "string", name = "remarks", value = "备注名", required = false)
-		,@ApiImplicitParam (dataType = "string", name = "userStatus", value = "不传表示查询所有。1:启用，0:停用", required = false)
-	})
-	@RequestMapping(value = "/receiver/list", method = RequestMethod.GET)
-	@ResponseBody
-	public BaseBean<BasePageBean<WechatMsgReceiverEntity>> getReceiverList(@RequestParam(defaultValue = "1") Integer page,
-		@RequestParam(defaultValue = "10") Integer limit, String nickname, String remarks, String userStatus) {
-		BaseBean<BasePageBean<WechatMsgReceiverEntity>> result = new BaseBean<BasePageBean<WechatMsgReceiverEntity>>();
-		
-		// 页码从1开始，但是sql中从0开始
-		List<WechatMsgReceiverEntity> receiverEntities = wechatService.queryReceivers(page - 1, limit, nickname, remarks, userStatus);
-		long totalSize = wechatService.queryReceiverSize(nickname, remarks, userStatus);
-		result.data = new BasePageBean<WechatMsgReceiverEntity>(page, limit, totalSize, receiverEntities);
-		
-		return result;
-	}
+        System.out.println("--->result:" + JSON.toJSONString(baseBean));
 
-	/**
-	 * 查询获取微信公众号消息接收者列表
-	 * @return
-	 */
-	@ApiOperation(value = "更新微信公众号消息接收者信息", notes = "备注名、状态")
-	@ApiImplicitParams({
-		@ApiImplicitParam (dataType = "WechatMsgReceiverEntity",
-			name = "receiverEntity", value = "微信接收消息者bean", required = true, paramType = "body")
-	})
-	@RequestMapping(value = "/receiver/update", method = RequestMethod.POST)
-	@ResponseBody
-	public BaseMapBean updateReceiverInfo(@RequestBody WechatMsgReceiverEntity receiverEntity) {
-		BaseMapBean result = new BaseMapBean();
-		
-		wechatService.updateReceiver(receiverEntity);
-		
-		return result;
-	}
+        return baseBean;
+    }
+
+    // 写一个回调接口，接收xml返回记录模板消息发送结果
+
+    /**
+     * 查询获取微信公众号消息接收者列表
+     *
+     * @return
+     */
+    @ApiOperation(value = "查询获取微信公众号消息接收者列表", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "Integer", name = "page", value = "页码，从1开始", required = false)
+            , @ApiImplicitParam(dataType = "Integer", name = "limit", value = "size，如10", required = false)
+            , @ApiImplicitParam(dataType = "string", name = "nickname", value = "微信昵称", required = false)
+            , @ApiImplicitParam(dataType = "string", name = "remarks", value = "备注名", required = false)
+            , @ApiImplicitParam(dataType = "string", name = "userStatus", value = "不传表示查询所有。1:启用，0:停用", required = false)
+    })
+    @RequestMapping(value = "/receiver/list", method = RequestMethod.GET)
+    @ResponseBody
+    public BaseBean<BasePageBean<WechatMsgReceiverEntity>> getReceiverList(@RequestParam(defaultValue = "1") Integer page,
+                                                                           @RequestParam(defaultValue = "10") Integer limit, String nickname, String remarks, String userStatus) {
+        BaseBean<BasePageBean<WechatMsgReceiverEntity>> result = new BaseBean<BasePageBean<WechatMsgReceiverEntity>>();
+
+        // 页码从1开始，但是sql中从0开始
+        List<WechatMsgReceiverEntity> receiverEntities = wechatService.queryReceivers(page - 1, limit, nickname, remarks, userStatus);
+        long totalSize = wechatService.queryReceiverSize(nickname, remarks, userStatus);
+        result.data = new BasePageBean<WechatMsgReceiverEntity>(page, limit, totalSize, receiverEntities);
+
+        return result;
+    }
+
+    /**
+     * 查询获取微信公众号消息接收者列表
+     *
+     * @return
+     */
+    @ApiOperation(value = "更新微信公众号消息接收者信息", notes = "备注名、状态")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "WechatMsgReceiverEntity",
+                    name = "receiverEntity", value = "微信接收消息者bean", required = true, paramType = "body")
+    })
+    @RequestMapping(value = "/receiver/update", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseMapBean updateReceiverInfo(@RequestBody WechatMsgReceiverEntity receiverEntity) {
+        BaseMapBean result = new BaseMapBean();
+
+        wechatService.updateReceiver(receiverEntity);
+
+        return result;
+    }
 }
