@@ -37,7 +37,7 @@ public class AnalyseServices {
     WechatController mWechatController;
 
     @Async("taskExecutor")
-    @Scheduled(fixedDelay = INTERVAL)  //间隔60秒
+    @Scheduled(fixedDelay = INTERVAL)
     public void periodCheckSecurity() throws InterruptedException {
         Logger logger = LoggerFactory.getLogger(getClass());
         List<AppInfo> appInfos=appInfoWrapper.getAllApps();
@@ -48,7 +48,7 @@ public class AnalyseServices {
                    logger.debug("risk count:"+count);
                    // TODO: 2020/3/12 暂时测试每一个上报都进行微信通知
                    mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
-                           "在过去的"+(INTERVAL/60/1000)+"分钟内"+count+"条多开设备", "请至APP记录平台查看完整详细信息", null);
+                           "在过去的"+(INTERVAL/60/1000)+"分钟内"+count+"条风险设备记录", "请至APP记录平台查看完整详细信息", null);
                } else {
                    logger.info("appId["+appInfo.getAppId()+"]periodCheckSecurity method run,find no risk");
                }
