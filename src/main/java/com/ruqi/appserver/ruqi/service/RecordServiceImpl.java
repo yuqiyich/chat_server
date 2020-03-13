@@ -37,10 +37,6 @@ public class RecordServiceImpl implements IRecordService {
 //           int appId=appInfoWrapper.getAppIdByKey("BB392D26CF521EFD");
             AppInfo appInfo = appInfoWrapper.getAppInfoByKey(data.getAppInfo().getAppKey());
             if (appInfo!=null&&appInfo.getAppId()>0) {
-                // TODO: 2020/3/12 暂时测试每一个上报都进行微信通知
-                mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), data.getContent().riskType,
-                        String.format("版本号：%s，uid：%s，deviceId：%s", data.getContent().appVersionName,
-                                data.getUserInfo().userId, data.getContent().deviceId), "请至APP记录平台查看完整详细信息", null);
                 RiskInfo riskInfo = data.getContent();
                 riskInfo.setAppId(appInfo.getAppId());
                 riskInfo.setRequestIp(requestIp);

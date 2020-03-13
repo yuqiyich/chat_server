@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author yich
  */
@@ -17,4 +19,13 @@ public interface AppInfoWrapper {
     @Select("SELECT * FROM app_info where app_key = #{key}")
     @Results({@Result(property = "appId", column = "app_id"),@Result(property = "appName", column = "app_name")})
     AppInfo getAppInfoByKey(String key);
+
+
+    /**
+     * 后面优化用redis来缓存所有的app的信息
+     * @return
+     */
+    @Select("SELECT * FROM app_info ")
+    @Results({@Result(property = "appId", column = "app_id"),@Result(property = "appName", column = "app_name")})
+    List<AppInfo> getAllApps();
 }
