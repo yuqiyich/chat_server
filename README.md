@@ -13,7 +13,7 @@ VSCode、IntelliJ IDEA、WebStorm等等，推荐使用IntelliJ IDEA。后续说�
 #### 运行
 同普通JAVA程序，在IDEA中运行`DemoApplication`类中的`main`方法，就能运行该项目的全部服务。
 <br/>
-该项目将接口API与管理中后台集成在一起，运行后接口API与中台都能访问。如中台"http://localhost:8080/"、API接口"http://localhost:8080/wechat/receiver/list"
+该项目将接口API与管理中后台集成在一起，运行后接口API与中台都能访问。如中台"http://localhost:8080"、API接口"http://localhost:8080/wechat/receiver/list"
 
 #### 调试
 开发过程中难免会遇到调试代码的情况，而该项目的主要语言是JAVA、HTML等，所以其调试手段与JAVA项目、前端开发一致。
@@ -22,7 +22,7 @@ JAVA日志在IDEA中的Console控制台能看到。项目根目录下的myapp.lo
 
 ### 线上部署
 #### 环境说明
-application.properties文件中增加配置：spring.profiles.active=@profiles.active@
+application.properties文件中增加配置：`spring.profiles.active=@profiles.active@`
 <br/>
 pom.xml文件中配置profiles下dev、test、prod三种环境，resources目录下创建三个环境的配置文件application-${env}.properties，不同环境下可以分别设置不同的属性。***默认***使用***dev***配置。
 <br/>
@@ -30,7 +30,7 @@ pom.xml文件中配置profiles下dev、test、prod三种环境，resources目录
 #### 打包
 * IDEA操作打包，在右侧Maven工具箱中选择对应的环境，点击install即可：
 <br/>
-<img src='./README_IMG/idea_install.png' width='500'>
+<img src='./README_IMG/idea_install.png' width='600'>
 * 命令行打包，在项目根目录下执行命令：
 `mvn clean package -P {env}`, 如`mvn clean package -P prod`
 
@@ -43,16 +43,18 @@ pom.xml文件中配置profiles下dev、test、prod三种环境，resources目录
 会要求输入服务器的密码，然后等待上传成功即可。
 * 方式二：IDEA的deployment功能。先进行配置，后续打包好后，操作upload到配置好的服务器的对应目录下。
 <br/>
-<img src='./README_IMG/deploy_config.png' width='500'>
+<img src='./README_IMG/deploy_config.png' width='600'>
 <br/>
-<img src='./README_IMG/deploy_details.png' width='500'>
+<img src='./README_IMG/deploy_details.png' width='600'>
 <br/>
-<img src='./README_IMG/deploy_upload.png' width='500'>
+<img src='./README_IMG/deploy_upload.png' width='600'>
+<br/>
 ##### 运行最新版本jar
 mac系统，命令行`ssh wxgzh@10.3.1.3`，输入密码登录服务器。
 <br/>
 `cd gongzhonghao/`进入目录，执行脚本`sh service.sh status`可以查看服务状态，`sh service.sh stop`停止服务，`sh service.sh start`开启服务，则完成了此次更新部署重启服务。
 运行后，可以访问一下中台验证部署是否成功生效。
+<br/>
 ##### 查看线上日志
 服务器目录下gzh.log、myapp.log均记录线上日志。
 `tail -f ${filename}`命令，查看实时日志信息。
@@ -77,16 +79,16 @@ mac系统，命令行`ssh wxgzh@10.3.1.3`，输入密码登录服务器。
 #### Swagger
 Swagger插件，规范开发者的代码，自动生成对应的接口文档，且能直接在线进行接口调试。一般情况下部署后本地访问路径为"http://localhost:8080/swagger-ui.html"。
 <br/>
-大家可以自行百度或官网进行了解："https://swagger.io/"。
+大家可以自行百度或官网进行了解："https://swagger.io"。
 
 #### layui
 经典模块化前端框架。由职业前端倾情打造，面向全层次的前后端开发者，低门槛开箱即用的前端 UI 解决方案。该项目使用最新版2.5.6。
 <br/>
-大家可以自行百度或官网进行了解："https://www.layui.com/"。
+大家可以自行百度或官网进行了解："https://www.layui.com"。
 
 #### PUML
 plantUML是一个可以很方便的进行编码生成流程图的工具，需要安装PlantUML integration插件。文件统一放在puml目录下，以.puml结尾。
 梳理逻辑写plantUML可以帮助开发者自己梳理流程逻辑，更能便于他人快速理解逻辑流程。
 <br/>
-大家可以自行百度或官网进行了解："https://plantuml.com/"，也可以选用其他工具、增强代码注释等达到让大家都能清晰理解代码逻辑的目的。
+大家可以自行百度或官网进行了解："https://plantuml.com"，也可以选用其他工具、增强代码注释等达到让大家都能清晰理解代码逻辑的目的。
 
