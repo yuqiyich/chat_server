@@ -20,11 +20,15 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 网络请求
  */
 public class BaseHttpClient {
+	private static Logger logger = LoggerFactory.getLogger(BaseHttpClient.class.getClass());
+
     public static String sendGet(String url, String param) {
 		String result = "";
 		BufferedReader in = null;
@@ -46,7 +50,7 @@ public class BaseHttpClient {
 			Map<String, List<String>> map = connection.getHeaderFields();
 			// 遍历所有的响应头字段
 			for (String key : map.keySet()) {
-				System.out.println(key + "--->" + map.get(key));
+				logger.info(key + "--->" + map.get(key));
 			}
 			// 定义 BufferedReader输入流来读取URL的响应
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -55,7 +59,7 @@ public class BaseHttpClient {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送GET请求出现异常！" + e);
+			logger.info("发送GET请求出现异常！" + e);
 			e.printStackTrace();
 		}
 		// 使用finally块来关闭输入流
@@ -108,7 +112,7 @@ public class BaseHttpClient {
 				result += line;
 			}
 		} catch (Exception e) {
-			System.out.println("发送 POST 请求出现异常！" + e);
+			logger.info("发送 POST 请求出现异常！" + e);
 			e.printStackTrace();
 		}
 		// 使用finally块来关闭输出流、输入流
@@ -143,11 +147,11 @@ public class BaseHttpClient {
 			// 从响应模型中获取响应实体
 			HttpEntity responseEntity = response.getEntity();
 
-			System.out.println("响应状态为:" + response.getStatusLine());
+			logger.info("响应状态为:" + response.getStatusLine());
 			if (responseEntity != null) {
 				result = EntityUtils.toString(responseEntity);
-				System.out.println("响应内容长度为:" + responseEntity.getContentLength());
-				System.out.println("响应内容为:" + result);
+				logger.info("响应内容长度为:" + responseEntity.getContentLength());
+				logger.info("响应内容为:" + result);
 			}
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();

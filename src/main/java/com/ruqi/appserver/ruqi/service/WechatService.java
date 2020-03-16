@@ -8,11 +8,16 @@ import com.ruqi.appserver.ruqi.dao.mappers.WechatMapper;
 import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+// TODO: 2020/3/16 多线程情况下，分布式情况下，可能存在同时多个进行请求token和保存到数据库的操作。
 @Service
 public class WechatService {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private WechatMapper wechatMapper;
 
@@ -24,10 +29,9 @@ public class WechatService {
      */
 	public String queryAccessToken() {
         // 本地有则直接使用，否则数据库拿。
-        // TODO: 如果是分布式之类的，其他地方重新获取了本地的就不正确。
-        if (null != mWechatAccessTokenEntity && 
+        if (null != mWechatAccessTokenEntity &&
             mWechatAccessTokenEntity.expiresTime.getTime() > System.currentTimeMillis()) {
-            System.out.println("--->本地token");
+            logger.info("--->本地token");
             return mWechatAccessTokenEntity.accessToken;
         }
 
@@ -38,7 +42,7 @@ public class WechatService {
         }
         if (null != mWechatAccessTokenEntity && 
             mWechatAccessTokenEntity.expiresTime.getTime() > System.currentTimeMillis()) {
-            System.out.println("--->数据库token");
+            logger.info("--->数据库token");
             mWechatAccessTokenEntity.accessToken = EncryptUtils.decode(mWechatAccessTokenEntity.accessToken);
             return mWechatAccessTokenEntity.accessToken;
         } else {
@@ -75,14 +79,14 @@ public class WechatService {
         WechatMsgReceiverEntity receiverEntity = wechatMapper.queryReceiverByOpenid(openId);
         // System.out.println("--->queryReceiverByOpenid=" + JSON.toJSONString(receiverEntity));
         if (null != receiverEntity) {
-            System.out.println("--->bindReceiver exits userStatus=" + receiverEntity.userStatus);
+            logger.info("--->bindReceiver exits userStatus=" + receiverEntity.userStatus);
             if (receiverEntity.userStatus != 1) {
                 receiverEntity.nickname = nickname;
                 receiverEntity.userStatus = 1;
                 wechatMapper.updateReceiver(receiverEntity);
             }
         } else {
-            System.out.println("--->bindReceiver not exits insert");
+            logger.info("--->bindReceiver not exits insert");
             receiverEntity = new WechatMsgReceiverEntity();
             receiverEntity.openid = openId;
             receiverEntity.nickname = nickname;
@@ -95,7 +99,7 @@ public class WechatService {
      */
     public void updateReceiver(WechatMsgReceiverEntity receiverEntity) {
         if (null == receiverEntity || receiverEntity.id <= 0) {
-            System.out.println("--->updateReceiver receiverEntity is null or id invalid");
+            logger.info("--->updateReceiver receiverEntity is null or id invalid");
             return;
         }
 

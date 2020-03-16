@@ -63,7 +63,7 @@ public class WechatController {
                                 + json.getLong("expires_in").longValue() * 1000 - 600000); // 过期时间，减少10分钟
                         wechatService.updateAccessToken(entity);
                     } else {
-                        System.out.println("--->获取accessToken失败，result: " + result);
+                        logger.info("--->获取accessToken失败，result: " + result);
                     }
                     // {"access_token":"ACCESS_TOKEN","expires_in":7200}
                     // {"errcode":40013,"errmsg":"invalid appid"}
@@ -74,9 +74,9 @@ public class WechatController {
         }
 
         if (MyStringUtils.isEmpty(accessToken)) {
-            System.out.println("--->获取accessToken失败，请检查具体原因");
+            logger.info("--->获取accessToken失败，请检查具体原因");
         } else {
-            System.out.println("--->获取到了accessToken");
+            logger.info("--->获取到了accessToken");
         }
 
         return accessToken;
@@ -159,7 +159,7 @@ public class WechatController {
 
             // {"errcode":0,"errmsg":"ok","msgid":1226691075109289985}
 
-            System.out.println("--->发消息result=" + result);
+            logger.info("--->发消息result=" + result);
             // 如果接口返回token失效则获取token再重试
 
             // TODO：保存消息id、安全报警id、微信用户的对应id、发送结果、备注
@@ -170,7 +170,7 @@ public class WechatController {
         map.put("size", size);
         baseBean.data = map;
 
-        System.out.println("--->result:" + JSON.toJSONString(baseBean));
+        logger.info("--->result:" + JSON.toJSONString(baseBean));
 
         return baseBean;
     }
@@ -205,7 +205,7 @@ public class WechatController {
     }
 
     /**
-     * 查询获取微信公众号消息接收者列表
+     * 更新微信公众号消息接收者信息
      *
      * @return
      */
