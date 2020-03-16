@@ -13,7 +13,7 @@ VSCode、IntelliJ IDEA、WebStorm等等，推荐使用IntelliJ IDEA。后续说�
 #### 运行
 同普通JAVA程序，在IDEA中运行`DemoApplication`类中的`main`方法，就能运行该项目的全部服务。
 <br/>
-该项目将接口API与管理中后台集成在一起，运行后接口API与中台都能访问。如中台"http://localhost:8080"、API接口"http://localhost:8080/wechat/receiver/list"
+该项目将接口API与管理中后台集成在一起，运行后接口API与中台都能访问。如[中台主页](http://localhost:8080/)、[API接口](http://localhost:8080/wechat/receiver/list/)
 
 #### 调试
 开发过程中难免会遇到调试代码的情况，而该项目的主要语言是JAVA、HTML等，所以其调试手段与JAVA项目、前端开发一致。
@@ -34,9 +34,11 @@ pom.xml文件中配置profiles下dev、test、prod三种环境，resources目录
 * 命令行打包，在项目根目录下执行命令：
 `mvn clean package -P {env}`, 如`mvn clean package -P prod`
 
-则会在项目下生成对应的jar包（微服务部署使用jar包，jar包名字在pom.xml中可以配置，但是名字与后续部署、脚本运行等有关）：
+则会在项目下target目录下生成对应的jar包（微服务部署使用jar包，jar包名字在pom.xml中可以配置，但是名字与后续部署、脚本运行等有关）。
+
 #### 发布
 目前项目的发布指打正式包发布在公司测试服务器上的流程。需要注意打包时要选择prod环境。
+
 ##### 上传jar到服务器
 * 方式一：手动命令行上传到服务器，如下命令中第二个参数为jar包在电脑本地的绝对路径，大家需要修改成自己的。
 `scp /Users/zhangyu/WebProjects/mobile_manager/target/ruqi-mobile-manager-0.0.1-SNAPSHOT.jar wxgzh@10.3.1.3:~/gongzhonghao/`
@@ -49,12 +51,14 @@ pom.xml文件中配置profiles下dev、test、prod三种环境，resources目录
 <br/>
 <img src='./README_IMG/deploy_upload.png' width='600'>
 <br/>
+
 ##### 运行最新版本jar
 mac系统，命令行`ssh wxgzh@10.3.1.3`，输入密码登录服务器。
 <br/>
 `cd gongzhonghao/`进入目录，执行脚本`sh service.sh status`可以查看服务状态，`sh service.sh stop`停止服务，`sh service.sh start`开启服务，则完成了此次更新部署重启服务。
 运行后，可以访问一下中台验证部署是否成功生效。
 <br/>
+
 ##### 查看线上日志
 服务器目录下gzh.log、myapp.log均记录线上日志。
 `tail -f ${filename}`命令，查看实时日志信息。
@@ -77,18 +81,18 @@ mac系统，命令行`ssh wxgzh@10.3.1.3`，输入密码登录服务器。
 
 ### 第三方插件功能说明
 #### Swagger
-Swagger插件，规范开发者的代码，自动生成对应的接口文档，且能直接在线进行接口调试。一般情况下部署后本地访问路径为"http://localhost:8080/swagger-ui.html"。
+Swagger插件，规范开发者的代码，自动生成对应的接口文档，且能直接在线进行接口调试。一般情况下部署后本地访问路径为`http://localhost:8080/swagger-ui.html`。
 <br/>
-大家可以自行百度或官网进行了解："https://swagger.io"。
+大家可以自行百度或[官网](https://swagger.io/)进行了解。
 
 #### layui
 经典模块化前端框架。由职业前端倾情打造，面向全层次的前后端开发者，低门槛开箱即用的前端 UI 解决方案。该项目使用最新版2.5.6。
 <br/>
-大家可以自行百度或官网进行了解："https://www.layui.com"。
+大家可以自行百度或[官网](https://www.layui.com)进行了解。
 
 #### PUML
 plantUML是一个可以很方便的进行编码生成流程图的工具，需要安装PlantUML integration插件。文件统一放在puml目录下，以.puml结尾。
 梳理逻辑写plantUML可以帮助开发者自己梳理流程逻辑，更能便于他人快速理解逻辑流程。
 <br/>
-大家可以自行百度或官网进行了解："https://plantuml.com"，也可以选用其他工具、增强代码注释等达到让大家都能清晰理解代码逻辑的目的。
+大家可以自行百度或[官网](https://plantuml.com/)进行了解。也可以选用其他工具、增强代码注释等达到让大家都能清晰理解代码逻辑的目的。
 
