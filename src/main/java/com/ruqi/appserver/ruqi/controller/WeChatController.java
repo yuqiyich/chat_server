@@ -1,7 +1,5 @@
 package com.ruqi.appserver.ruqi.controller;
 
-import com.ruqi.appserver.ruqi.network.HttpClient;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
