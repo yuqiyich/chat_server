@@ -70,7 +70,7 @@
             <ul class="layui-nav layui-nav-tree" lay-filter="navtree">
                 <!--默认展开-->
                 <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:;" title="主页"><i class="layui-icon layui-icon-home"></i><cite>主页</cite></a>
+                    <a href="javascript:;" lay-href="home.html" title="主页"><i class="layui-icon layui-icon-home"></i><cite>主页</cite></a>
                     <!-- <dl class="layui-nav-child">
                             <dd><a href="javascript:;">列表一</a></dd>
                             <dd><a href="javascript:;">列表二</a></dd>
@@ -93,7 +93,7 @@
                     <a href="javascript:;" title="安全报警"><cite>安全报警</cite></a>
                     <dl class="layui-nav-child">
                         <dd><a href="javascript:;" lay-href="./set.html">报警列表</a></dd>
-                        <dd><a href="javascript:;" lay-href="wechatH5/receiverList">微信公众号</a></dd>
+                        <dd><a href="javascript:;" lay-href="wechatReceiverList.html">微信公众号</a></dd>
                     </dl>
                 </li>
             </ul>
@@ -105,11 +105,11 @@
         <div class="layui-admin-pagetabs">
             <div class="layui-tab layui-tab-brief" lay-allowClose="true" lay-filter="pagetabs">
                 <ul class="layui-tab-title layui-bg-white">
-                    <li class="layui-this" lay-id="wechatH5/home"><i class="layui-icon layui-icon-home"></i></li>
+                    <li class="layui-this" lay-id="home.html"><i class="layui-icon layui-icon-home"></i></li>
                 </ul>
                 <div class="layui-tab-content">
                     <div class="layui-tab-item layui-show">
-                        <iframe src="wechatH5/home" id="mainiframe" class="layui-admin-iframe" scrolling="no"
+                        <iframe src="home.html" id="mainiframe" class="layui-admin-iframe" scrolling="no"
                                 frameborder="0"
                                 onload="setIframeHeight(this);"></iframe>
                     </div>
