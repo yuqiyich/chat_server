@@ -45,8 +45,13 @@ public class WechatService {
             return "";
         }
     }
-    
+
+    /**
+     * 更新token，更改本地值。更新到数据库。
+     * @param entity
+     */
     public void updateAccessToken(WechatAccessTokenEntity entity) {
+        mWechatAccessTokenEntity = entity;
         entity.accessToken = EncryptUtils.encode(entity.accessToken);
 
         // 先清除数据库，再插入这条数据
