@@ -7,6 +7,8 @@ import com.ruqi.appserver.ruqi.network.WechatConstant;
 import com.ruqi.appserver.ruqi.service.WechatService;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,8 @@ import java.net.URLEncoder;
 
 // 在html页面并没有办法获取的到控制器ModelAndView里面数据的方法
 public class WechatWebController {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private WechatService wechatService;
@@ -56,14 +60,14 @@ public class WechatWebController {
         // 拿到对应的openId，与某个微信进行绑定，能获取到微信昵称等？ 保存在数据库，后续发送模板消息使用这个openId。
 
         if (MyStringUtils.isEmpty(code)) {
-            System.out.println("--->redirectUri code is null");
+            logger.info("--->redirectUri code is null");
             return "error";
         }
 
         String result = BaseHttpClient.sendGet(String.format(UrlConstant.WeChatUrl.OPEN_ID_GET,
                 WechatConstant.APP_ID, WechatConstant.SECRET, code), "");
 
-        System.out.println("--->openIdResult=" + result);
+        logger.info("--->openIdResult=" + result);
 
         String accessToken = "";
         String openId = "";
@@ -84,7 +88,7 @@ public class WechatWebController {
             String userInfo = BaseHttpClient.sendGet(String.format(UrlConstant.WeChatUrl.USER_INFO_GET,
                     accessToken, openId), "");
 
-            System.out.println("--->userInfoResult=" + userInfo);
+            logger.info("--->userInfoResult=" + userInfo);
 
             String nickname = "";
             try {
