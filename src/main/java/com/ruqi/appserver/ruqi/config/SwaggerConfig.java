@@ -1,6 +1,8 @@
 package com.ruqi.appserver.ruqi.config;
 
 import com.google.common.base.Predicates;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 //@Profile("dev")//在生产环境不开启
 //@ConditionalOnProperty(name = "swagger.enable", havingValue = "true")
 public class SwaggerConfig {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Value("${swagger.enable:false}")
     private boolean mSwaggerEnable = false;
 

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
-import com.aliyuncs.utils.StringUtils;
 
+import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -34,7 +34,7 @@ public class BaseHttpClient {
 		BufferedReader in = null;
 		try {
 			String urlNameString = url;
-			if (!StringUtils.isEmpty(param)) {
+			if (!MyStringUtils.isEmpty(param)) {
 				urlNameString += "?" + param;
 			}
 			URL realUrl = new URL(urlNameString);
