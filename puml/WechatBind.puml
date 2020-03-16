@@ -1,0 +1,43 @@
+// 微信服务号，关注绑定通知。
+// 拿到服务号的关注者对应这个服务号的openId、昵称。
+// 用于模板消息发送。
+
+// actor, boundary, control, entity, database，collections
+// 参与者、边界、控件、实体、数据库、集合
+
+// newpage 分页，相当于多个图片
+// == ==  分段
+
+@startuml
+
+header 20200313
+
+title 绑定微信服务号用于收取模板消息流程图
+
+actor 用户
+
+用户 -> APP记录平台 : 扫描二维码，打开对应的url（/authorize）
+
+== APP记录平台与微信平台 start ==
+
+APP记录平台 -> 微信平台 : 跳转打开微信平台的url
+note right : 配置appid、在微信管理后台配置的域名下的回调url，\n指定类型为需要获取用户信息
+微信平台 -> APP记录平台 : 回调打开配置的url，会带上返回的code值
+APP记录平台 -> 微信平台 : 调用微信平台的获取用户的openid和access_token的方法
+APP记录平台 <-- 微信平台 : 返回用户的openid和access_token
+note right : access_token是为了获取信息接口
+APP记录平台 -> 微信平台 : 调用微信平台的获取用户信息的方法（会返回头像、昵称等信息）
+note right : 已拿到openid可以进行消息推送\n拿到昵称是便于区分用户
+APP记录平台 <-- 微信平台 : 返回用户信息（openid、昵称等）
+
+activate APP记录平台
+APP记录平台 -> APP记录平台 : 查询数据库已有openid数据则更新昵称、启用状态，\n否则新增数据
+
+== APP记录平台与微信平台 end ==
+
+APP记录平台 -> 用户 : 展示对应的回调url的内容（/redirectUri）
+note left :  展示服务号关注二维码，\n提示需要关注才能接收到消息
+
+deactivate APP记录平台
+
+@enduml
