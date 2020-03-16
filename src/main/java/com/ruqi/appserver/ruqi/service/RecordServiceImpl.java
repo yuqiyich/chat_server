@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class RecordServiceImpl implements IRecordService {
@@ -46,6 +47,16 @@ public class RecordServiceImpl implements IRecordService {
                 logger.info("this appKey[" + data.getAppInfo().getAppKey() + "] not exists,throw this msg");
             }
         }
+    }
+
+    @Override
+    public List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit,RecordInfo<RiskInfo> riskParams ) {
+       return  riskInfoWrapper.queryRiskList(pageIndex,limit,riskParams);
+    }
+
+    @Override
+    public int queryTotalSize( RecordInfo<RiskInfo> riskParams) {
+        return  1;
     }
 
     private void saveRiskUserInfo(UserEntity userInfo) {
