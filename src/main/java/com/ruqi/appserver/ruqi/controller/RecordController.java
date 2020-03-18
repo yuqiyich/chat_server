@@ -1,9 +1,6 @@
 package com.ruqi.appserver.ruqi.controller;
 
-import com.ruqi.appserver.ruqi.bean.BaseBean;
-import com.ruqi.appserver.ruqi.bean.BasePageBean;
-import com.ruqi.appserver.ruqi.bean.RecordInfo;
-import com.ruqi.appserver.ruqi.bean.RiskInfo;
+import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.dao.entity.WechatMsgReceiverEntity;
 import com.ruqi.appserver.ruqi.service.IRecordService;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
@@ -52,18 +49,35 @@ public class RecordController {
      */
     @ApiOperation(value = "查询报警列表", notes = "")
     @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "Integer", name = "page", value = "页码，从1开始", required = false)
-            , @ApiImplicitParam(dataType = "Integer", name = "limit", value = "size，如10", required = false)
-            , @ApiImplicitParam(dataType = "RecordInfo<RiskInfo>", name = "参数对象", value = "参数类型", required = false)
+             @ApiImplicitParam(dataType = "RecordInfo<RiskInfo>", name = "参数对象", value = "参数类型", required = false)
     })
     @RequestMapping(value = "/queryRiskList", method = RequestMethod.POST)
     @ResponseBody
-    public BaseBean<BasePageBean<RecordInfo<RiskInfo>>> getRiskInfoList(@RequestParam(defaultValue = "1") Integer page,
-                                                                           @RequestParam(defaultValue = "10") Integer limit,@RequestBody RecordInfo<RiskInfo> params) {
+    public BaseBean<BasePageBean<RecordInfo<RiskInfo>>> getRiskInfoList(@RequestBody RecordInfo<RiskInfo> params) {
         BaseBean<BasePageBean<RecordInfo<RiskInfo>>> result = new BaseBean<>();
-        List<RecordInfo<RiskInfo>> receiverEntities = recordService.queryList(page - 1, limit, params);
+        List<RecordInfo<RiskInfo>> receiverEntities = recordService.queryList(params.getPage()-1, params.getLimit(), params);
         long totalSize = recordService.queryTotalSize(params);
-        result.data = new BasePageBean<RecordInfo<RiskInfo>>(page, limit, totalSize, receiverEntities);
+        result.data = new BasePageBean<RecordInfo<RiskInfo>>(params.getPage()-1, params.getLimit(), totalSize, receiverEntities);
+        return result;
+    }
+
+    /**
+     * 查询获取微信公众号消息接收者列表(for web 的layui的table控件接口)
+     *
+     * @return
+     */
+    @ApiOperation(value = "查询报警列表", notes = "")
+    @ApiImplicitParams({
+             @ApiImplicitParam(dataType = "RecordInfo<RiskInfo>", name = "参数对象", value = "参数类型", required = false)
+    })
+    @RequestMapping(value = "/queryRiskListForLayui", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<BasePageBean<RecordRiskInfo>> getRiskInfoListForLayui( @RequestBody RecordInfo<RiskInfo> params) {
+        BaseBean<BasePageBean<RecordRiskInfo>> result = new BaseBean<>();
+        List<RecordRiskInfo> receiverEntities = recordService.queryListForLayUi(params.getPage() - 1, params.getLimit(), params);
+        long totalSize = recordService.queryTotalSize(params);
+        result.data = new BasePageBean<RecordRiskInfo>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
         return result;
     }
 }

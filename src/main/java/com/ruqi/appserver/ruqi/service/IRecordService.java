@@ -1,9 +1,6 @@
 package com.ruqi.appserver.ruqi.service;
 
-import com.ruqi.appserver.ruqi.bean.AppInfo;
-import com.ruqi.appserver.ruqi.bean.RecordInfo;
-import com.ruqi.appserver.ruqi.bean.RiskInfo;
-import com.ruqi.appserver.ruqi.bean.UserEntity;
+import com.ruqi.appserver.ruqi.bean.*;
 
 import java.util.Date;
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.List;
 public interface IRecordService {
 
     void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime,String requestIp);
+    List<RecordRiskInfo> queryListForLayUi(int pageIndex, int limit, RecordInfo<RiskInfo> params);
     List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit, RecordInfo<RiskInfo> params);
     int queryTotalSize(RecordInfo<RiskInfo> params);
 }
