@@ -1,6 +1,11 @@
 package com.ruqi.appserver.ruqi.bean;
 
+import com.aliyuncs.utils.StringUtils;
+
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -31,6 +36,58 @@ public class RiskInfo {
     public String riskType;
     public String ext;//使用额外字段标识
     public String riskDetail;
+
+
+
+    /*****
+     *查询字段参数
+     */
+    public String duringTime;
+    public Date startDate;
+    public Date endDate;
+   public SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+
+    public String getDuringTime() {
+        return duringTime;
+    }
+
+    public void setDuringTime(String duringTime) {
+        this.duringTime = duringTime;
+        createStartEndDate();
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+    public  void createStartEndDate(){
+        if (!StringUtils.isEmpty(duringTime)){
+             String[] str=duringTime.split("~");
+             if (str.length==2){
+                 try {
+                     startDate = format.parse(str[0].trim());
+                     endDate = format.parse(str[1].trim());
+                 } catch (ParseException e) {
+                     e.printStackTrace();
+                 }
+             }
+        }
+    }
+    /*****
+     *查询字段参数
+     */
 
     public String getScene() {
         return scene;
