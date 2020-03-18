@@ -59,9 +59,14 @@
         <div class="layui-inline">
             <label class="layui-form-label">用户手机</label>
             <div class="layui-input-inline" style="width: 100px;">
-                <input type="text" maxlength="10" id="phoneNum" name="phoneNum"
-                       lay-verify="phoneNum"
-                       autocomplete="off"
+                <input type="text" class="layui-input" id="test1">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">上传时间段</label>
+            <div class="layui-input-inline" style="width: 300px;">
+                <input type="text"  id="duringTime" name="duringTime"
+                       lay-verify="duringTime"
                        class="layui-input">
             </div>
         </div>
@@ -94,23 +99,6 @@
         // var data = form.val("wechat_info");
 
         //监听提交
-        // 更新备注名
-        form.on('submit(updateRemarkName)', function (data) {
-            var newName = data.field.remarkName;
-
-            layer.msg(JSON.stringify(selectedData));
-
-            if (null != selectedData) {
-                if (newName == selectedData.remark) {
-                    return true;
-                } else {
-                    selectedData.remark = newName;
-                    return updateUserInfo(selectedData);
-                }
-            }
-            layui.msg("发生异常错误，请刷新重试");
-            return false;
-        });
         // 搜索
         form.on('submit(search)', function (data) {
             layui.use('table', function () {
@@ -127,12 +115,10 @@
                         },
                         "content": {
                             "appVersionName": $("#appVersion").val(),
+                            "duringTime": $("#duringTime").val(),
                             "deviceModel": $("#deviceModel").val()
                         }
-            }
-                        // app_versionname: $("#appVersion").val()
-                        // , userPhone: $("#phoneNum").val()
-                        // , user_name: $("#userName").val()
+                   }
                 }, 'data');
             });
             return false;
@@ -145,9 +131,18 @@
                 table.reload('developerTable', {
                     page: {curr: 1}
                     , where: {
-                        nickname: $("#filterNickName").val()
-                        , remarks: $("#filterRemarkName").val()
-                        , userStatus: $("#statusSelect").val()
+                        "appInfo": {
+                            "appId": $("#appIdSelect").val(),
+                        },
+                        "userInfo": {
+                            "userName": $("#userName").val(),
+                            "userPhone": $("#phoneNum").val(),
+                        },
+                        "content": {
+                            "appVersionName": $("#appVersion").val(),
+                            "duringTime": $("#duringTime").val(),
+                            "deviceModel": $("#deviceModel").val()
+                        }
                     }
                 }, 'data');
             });
@@ -156,7 +151,18 @@
     });
 </script>
 <script>
-    var selectedData = null;
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#duringTime' //指定元素
+            ,type: 'datetime'
+            ,range:  '~' //或 range: '~' 来自定义分割字符
+
+        });
+    });
+
 
     layui.use('table', function () {
         var table = layui.table;
@@ -282,7 +288,7 @@
             switch (obj.event) {
                 case 'reloadData':
                     table.reload('developerTable', {
-                        page: {curr: $(".layui-laypage-skip").find("input").val() }
+                        page: {curr: 1 }
                         //,height: 300
                         //,url: 'x'
                     }, 'data');
