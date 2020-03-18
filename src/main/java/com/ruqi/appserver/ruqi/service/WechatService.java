@@ -1,17 +1,16 @@
 package com.ruqi.appserver.ruqi.service;
 
-import java.util.List;
-
 import com.ruqi.appserver.ruqi.dao.entity.WechatAccessTokenEntity;
 import com.ruqi.appserver.ruqi.dao.entity.WechatMsgReceiverEntity;
 import com.ruqi.appserver.ruqi.dao.mappers.WechatMapper;
 import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 // TODO: 2020/3/16 多线程情况下，分布式情况下，可能存在同时多个进行请求token和保存到数据库的操作。
 @Service
@@ -25,12 +24,13 @@ public class WechatService {
 
     /**
      * 已过期或者token为空，返回空。后续需要进行重新api请求获取和保存。
+     *
      * @return
      */
-	public String queryAccessToken() {
+    public String queryAccessToken() {
         // 本地有则直接使用，否则数据库拿。
         if (null != mWechatAccessTokenEntity &&
-            mWechatAccessTokenEntity.expiresTime.getTime() > System.currentTimeMillis()) {
+                mWechatAccessTokenEntity.expiresTime.getTime() > System.currentTimeMillis()) {
             logger.info("--->本地token");
             return mWechatAccessTokenEntity.accessToken;
         }
@@ -40,8 +40,8 @@ public class WechatService {
         if (null != dataList && dataList.size() > 0) {
             mWechatAccessTokenEntity = dataList.get(0);
         }
-        if (null != mWechatAccessTokenEntity && 
-            mWechatAccessTokenEntity.expiresTime.getTime() > System.currentTimeMillis()) {
+        if (null != mWechatAccessTokenEntity &&
+                mWechatAccessTokenEntity.expiresTime.getTime() > System.currentTimeMillis()) {
             logger.info("--->数据库token");
             mWechatAccessTokenEntity.accessToken = EncryptUtils.decode(mWechatAccessTokenEntity.accessToken);
             return mWechatAccessTokenEntity.accessToken;
@@ -52,6 +52,7 @@ public class WechatService {
 
     /**
      * 更新token，更改本地值。更新到数据库。
+     *
      * @param entity
      */
     public void updateAccessToken(WechatAccessTokenEntity entity) {
@@ -65,6 +66,7 @@ public class WechatService {
 
     /**
      * 绑定
+     *
      * @param nickname
      * @param openId
      */
@@ -105,7 +107,7 @@ public class WechatService {
 
         wechatMapper.updateReceiver(receiverEntity);
     }
-    
+
     public long queryReceiverSize(String nickname, String remarks, String userStatus) {
         return wechatMapper.queryReceiverSize(nickname, remarks, userStatus);
     }
@@ -117,4 +119,5 @@ public class WechatService {
     public List<WechatMsgReceiverEntity> queryAvailableReceivers() {
         return wechatMapper.queryAvailableReceivers();
     }
+
 }

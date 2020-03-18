@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/js/layui2.5.6/css/layui.css">
     <style>
         body {
-            padding: 20px; /*overflow-y: scroll;*/
+            padding: 20px;
         }
     </style>
 </head>
@@ -58,17 +58,17 @@
     </div>
 </form>
 
-<table id="developerTable" lay-filter="developerTable"></table>
+<table id="wechatMsgTable" lay-filter="wechatMsgTable"></table>
 
 <div hidden="true" type="text/html" id="itemEditView" onload="">
     <form id="updateForm" name="updateForm" class="layui-form" style="margin-top: 10%;" action=""
           lay-filter="wechat_info">
         <div class="layui-form-item">
             <div class="layui-inline">
-                <label class="layui-form-label">备注名</label>
+                <label class="layui-form-label">备注</label>
                 <div class="layui-input-inline">
                     <input maxlength="10" type="text" id="remarkName" name="remarkName" lay-verify="remarkName"
-                           autocomplete="off" placeholder="请输入备注名" class="layui-input">
+                           autocomplete="off" placeholder="请输入备注信息" class="layui-input">
                 </div>
             </div>
         </div>
@@ -81,12 +81,6 @@
     </form>
 </div>
 
-<script type="text/html" id="toolbarDemo">
-    <div class="layui-btn-container">
-        <button id="btn_showQrcodeView" class="layui-btn layui-btn-sm" lay-event="showQrcodeView">添加绑定</button>
-        <button class="layui-btn layui-btn-sm" lay-event="testSendAllMsg">测试全量通知</button>
-    </div>
-</script>
 <script src="/js/layui2.5.6/layui.js" charset="utf-8"></script>
 <script type="text/html" id="tpl_user_status">
     {{#  if(d.userStatus == '1'){ }}
@@ -96,21 +90,13 @@
     {{#  } }}
 </script>
 <script type="text/html" id="barOperator">
-    {{#  if(d.userStatus == '1'){ }}
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="user_disable">禁用</a>
-    {{#  } else { }}
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="user_enable">启用</a>
-    {{#  } }}
-
-    <a class="layui-btn layui-btn-xs" lay-event="user_edit">编辑</a>
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="user_send_msg_test">测试推送</a>
-    <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
+    <a class="layui-btn layui-btn-xs" lay-event="remark_edit">编辑</a>
 </script>
 <script>
-    var updateUserInfo = function (itemData) {
+    var updateMsgInfo = function (itemData) {
         $.ajax({
             type: "POST",
-            url: "/wechat/receiver/update",
+            url: "/wechat/msg/update",
             data: JSON.stringify(itemData),//请求的参数
             contentType: 'application/json;charset=utf-8',
             dataType: "json",//以json格式返回的数据，不是json就把此行去掉
@@ -121,7 +107,7 @@
                         // 更改了，需要刷新数据
                         layui.use('table', function () {
                             var table = layui.table;
-                            table.reload('developerTable', {}, 'data');
+                            table.reload('wechatMsgTable', {}, 'data');
                         });
                         return true;
                     } else {
@@ -154,7 +140,7 @@
                     return true;
                 } else {
                     selectedData.remark = newName;
-                    return updateUserInfo(selectedData);
+                    return updateMsgInfo(selectedData);
                 }
             }
             layui.msg("发生异常错误，请刷新重试");
@@ -164,7 +150,7 @@
         form.on('submit(search)', function (data) {
             layui.use('table', function () {
                 var table = layui.table;
-                table.reload('developerTable', {
+                table.reload('wechatMsgTable', {
                     page: {curr: 1}
                     , where: {
                         nickname: $("#filterNickName").val()
@@ -180,7 +166,7 @@
             document.getElementById("filterForm").reset();
             layui.use('table', function () {
                 var table = layui.table;
-                table.reload('developerTable', {
+                table.reload('wechatMsgTable', {
                     page: {curr: 1}
                     , where: {
                         nickname: $("#filterNickName").val()
@@ -193,6 +179,26 @@
         });
     });
 </script>
+<!--转换时间格式-->
+<script type="text/javascript">
+    function dateToStr(date) {
+        var time = new Date(date.time);
+        var y = time.getFullYear();
+        var M = time.getMonth() + 1;
+        M = M < 10 ? ("0" + M) : M;
+        var d = time.getDate();
+        d = d < 10 ? ("0" + d) : d;
+        var h = time.getHours();
+        h = h < 10 ? ("0" + h) : h;
+        var m = time.getMinutes();
+        m = m < 10 ? ("0" + m) : m;
+        var s = time.getSeconds();
+        s = s < 10 ? ("0" + s) : s;
+        var str = y + "-" + M + "-" + d + " " + h + ":" + m + ":" + s;
+        console.log(str);
+        return str;
+    }
+</script>
 <script>
     var selectedData = null;
 
@@ -200,13 +206,12 @@
         var table = layui.table;
 
         table.render({
-            elem: '#developerTable'
-            , title: '微信公众号消息通知接收者表'
-            , url: '/wechat/receiver/list'
+            elem: '#wechatMsgTable'
+            , title: '微信公众号消息列表'
+            , url: '/wechat/msg/list'
             , page: {curr: 1}
             , limit: 10
             , limits: [10, 30, 50, 100]
-            , toolbar: '#toolbarDemo'
             // ,toolbar: true
             // 右上角工具条
             , defaultToolbar: ['filter', 'exports', 'print'
@@ -219,28 +224,22 @@
             , cols: [
                 [
                     {field: 'id', title: 'ID', fixed: 'left', width: 60, unresize: true, sort: true, align: 'center'}
-                    , {field: 'openid', title: 'openid', sort: false, align: 'center'}
-                    , {field: 'nickname', title: '微信昵称', sort: false, align: 'center'}
-                    , {field: 'remark', title: '备注名', sort: false, align: 'center'}
+                    , {field: 'openid', title: 'openid', align: 'center'}
+                    , {field: 'msgid', title: 'msgid', align: 'center'}
+                    , {field: 'msgDetails', title: '消息内容', minWidth: 100, align: 'center'}
+                    , {field: 'remark', title: '备注', align: 'center'}
                     , {
-                    field: 'userStatus',
-                    templet: '#tpl_user_status',
-                    fixed: 'right',
-                    title: '状态',
-                    width: 80,
-                    unresize: true,
-                    sort: false,
-                    align: 'center'
+                    field: 'createTime', templet: function (d) {
+                        return formatDateTime(d.createTime);
+                    }, title: '发送时间', minWidth: 100, align: 'center'
                 }
                     , {
-                    toolbar: '#barOperator',
-                    fixed: 'right',
-                    title: '操作',
-                    width: 200,
-                    unresize: false,
-                    sort: false,
-                    align: 'center'
+                    field: 'modifyTime', templet: function (d) {
+                        return formatDateTime(d.modifyTime);
+                    }, title: '接收结果时间', minWidth: 120, align: 'center'
                 }
+                    , {field: 'result', title: '发送结果', minWidth: 100, align: 'center'}
+                    , {toolbar: '#barOperator', fixed: 'right', title: '操作', width: 80, align: 'center'}
                 ]
             ]
             , parseData: function (res) {
@@ -254,89 +253,32 @@
         });
 
         //监听工具条
-        table.on('tool(developerTable)', function (obj) {
+        table.on('tool(wechatMsgTable)', function (obj) {
             selectedData = obj.data;
             var itemData = obj.data;
-            // layer.alert(JSON.stringify(itemData));
             switch (obj.event) {
-                case 'user_edit':
+                case 'remark_edit':
                     // 先进行reset，否则上一次输入的数据还会显示出来
                     document.getElementById("updateForm").reset();
                     layer.open({
                         type: 1,
                         btnAlign: 'c',
                         area: ['400px', '300px'],
-                        title: '个人微信号信息',
+                        title: '微信消息',
                         content: $("#itemEditView"),
                         success: function (layero, index) {
                             $('input[name=remarkName]').attr('value', itemData.remark);
                         },
-
                     })
-                    break;
-                case 'user_enable':
-                case 'user_disable':
-                    if (obj.event == 'user_enable') {
-                        itemData.userStatus = 1;
-                    } else {
-                        itemData.userStatus = 0;
-                    }
-                    updateUserInfo(itemData);
-                    break;
-                case 'user_send_msg_test':
-                    var jsonStr = itemData.openid;
-                    $.ajax({
-                        type: "POST",
-                        url: "/wechat/template/testSend",
-                        data: jsonStr,//请求的参数
-                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-                        contentType: 'application/json;charset=utf-8',
-                        success: function (dataResult) {
-                            if (null != dataResult) {
-                                if (dataResult.errorCode == 0) {
-                                    console.log("--->result dataResult.size:" + dataResult.data.size);
-                                    layer.msg('已成功发送');
-                                } else {
-                                    console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
-                                    layer.msg('发送失败:' + dataResult.errorMsg);
-                                }
-                            }
-                        }
-                    });
                     break;
             }
         });
 
         //工具栏事件
-        table.on('toolbar(developerTable)', function (obj) {
+        table.on('toolbar(wechatMsgTable)', function (obj) {
             switch (obj.event) {
-                case 'showQrcodeView':
-                    layer.open({
-                        type: 1,
-                        content: "<div style='text-align: center;'><p>扫码绑定微信账号<br>（还需关注公众号才能接收消息）</p><img style='width:120px; height: 120px;' src='/img/wechat_bind.png' /></div>"
-                    });
-                    break;
-                case 'testSendAllMsg':
-                    $.ajax({
-                        type: "POST",
-                        url: "/wechat/template/testSendAll",
-                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-                        contentType: 'application/json;charset=utf-8',
-                        success: function (dataResult) {
-                            if (null != dataResult) {
-                                if (dataResult.errorCode == 0) {
-                                    console.log("--->result dataResult.size:" + dataResult.data.size);
-                                    layer.msg('已发送至' + dataResult.data.size + '个微信号');
-                                } else {
-                                    console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
-                                    layer.msg('发送失败:' + dataResult.errorMsg);
-                                }
-                            }
-                        }
-                    });
-                    break;
                 case 'reloadData':
-                    table.reload('developerTable', {
+                    table.reload('wechatMsgTable', {
                         page: {curr: 1}
                     }, 'data');
                     break;
@@ -345,9 +287,9 @@
         });
 
         //监听排序
-        table.on('sort(developerTable)', function (obj) {
+        table.on('sort(wechatMsgTable)', function (obj) {
             // 本地该页数据排序
-            table.reload('developerTable', {
+            table.reload('wechatMsgTable', {
                 initSort: obj
             });
         });
@@ -359,7 +301,7 @@
                 });
             }
             , add: function () {
-                table.addRow('developerTable')
+                table.addRow('wechatMsgTable')
             }
         };
         $('i').on('click', function () {
