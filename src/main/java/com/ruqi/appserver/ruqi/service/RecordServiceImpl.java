@@ -50,23 +50,30 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
+    public List<RecordRiskInfo> queryListForLayUi(int pageIndex, int limit, RecordInfo<RiskInfo> params) {
+        return riskInfoWrapper.queryListForLayUi(pageIndex*limit,limit,params);
+    }
+
+    @Override
     public List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit,RecordInfo<RiskInfo> riskParams ) {
-       return  riskInfoWrapper.queryRiskList(pageIndex,limit,riskParams);
+       return  riskInfoWrapper.queryRiskList(pageIndex*limit,limit,riskParams);
     }
 
     @Override
     public int queryTotalSize( RecordInfo<RiskInfo> riskParams) {
-        return  1;
+        return  riskInfoWrapper.queryTotalSize(riskParams,9);
     }
 
     private void saveRiskUserInfo(UserEntity userInfo) {
         if (userInfo != null) {
             long userID = userInfo.getUserId();
-            UserEntity userEntity = userWrapper.getOne(userID);
-            if (userEntity != null) {
-                userWrapper.update(userInfo);
-            } else {
-                userWrapper.insert(userInfo);
+            if (userID>0){
+                UserEntity userEntity = userWrapper.getOne(userID);
+                if (userEntity != null) {
+                    userWrapper.update(userInfo);
+                } else {
+                    userWrapper.insert(userInfo);
+                }
             }
         }
     }

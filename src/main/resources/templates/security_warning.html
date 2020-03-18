@@ -21,7 +21,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">应用类型</label>
             <div class="layui-input-inline" style="width: 100px;">
-                <select id="statusSelect">
+                <select id="appIdSelect">
                     <option value="">所有应用</option>
                     <option value="1">如祺乘客</option>
                     <option value="2">如祺乘客dev</option>
@@ -85,33 +85,6 @@
     <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
 </script>
 <script>
-    var updateUserInfo = function (itemData) {
-        $.ajax({
-            type: "POST",
-            url: "/wechat/receiver/update",
-            data: JSON.stringify(itemData),//请求的参数
-            contentType: 'application/json;charset=utf-8',
-            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-            success: function (dataResult) {
-                if (null != dataResult) {
-                    if (dataResult.errorCode == 0) {
-                        layer.msg('更改成功');
-                        // 更改了，需要刷新数据
-                        layui.use('table', function () {
-                            var table = layui.table;
-                            table.reload('developerTable', {}, 'data');
-                        });
-                        return true;
-                    } else {
-                        layer.msg('更改失败');
-                        return false;
-                    }
-                }
-            }
-        });
-    }
-</script>
-<script>
     layui.use(['form', 'layedit', 'laydate'], function () {
         var form = layui.form
             , layer = layui.layer
@@ -145,10 +118,21 @@
                 table.reload('developerTable', {
                     page: {curr: 1}
                     , where: {
-                        nickname: $("#filterNickName").val()
-                        , remarks: $("#filterRemarkName").val()
-                        , userStatus: $("#statusSelect").val()
-                    }
+                    "appInfo": {
+                            "appId": $("#appIdSelect").val(),
+                        },
+                        "userInfo": {
+                            "userName": $("#userName").val(),
+                            "userPhone": $("#phoneNum").val(),
+                        },
+                        "content": {
+                            "appVersionName": $("#appVersion").val(),
+                            "deviceModel": $("#deviceModel").val()
+                        }
+            }
+                        // app_versionname: $("#appVersion").val()
+                        // , userPhone: $("#phoneNum").val()
+                        // , user_name: $("#userName").val()
                 }, 'data');
             });
             return false;
@@ -177,13 +161,15 @@
     layui.use('table', function () {
         var table = layui.table;
 
-        table.render({
+     var tableIns =   table.render({
             elem: '#developerTable'
             // ,height:400
             // ,height: 'full - 20'
             //,width: 600
-            , title: '报警信息猎豹'
-            , url: '/wechat/receiver/list'
+            , title: '报警信息列表'
+            , url: '/record/queryRiskListForLayui'
+            ,method:'post'
+            ,contentType: 'application/json'
             // ,text: '无数据'
             //,size: 'lg'
             , page: {curr: 1}
@@ -214,29 +200,32 @@
             ]
             , cols: [
                 [
-                    {field: 'id', title: 'ID', fixed: 'left', width: 60, unresize: true, sort: true, align: 'center'}
-                    , {field: 'risk_type', title: '风险类型', sort: false, align: 'center'}
-                    , {field: 'user_id', title: '用户id', sort: false, align: 'center'}
-                    , {field: 'device_id', title: '设备id', sort: false, align: 'center'}
-                    , {field: 'risk_detail', title: '风险详情', sort: false, align: 'center'}
-                    , {field: 'create_time', title: '上报时间', sort: false, align: 'center'}
-                    , {field: 'system_version', title: '系统版本', sort: false, align: 'center'}
-                    , {field: 'net_state', title: '网络装填', sort: false, align: 'center'}
-                    , {field: 'location_lat', title: '定位经度', sort: false, align: 'center'}
-                    , {field: 'location_lng', title: '定位纬度', sort: false, align: 'center'}
-                    , {field: 'channel', title: '渠道', sort: false, align: 'center'}
-                    , {field: 'scene', title: '上传场景', sort: false, align: 'center'}
-                    , {field: 'app_versioncode', title: 'app版本', sort: false, align: 'center'}
-                    , {field: 'app_versionname', title: 'app名称', sort: false, align: 'center'}
-                    , {field: 'app_id', title: '应用id', sort: false, align: 'center'}
-                    , {field: 'device_model', title: '设备型号', sort: false, align: 'center'}
-                    , {field: 'request_ip', title: '请求ip', sort: false, align: 'center'}
-                    , {field: 'ext', title: '备注', sort: false, align: 'center'}
+                      {field: 'id', title: 'ID', fixed: 'left', width: 60, unresize: true, sort: true, align: 'center'}
+                    , {minWidth:100,field: 'riskType', title: '风险类型', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'userId', title: '用户id', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'userPhone', title: '用户手机', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'userName', title: '用户名称', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'deviceId', title: '设备id', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'riskDetail', title: '风险详情', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'createTime', title: '上报时间', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'systemVersion', title: '系统版本', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'netState', title: '网络状态', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'locationLat', title: '经度', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'locationLng', title: '纬度', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'channel', title: '渠道', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'scene', title: '上传场景', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'appVersionCode', title: 'app版本', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'appVersionName', title: 'app名称', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'appId', title: '应用id', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'deviceModel', title: '设备型号', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'deviceBrand', title: '设备品牌', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'requestIp', title: '请求ip', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'ext', title: '备注', sort: false, align: 'center'}
                     , {
                     toolbar: '#barOperator',
                     fixed: 'right',
                     title: '操作',
-                    width: 200,
+                    width: 60,
                     unresize: false,
                     sort: false,
                     align: 'center'
@@ -263,45 +252,6 @@
             var itemData = obj.data;
             // layer.alert(JSON.stringify(itemData));
             switch (obj.event) {
-                case 'user_edit':
-                    // 先进行reset，否则上一次输入的数据还会显示出来
-                    document.getElementById("updateForm").reset();
-                    layer.open({
-                        type: 1,
-                        btnAlign: 'c',
-                        area: ['400px', '300px'],
-                        title: '个人微信号信息',
-                        content: $("#itemEditView"),
-                        // btn:['提交','取消'],
-                        // btn1: function() {
-
-                        // },
-                        // btn2:function() {
-                        // }
-                        // cancel: function(index, layero){
-                        // 	// layer.close(index);
-                        // 	layer.msg($('input[name=remarkName]').get('value').value);
-                        // 	// $('input[name=remarkName]').attr('value', "111111");
-                        // 	return false;
-                        // },
-                        success: function (layero, index) {
-                            $('input[name=remarkName]').attr('value', itemData.remark);
-                            // $('form[name=updateForm]').attr('value', itemData);
-                        },
-                        // end: function() {
-                        // 	$("#itemEditView").reload();
-                        // },
-                    })
-                    break;
-                case 'user_enable':
-                case 'user_disable':
-                    if (obj.event == 'user_enable') {
-                        itemData.userStatus = 1;
-                    } else {
-                        itemData.userStatus = 0;
-                    }
-                    updateUserInfo(itemData);
-                    break;
                 case 'user_send_msg_test':
                     var jsonStr = itemData.openid;
                     $.ajax({
@@ -330,58 +280,9 @@
         table.on('toolbar(developerTable)', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id);
             switch (obj.event) {
-                case 'showQrcodeView':
-                    layer.open({
-                        type: 1,
-                        // content: ["<div style='text-align: center;background-color: white;width:100;'><p style='margin-top: 20;color: black;'>扫码绑定微信账号（绑定后还需关注公众号才能接收消息）</p><img style='width:30%; height: 30%;' src='/img/wechat_bind.png' /></div>" //这里content是一个普通的String
-                        // 	, '#btn_showQrcodeView']
-                        content: "<div style='text-align: center;'><p>扫码绑定微信账号<br>（还需关注公众号才能接收消息）</p><img style='width:120px; height: 120px;' src='/img/wechat_bind.png' /></div>"
-                    });
-                    // layer.alert('扫码绑定新的微信接收者', {icon: '/img/wechat_bind.png'});
-                    break;
-                case 'testSendAllMsg':
-                    $.ajax({
-                        type: "POST",
-                        url: "/wechat/template/testSendAll",
-                        // data: {username:$("#username").val(), content:$("#content").val()},//请求的参数
-                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-                        contentType: 'application/json;charset=utf-8',
-                        success: function (dataResult) {
-                            if (null != dataResult) {
-                                if (dataResult.errorCode == 0) {
-                                    console.log("--->result dataResult.size:" + dataResult.data.size);
-                                    layer.msg('已发送至' + dataResult.data.size + '个微信号');
-                                } else {
-                                    console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
-                                    layer.msg('发送失败:' + dataResult.errorMsg);
-                                }
-                            }
-                        }
-                    });
-                    break;
-                case 'update':
-                    layer.msg('编辑');
-                    break;
-                case 'delete':
-                    layer.msg('删除');
-                    break;
-                case 'getCheckData':
-                    var data = checkStatus.data;
-                    layer.alert(JSON.stringify(data));
-                    break;
-                case 'getCheckLength':
-                    var data = checkStatus.data;
-                    layer.msg('选中了：' + data.length + ' 个');
-                    break;
-                case 'isAll':
-                    layer.msg(checkStatus.isAll ? '全选' : '未全选')
-                    break;
-                // case 'LAYTABLE_TIPS':
-                // 	layer.alert('Table for layui-v'+ layui.v);
-                // break;
                 case 'reloadData':
                     table.reload('developerTable', {
-                        page: {curr: 1}
+                        page: {curr: $(".layui-laypage-skip").find("input").val() }
                         //,height: 300
                         //,url: 'x'
                     }, 'data');
