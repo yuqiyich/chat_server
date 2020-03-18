@@ -1,7 +1,6 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
-import com.ruqi.appserver.ruqi.controller.WechatController;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
@@ -24,12 +23,10 @@ public class RecordServiceImpl implements IRecordService {
     UserMapper userWrapper;
     @Autowired
     RiskInfoWrapper riskInfoWrapper;
-    @Autowired
-    WechatController mWechatController;
 
     @Override
     @Async("taskExecutor")
-    public void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime,String requestIp) {
+    public void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime, String requestIp) {
         logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime() + ";curThread:" + Thread.currentThread().getName());
         if (data.getRecordType() == RiskEnum.RUNTIME_RISK.getId()
                 && data.getAppInfo() != null
@@ -37,7 +34,7 @@ public class RecordServiceImpl implements IRecordService {
                 && !MyStringUtils.isEmpty(data.getAppInfo().getAppKey())) {//
 //           int appId=appInfoWrapper.getAppIdByKey("BB392D26CF521EFD");
             AppInfo appInfo = appInfoWrapper.getAppInfoByKey(data.getAppInfo().getAppKey());
-            if (appInfo!=null&&appInfo.getAppId()>0) {
+            if (appInfo != null && appInfo.getAppId() > 0) {
                 RiskInfo riskInfo = data.getContent();
                 riskInfo.setAppId(appInfo.getAppId());
                 riskInfo.setRequestIp(requestIp);
@@ -51,23 +48,23 @@ public class RecordServiceImpl implements IRecordService {
 
     @Override
     public List<RecordRiskInfo> queryListForLayUi(int pageIndex, int limit, RecordInfo<RiskInfo> params) {
-        return riskInfoWrapper.queryListForLayUi(pageIndex*limit,limit,params);
+        return riskInfoWrapper.queryListForLayUi(pageIndex * limit, limit, params);
     }
 
     @Override
-    public List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit,RecordInfo<RiskInfo> riskParams ) {
-       return  riskInfoWrapper.queryRiskList(pageIndex*limit,limit,riskParams);
+    public List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit, RecordInfo<RiskInfo> riskParams) {
+        return riskInfoWrapper.queryRiskList(pageIndex * limit, limit, riskParams);
     }
 
     @Override
-    public int queryTotalSize( RecordInfo<RiskInfo> riskParams) {
-        return  riskInfoWrapper.queryTotalSize(riskParams,9);
+    public int queryTotalSize(RecordInfo<RiskInfo> riskParams) {
+        return riskInfoWrapper.queryTotalSize(riskParams, 9);
     }
 
     private void saveRiskUserInfo(UserEntity userInfo) {
         if (userInfo != null) {
             long userID = userInfo.getUserId();
-            if (userID>0){
+            if (userID > 0) {
                 UserEntity userEntity = userWrapper.getOne(userID);
                 if (userEntity != null) {
                     userWrapper.update(userInfo);

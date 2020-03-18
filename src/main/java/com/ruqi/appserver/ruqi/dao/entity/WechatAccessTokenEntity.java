@@ -1,8 +1,8 @@
 package com.ruqi.appserver.ruqi.dao.entity;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 public class WechatAccessTokenEntity {
     public String accessToken;
-    public Timestamp expiresTime;
+    public Date expiresTime;
 }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.ruqi.appserver.ruqi.dao.mappers.WechatMsgMapper">
+
+    <!-- 消息记录 -->
+    <resultMap id="WechatMsgEntity" type="com.ruqi.appserver.ruqi.dao.entity.WechatMsgEntity">
+        <result column="id" property="id"/>
+        <result column="openid" property="openid"/>
+        <result column="msgid" property="msgid"/>
+        <result column="remark" property="remark"/>
+        <result column="msg_details" property="msgDetails"/>
+        <result column="result" property="result"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <insert id="insertMsgRecord" parameterType="WechatMsgEntity">
+        insert into
+            wechat_msg_record(openid, msgid, msg_details, create_time)
+        values
+            (#{openid}, #{msgid}, #{msgDetails}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))
+    </insert>
+
+    <select id="queryMsgSize" resultType="long">
+        select count(*) as totalSize
+        from wechat_msg_record
+        <where>
+            <if test=" openid != null and openid != '' ">
+                <bind name="popenid" value=" '%' + openid + '%' "></bind>
+                openid like #{popenid}
+            </if>
+            <if test=" details != null and details != '' ">
+                <bind name="pdetails" value=" '%' + details + '%' "></bind>
+                AND msg_details like #{pdetails}
+            </if>
+            <if test=" remark != null and remark != '' ">
+                <bind name="premark" value=" '%' + remark + '%' "></bind>
+                AND remark like #{premark}
+            </if>
+            <if test=" result != null and result != '' ">
+                <bind name="presult" value=" '%' + result + '%' "></bind>
+                AND result like #{presult}
+            </if>
+            <if test=" startTime != null and startTime != '' and endTime != null and endTime != '' ">
+                <bind name="ptime" value=" startTime + 'and' + endTime "></bind>
+                AND create_time between #{ptime}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryMsgList" parameterType="String" resultMap="WechatMsgEntity">
+        select
+        id,
+        openid,
+        msgid,
+        remark,
+        msg_details,
+        result,
+        create_time,
+        modify_time
+        from
+        wechat_msg_record
+        <where>
+            <if test=" openid != null and openid != '' ">
+                <bind name="popenid" value=" '%' + openid + '%' "></bind>
+                openid like #{popenid}
+            </if>
+            <if test=" details != null and details != '' ">
+                <bind name="pdetails" value=" '%' + details + '%' "></bind>
+                AND msg_details like #{pdetails}
+            </if>
+            <if test=" remark != null and remark != '' ">
+                <bind name="premark" value=" '%' + remark + '%' "></bind>
+                AND remark like #{premark}
+            </if>
+            <if test=" result != null and result != '' ">
+                <bind name="presult" value=" '%' + result + '%' "></bind>
+                AND result like #{presult}
+            </if>
+            <if test=" startTime != null and startTime != '' and endTime != null and endTime != '' ">
+                <bind name="ptime" value=" startTime + 'and' + endTime "></bind>
+                AND create_time between #{ptime}
+            </if>
+        </where>
+        limit #{pageIndex}, #{pageSize}
+    </select>
+
+    <update id="updateMsgRemark" parameterType="WechatMsgEntity">
+        UPDATE wechat_msg_record
+        SET remark = #{remark}
+        WHERE id = #{id}
+    </update>
+</mapper>

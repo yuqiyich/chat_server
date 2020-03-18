@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace= "com.ruqi.appserver.ruqi.dao.mappers.WechatMapper" >
+<mapper namespace="com.ruqi.appserver.ruqi.dao.mappers.WechatMapper">
     <!-- token -->
-    <resultMap id ="WechatAccessTokenBean" type="com.ruqi.appserver.ruqi.dao.entity.WechatAccessTokenEntity">
+    <resultMap id="WechatAccessTokenBean" type="com.ruqi.appserver.ruqi.dao.entity.WechatAccessTokenEntity">
         <result column="access_token" property="accessToken"/>
         <result column="expires_time" property="expiresTime"/>
     </resultMap>
 
-    <select id = "queryWechatAccessToken" resultMap="WechatAccessTokenBean">
+    <select id="queryWechatAccessToken" resultMap="WechatAccessTokenBean">
         select
             access_token,
             expires_time
@@ -16,7 +16,7 @@
             wechat_token
     </select>
 
-    <delete id = "clearDatas">
+    <delete id="clearDatas">
         delete
         from
             wechat_token
@@ -30,7 +30,7 @@
     </insert>
 
     <!-- receiver -->
-    <resultMap id ="WechatMsgReceiverEntity" type="com.ruqi.appserver.ruqi.dao.entity.WechatMsgReceiverEntity">
+    <resultMap id="WechatMsgReceiverEntity" type="com.ruqi.appserver.ruqi.dao.entity.WechatMsgReceiverEntity">
         <result column="id" property="id"/>
         <result column="openid" property="openid"/>
         <result column="nickname" property="nickname"/>
@@ -58,15 +58,15 @@
         </where>
     </select>
 
-    <select id = "queryReceivers" parameterType="String" resultMap="WechatMsgReceiverEntity">
+    <select id="queryReceivers" parameterType="String" resultMap="WechatMsgReceiverEntity">
         select
-            id,
-            openid,
-            nickname,
-            remark,
-            user_status
+        id,
+        openid,
+        nickname,
+        remark,
+        user_status
         from
-            wechat_msg_receiver
+        wechat_msg_receiver
         <where>
             <if test="nickname != null">
                 nickname like "%"#{nickname}"%"
@@ -82,8 +82,8 @@
         </where>
         limit #{pageIndex}, #{pageSize}
     </select>
-    
-    <select id = "queryAvailableReceivers" resultMap="WechatMsgReceiverEntity">
+
+    <select id="queryAvailableReceivers" resultMap="WechatMsgReceiverEntity">
         select
             id,
             openid,
@@ -94,7 +94,7 @@
             user_status = 1
     </select>
 
-    <select id = "queryReceiverByOpenid" parameterType="String" resultMap="WechatMsgReceiverEntity">
+    <select id="queryReceiverByOpenid" parameterType="String" resultMap="WechatMsgReceiverEntity">
         select
             user_status,
             nickname,
@@ -118,4 +118,5 @@
         values 
             (#{openid}, #{nickname}, 1, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))
     </insert>
+
 </mapper>
