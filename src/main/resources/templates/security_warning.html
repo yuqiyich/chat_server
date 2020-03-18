@@ -213,7 +213,7 @@
                     , {minWidth:100,field: 'userName', title: '用户名称', sort: false, align: 'center'}
                     , {minWidth:100,field: 'deviceId', title: '设备id', sort: false, align: 'center'}
                     , {minWidth:100,field: 'riskDetail', title: '风险详情', sort: false, align: 'center'}
-                    , {minWidth:100,field: 'createTime', title: '上报时间', sort: false, align: 'center'}
+                    , {minWidth:100,field: 'createTime', templet: function (d) {  return formatDateTime(d.createTime);},title: '上报时间', sort: false, align: 'center'}
                     , {minWidth:100,field: 'systemVersion', title: '系统版本', sort: false, align: 'center'}
                     , {minWidth:100,field: 'netState', title: '网络状态', sort: false, align: 'center'}
                     , {minWidth:100,field: 'locationLat', title: '经度', sort: false, align: 'center'}
