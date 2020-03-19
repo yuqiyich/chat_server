@@ -45,9 +45,6 @@ public class RiskInfo {
     public String duringTime;
     public Date startDate;
     public Date endDate;
-   public SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-
     public String getDuringTime() {
         return duringTime;
     }
@@ -76,6 +73,7 @@ public class RiskInfo {
         if (!StringUtils.isEmpty(duringTime)){
              String[] str=duringTime.split("~");
              if (str.length==2){
+                 SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                  try {
                      startDate = format.parse(str[0].trim());
                      endDate = format.parse(str[1].trim());

@@ -59,7 +59,6 @@ public interface RiskInfoWrapper {
               )
     List<RecordInfo<RiskInfo>> queryRiskList(int pageIndex, int limit, RecordInfo<RiskInfo> riskInfo);
 
-
     @Select({"<script>",
             "SELECT * FROM",
             "(SELECT * FROM risk_record",
