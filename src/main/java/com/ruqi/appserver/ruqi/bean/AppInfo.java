@@ -1,6 +1,8 @@
 package com.ruqi.appserver.ruqi.bean;
 
-public class AppInfo {
+import java.io.Serializable;
+
+public class AppInfo implements Serializable {
   public int getAppId() {
     return appId;
   }

@@ -22,8 +22,8 @@ public class RecordInfo<T extends RiskInfo> {
         this.limit = limit;
     }
 
-    private int page;
-    private int limit;
+    private int page=1;
+    private int limit=10;
     private AppInfo appInfo;//应用表
     private UserEntity userInfo;//用户信息表
     private int RecordType = RiskEnum.RUNTIME_RISK.getId();//默认记录类型
@@ -60,5 +60,17 @@ public class RecordInfo<T extends RiskInfo> {
 
     public void setContent(T content) {
         this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return "RecordInfo{" +
+                "page=" + page +
+                ", limit=" + limit +
+                ", appInfo=" + appInfo +
+                ", userInfo=" + userInfo +
+                ", RecordType=" + RecordType +
+                ", content=" + content +
+                '}';
     }
 }

@@ -1,7 +1,6 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
-import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
@@ -18,7 +17,7 @@ import java.util.List;
 public class RecordServiceImpl implements IRecordService {
     Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
-    AppInfoWrapper appInfoWrapper;
+    AppInfoSevice appInfoSevice;
     @Autowired
     UserMapper userWrapper;
     @Autowired
@@ -27,13 +26,16 @@ public class RecordServiceImpl implements IRecordService {
     @Override
     @Async("taskExecutor")
     public void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime, String requestIp) {
-        logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime() + ";curThread:" + Thread.currentThread().getName());
+        logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime() );
         if (data.getRecordType() == RiskEnum.RUNTIME_RISK.getId()
                 && data.getAppInfo() != null
                 && data.getContent() != null
                 && !MyStringUtils.isEmpty(data.getAppInfo().getAppKey())) {//
 //           int appId=appInfoWrapper.getAppIdByKey("BB392D26CF521EFD");
-            AppInfo appInfo = appInfoWrapper.getAppInfoByKey(data.getAppInfo().getAppKey());
+
+            AppInfo appInfo = appInfoSevice.getAppInfoByKey(data.getAppInfo().getAppKey());
+            logger.info("appInfo id:" +"" + (appInfo!=null?appInfo.getAppId():0)+ ";curThread:" + Thread.currentThread().getName());
+
             if (appInfo != null && appInfo.getAppId() > 0) {
                 RiskInfo riskInfo = data.getContent();
                 riskInfo.setAppId(appInfo.getAppId());
