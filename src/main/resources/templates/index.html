@@ -9,7 +9,7 @@
     <script>
         //iframe高度自适应
         function setIframeHeight(ifm) {
-            ifm.height = document.documentElement.clientHeight - 170; //56是头顶的高度，和网友估计不一样。
+            // ifm.height = document.documentElement.clientHeight - 170; //56是头顶的高度，和网友估计不一样。
         };
         // $(function(){ window.onresize=function(){
         //     setIframeHeight(); }
@@ -104,16 +104,15 @@
     <!--正文-->
     <div class="layui-body layui-bg-gray">
         <!--选项卡-->
-        <div class="layui-admin-pagetabs">
-            <div class="layui-tab layui-tab-brief" lay-allowClose="true" lay-filter="pagetabs">
-                <ul class="layui-tab-title layui-bg-white">
+        <div class="layui-admin-pagetabs" style="height: 100%;">
+            <div class="layui-tab layui-tab-brief" lay-allowClose="true" lay-filter="pagetabs" style="height: 100%;">
+                <ul class="layui-tab-title layui-bg-white" style="display: block;">
                     <li class="layui-this" lay-id="home.html"><i class="layui-icon layui-icon-home"></i></li>
                 </ul>
-                <div class="layui-tab-content">
-                    <div class="layui-tab-item layui-show">
-                        <iframe src="home.html" id="mainiframe" class="layui-admin-iframe" scrolling="no"
-                                frameborder="0"
-                                onload="setIframeHeight(this);"></iframe>
+                <div class="layui-tab-content" style="height: calc(100% - 50px)">
+                    <div class="layui-tab-item layui-show" style="height: 100%;">
+                        <iframe src="home.html" id="mainiframe" class="layui-admin-iframe"
+                                frameborder="0"></iframe>
                     </div>
                 </div>
             </div>
@@ -237,9 +236,9 @@
                     if (flag) {
                         //新增选项卡
                         element.tabAdd('pagetabs', {
-                            title: elem[0].innerText
-                            ,
-                            content: '<iframe src="' + url + '" class="layui-admin-iframe" scrolling="no" frameborder="0" id="mainiframe" onload="setIframeHeight(this)"></iframe>'
+                            title: elem[0].innerText,
+                            // content: '<div style="height: auto;"><iframe src="' + url + '" style="height: 1200px;" class="layui-admin-iframe" frameborder="0" id="mainiframe"></iframe></div>'
+                            content: '<iframe src="' + url + '" style="height: 100%;" class="layui-admin-iframe" frameborder="0" id="mainiframe"></iframe>'
                             ,
                             id: url
                         });
