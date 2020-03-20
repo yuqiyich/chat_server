@@ -22,34 +22,52 @@
 
     <div class="layui-form-item">
         <div class="layui-inline">
-            <label class="layui-form-label">微信昵称</label>
+            <label class="layui-form-label">微信openid</label>
             <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="20" id="filterNickName" name="filterNickName" lay-verify="filterNickName"
-                       autocomplete="off"
-                       class="layui-input">
+                <input type="text" maxlength="512" id="filterOpenid" name="filterOpenid" lay-verify="filterOpenid"
+                       autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-inline">
-            <label class="layui-form-label">备注名</label>
+            <label class="layui-form-label">微信msgid</label>
             <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="10" id="filterRemarkName" name="filterRemarkName"
-                       lay-verify="filterRemarkName"
-                       autocomplete="off"
-                       class="layui-input">
+                <input type="text" maxlength="512" id="filterMsgid" name="filterMsgid"
+                       lay-verify="filterMsgid" autocomplete="off" class="layui-input">
             </div>
         </div>
     </div>
     <div class="layui-form-item">
         <div class="layui-inline">
-            <label class="layui-form-label">状态</label>
+            <label class="layui-form-label">消息内容</label>
             <div class="layui-input-inline" style="width: 200px;">
-                <select id="statusSelect">
-                    <option value="">全部</option>
-                    <option value="1">启用</option>
-                    <option value="0">禁用</option>
-                </select>
+                <input type="text" maxlength="512" id="filterDetails" name="filterDetails" lay-verify="filterDetails"
+                       autocomplete="off" class="layui-input">
             </div>
         </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-inline" style="width: 200px;">
+                <input type="text" maxlength="512" id="filterRemark" name="filterRemark"
+                       lay-verify="filterRemark" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">消息发送结果</label>
+            <div class="layui-input-inline" style="width: 200px;">
+                <input type="text" maxlength="512" id="filterResult" name="filterResult" lay-verify="filterResult"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">发送时间</label>
+            <div class="layui-input-inline" style="width: 300px;">
+                <input type="text" id="filterTime" name="filterTime" lay-verify="filterTime" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
         <div class="layui-inline">
             <div class="layui-input-block">
                 <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
@@ -132,6 +150,16 @@
 
         // var data = form.val("wechat_info");
 
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#filterTime' //指定元素
+            , type: 'datetime'
+            , range: '~' //或 range: '~' 来自定义分割字符
+            , min: '2020-3-1'
+            , max: 1 // 时间最大选择当天的第二天
+        });
+
         //监听提交
         // 更新备注
         form.on('submit(updateRemarkName)', function (data) {
@@ -154,6 +182,14 @@
         });
         // 搜索
         form.on('submit(search)', function (data) {
+            var time = $("#filterTime").val();
+            var startTime = "";
+            var endTime = "";
+            if (time.indexOf(" ~ ") > -1) {
+                startTime = time.toString().substring(0, time.toString().indexOf(" ~ "));
+                endTime = time.toString().substring(time.toString().indexOf(" ~ ") + 3, time.toString().length);
+            }
+            console.log("time=" + time + ", startTime=" + startTime + ", endTime=" + endTime);
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('wechatMsgTable', {
@@ -164,8 +200,8 @@
                         , details: $("#filterDetails").val()
                         , remark: $("#filterRemark").val()
                         , result: $("#filterResult").val()
-                        , startTime: ""
-                        , endTime: ""
+                        , startTime: startTime
+                        , endTime: endTime
                     }
                 }, 'data');
             });
@@ -203,7 +239,7 @@
         table.render({
             elem: '#wechatMsgTable'
             , title: '微信公众号消息列表'
-            , height: 315
+            // , height: 115
             , url: '/wechat/msg/list'
             , page: {curr: 1}
             , limit: 10
