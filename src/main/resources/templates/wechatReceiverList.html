@@ -107,7 +107,7 @@
     <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
 </script>
 <script>
-    var updateUserInfo = function (itemData) {
+    var updateUserInfo = function (itemData, layerIndex) {
         $.ajax({
             type: "POST",
             url: "/wechat/receiver/update",
@@ -118,6 +118,7 @@
                 if (null != dataResult) {
                     if (dataResult.errorCode == 0) {
                         layer.msg('更改成功');
+                        layer.close(layerIndex);
                         // 更改了，需要刷新数据
                         layui.use('table', function () {
                             var table = layui.table;
@@ -147,14 +148,17 @@
         form.on('submit(updateRemarkName)', function (data) {
             var newName = data.field.remarkName;
 
-            layer.msg(JSON.stringify(selectedData));
+            // layer.msg(JSON.stringify(selectedData));
 
             if (null != selectedData) {
                 if (newName == selectedData.remark) {
-                    return true;
+                    layer.close(layerIndex);
+                    return false;
                 } else {
                     selectedData.remark = newName;
-                    return updateUserInfo(selectedData);
+                    // submit类型的按钮的话，返回true就自己更新表单了。应该返回false，自己处理form的关闭和数据更新的逻辑。
+                    updateUserInfo(selectedData, layerIndex);
+                    return false;
                 }
             }
             layui.msg("发生异常错误，请刷新重试");
@@ -195,6 +199,7 @@
 </script>
 <script>
     var selectedData = null;
+    var layerIndex = null;
 
     layui.use('table', function () {
         var table = layui.table;
@@ -262,7 +267,7 @@
                 case 'user_edit':
                     // 先进行reset，否则上一次输入的数据还会显示出来
                     document.getElementById("updateForm").reset();
-                    layer.open({
+                    layerIndex = layer.open({
                         type: 1,
                         btnAlign: 'c',
                         area: ['400px', '300px'],

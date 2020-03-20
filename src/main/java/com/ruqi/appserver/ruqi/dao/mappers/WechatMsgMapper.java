@@ -11,11 +11,11 @@ public interface WechatMsgMapper {
     void insertMsgRecord(WechatMsgEntity msgEntity);
 
     // 微信消息总数目
-    long queryMsgSize(String openid, String details, String remark, String result, String startTime, String endTime);
+    long queryMsgSize(String openid, String msgid, String details, String remark, String result, String startTime, String endTime);
 
     // 查询微信消息列表
-    List<WechatMsgEntity> queryMsgList(int pageIndex, int pageSize, String openid, String details, String remark, String result, String startTime, String endTime);
+    List<WechatMsgEntity> queryMsgList(int pageIndex, int pageSize, String openid, String msgid, String details, String remark, String result, String startTime, String endTime);
 
     // 更新设置消息的备注
-    void updateMsgRemark(WechatMsgEntity wechatMsgEntity);
+    long updateMsgRemark(WechatMsgEntity wechatMsgEntity);
 }
