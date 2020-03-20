@@ -93,17 +93,19 @@
     <a class="layui-btn layui-btn-xs" lay-event="remark_edit">编辑</a>
 </script>
 <script>
-    var updateMsgInfo = function (itemData) {
+    var updateMsgInfo = function (itemData, layerIndex) {
         $.ajax({
             type: "POST",
             url: "/wechat/msg/update",
             data: JSON.stringify(itemData),//请求的参数
             contentType: 'application/json;charset=utf-8',
-            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+            // dataType: "json",//以json格式返回的数据，不是json就把此行去掉
             success: function (dataResult) {
+                // console.log('dataResult=' + JSON.stringify(dataResult));
                 if (null != dataResult) {
                     if (dataResult.errorCode == 0) {
                         layer.msg('更改成功');
+                        layer.close(layerIndex);
                         // 更改了，需要刷新数据
                         layui.use('table', function () {
                             var table = layui.table;
@@ -129,18 +131,20 @@
         // var data = form.val("wechat_info");
 
         //监听提交
-        // 更新备注名
+        // 更新备注
         form.on('submit(updateRemarkName)', function (data) {
             var newName = data.field.remarkName;
 
-            layer.msg(JSON.stringify(selectedData));
+            // layer.msg(JSON.stringify(selectedData));
 
             if (null != selectedData) {
                 if (newName == selectedData.remark) {
-                    return true;
+                    layer.close(layerIndex);
+                    return false;
                 } else {
                     selectedData.remark = newName;
-                    return updateMsgInfo(selectedData);
+                    updateMsgInfo(selectedData, layerIndex);
+                    return false;
                 }
             }
             layui.msg("发生异常错误，请刷新重试");
@@ -153,9 +157,13 @@
                 table.reload('wechatMsgTable', {
                     page: {curr: 1}
                     , where: {
-                        nickname: $("#filterNickName").val()
-                        , remarks: $("#filterRemarkName").val()
-                        , userStatus: $("#statusSelect").val()
+                        openid: $("#filterOpenid").val()
+                        , msgid: $("#filterMsgid").val()
+                        , details: $("#filterDetails").val()
+                        , remark: $("#filterRemark").val()
+                        , result: $("#filterResult").val()
+                        , startTime: ""
+                        , endTime: ""
                     }
                 }, 'data');
             });
@@ -169,9 +177,13 @@
                 table.reload('wechatMsgTable', {
                     page: {curr: 1}
                     , where: {
-                        nickname: $("#filterNickName").val()
-                        , remarks: $("#filterRemarkName").val()
-                        , userStatus: $("#statusSelect").val()
+                        openid: $("#filterOpenid").val()
+                        , msgid: $("#filterMsgid").val()
+                        , details: $("#filterDetails").val()
+                        , remark: $("#filterRemark").val()
+                        , result: $("#filterResult").val()
+                        , startTime: ""
+                        , endTime: ""
                     }
                 }, 'data');
             });
@@ -179,28 +191,9 @@
         });
     });
 </script>
-<!--转换时间格式-->
-<script type="text/javascript">
-    function dateToStr(date) {
-        var time = new Date(date.time);
-        var y = time.getFullYear();
-        var M = time.getMonth() + 1;
-        M = M < 10 ? ("0" + M) : M;
-        var d = time.getDate();
-        d = d < 10 ? ("0" + d) : d;
-        var h = time.getHours();
-        h = h < 10 ? ("0" + h) : h;
-        var m = time.getMinutes();
-        m = m < 10 ? ("0" + m) : m;
-        var s = time.getSeconds();
-        s = s < 10 ? ("0" + s) : s;
-        var str = y + "-" + M + "-" + d + " " + h + ":" + m + ":" + s;
-        console.log(str);
-        return str;
-    }
-</script>
 <script>
     var selectedData = null;
+    var layerIndex = null;
 
     layui.use('table', function () {
         var table = layui.table;
@@ -260,7 +253,7 @@
                 case 'remark_edit':
                     // 先进行reset，否则上一次输入的数据还会显示出来
                     document.getElementById("updateForm").reset();
-                    layer.open({
+                    layerIndex = layer.open({
                         type: 1,
                         btnAlign: 'c',
                         area: ['400px', '300px'],

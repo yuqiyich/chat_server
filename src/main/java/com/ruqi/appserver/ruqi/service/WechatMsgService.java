@@ -23,15 +23,15 @@ public class WechatMsgService {
         wechatMsgMapper.insertMsgRecord(msgEntity);
     }
 
-    public long queryMsgSize(String openid, String details, String remark, String result, String startTime, String endTime) {
-        return wechatMsgMapper.queryMsgSize(openid, details, remark, result, startTime, endTime);
+    public long queryMsgSize(String openid, String msgid, String details, String remark, String result, String startTime, String endTime) {
+        return wechatMsgMapper.queryMsgSize(openid, msgid, details, remark, result, startTime, endTime);
     }
 
-    public List<WechatMsgEntity> queryMsgList(int pageIndex, int pageSize, String openid, String details, String remark, String result, String startTime, String endTime) {
-        return wechatMsgMapper.queryMsgList(pageIndex, pageSize, openid, details, remark, result, startTime, endTime);
+    public List<WechatMsgEntity> queryMsgList(int pageIndex, int pageSize, String openid, String msgid, String details, String remark, String result, String startTime, String endTime) {
+        return wechatMsgMapper.queryMsgList(pageIndex, pageSize, openid, msgid, details, remark, result, startTime, endTime);
     }
 
-    public void updateMsgRemark(WechatMsgEntity wechatMsgEntity) {
-        wechatMsgMapper.updateMsgRemark(wechatMsgEntity);
+    public long updateMsgRemark(WechatMsgEntity wechatMsgEntity) {
+        return wechatMsgMapper.updateMsgRemark(wechatMsgEntity);
     }
 }

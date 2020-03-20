@@ -2,7 +2,6 @@ package com.ruqi.appserver.ruqi.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
 import com.ruqi.appserver.ruqi.bean.BaseBean;
 import com.ruqi.appserver.ruqi.bean.BaseMapBean;
 import com.ruqi.appserver.ruqi.bean.BasePageBean;
@@ -260,6 +259,7 @@ public class WechatController {
             @ApiImplicitParam(dataType = "Integer", name = "page", value = "页码，从1开始")
             , @ApiImplicitParam(dataType = "Integer", name = "limit", value = "size，如10")
             , @ApiImplicitParam(dataType = "string", name = "openid", value = "微信openid")
+            , @ApiImplicitParam(dataType = "string", name = "msgid", value = "微信msgid")
             , @ApiImplicitParam(dataType = "string", name = "details", value = "消息内容")
             , @ApiImplicitParam(dataType = "string", name = "remark", value = "备注")
             , @ApiImplicitParam(dataType = "string", name = "result", value = "消息发送结果")
@@ -269,13 +269,13 @@ public class WechatController {
     @RequestMapping(value = "/msg/list", method = RequestMethod.GET)
     @ResponseBody
     public BaseBean<BasePageBean<WechatMsgEntity>> getReceiverList(@RequestParam(defaultValue = "1") Integer page,
-                                                                   @RequestParam(defaultValue = "10") Integer limit, String openid,
+                                                                   @RequestParam(defaultValue = "10") Integer limit, String openid, String msgid,
                                                                    String details, String remark, String result, String startTime, String endTime) {
         BaseBean<BasePageBean<WechatMsgEntity>> resultBean = new BaseBean<>();
 
         // 页码从1开始，但是sql中从0开始
-        List<WechatMsgEntity> receiverEntities = wechatMsgService.queryMsgList(page - 1, limit, openid, details, remark, result, startTime, endTime);
-        long totalSize = wechatMsgService.queryMsgSize(openid, details, remark, result, startTime, endTime);
+        List<WechatMsgEntity> receiverEntities = wechatMsgService.queryMsgList(page - 1, limit, openid, msgid, details, remark, result, startTime, endTime);
+        long totalSize = wechatMsgService.queryMsgSize(openid, msgid, details, remark, result, startTime, endTime);
         resultBean.data = new BasePageBean<>(page, limit, totalSize, receiverEntities);
 
 //        logger.info("--->" + new Gson().toJson(receiverEntities));
@@ -290,14 +290,15 @@ public class WechatController {
      */
     @ApiOperation(value = "更新微信公众号消息接收者信息", notes = "备注")
     @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "WechatMsgEntity", name = "wechatMsgEntity", value = "修改备注信息的消息记录", paramType = "body")
+            @ApiImplicitParam(dataType = "WechatMsgEntity", name = "wechatMsgEntity", value = "修改备注信息的消息记录", paramType = "application/json;")
     })
     @RequestMapping(value = "/msg/update", method = RequestMethod.POST)
     @ResponseBody
     public BaseMapBean updateMsgRemark(@RequestBody WechatMsgEntity wechatMsgEntity) {
         BaseMapBean result = new BaseMapBean();
 
-        wechatMsgService.updateMsgRemark(wechatMsgEntity);
+        long id = wechatMsgService.updateMsgRemark(wechatMsgEntity);
+        logger.info("--->updateMsgRemark=" + id);
 
         return result;
     }
