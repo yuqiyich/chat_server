@@ -254,7 +254,7 @@ public class WechatController {
     /**
      * 查询微信公众号消息发送记录列表
      */
-    @ApiOperation(value = "查询获取微信公众号消息接收者列表", notes = "")
+    @ApiOperation(value = "查询获取微信公众号消息发送记录列表", notes = "")
     @ApiImplicitParams({
             @ApiImplicitParam(dataType = "Integer", name = "page", value = "页码，从1开始")
             , @ApiImplicitParam(dataType = "Integer", name = "limit", value = "size，如10")
@@ -268,7 +268,7 @@ public class WechatController {
     })
     @RequestMapping(value = "/msg/list", method = RequestMethod.GET)
     @ResponseBody
-    public BaseBean<BasePageBean<WechatMsgEntity>> getReceiverList(@RequestParam(defaultValue = "1") Integer page,
+    public BaseBean<BasePageBean<WechatMsgEntity>> getMsgList(@RequestParam(defaultValue = "1") Integer page,
                                                                    @RequestParam(defaultValue = "10") Integer limit, String openid, String msgid,
                                                                    String details, String remark, String result, String startTime, String endTime) {
         BaseBean<BasePageBean<WechatMsgEntity>> resultBean = new BaseBean<>();

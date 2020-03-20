@@ -46,9 +46,11 @@
                 <bind name="presult" value=" '%' + result + '%' "></bind>
                 AND result like #{presult}
             </if>
-            <if test=" startTime != null and startTime != '' and endTime != null and endTime != '' ">
-                <bind name="ptime" value=" startTime + 'and' + endTime "></bind>
-                AND create_time between #{ptime}
+            <if test=" startTime != null and startTime != ''">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test=" endTime != null and endTime != '' ">
+                AND create_time &lt;= #{endTime}
             </if>
         </where>
     </select>
@@ -86,9 +88,11 @@
                 <bind name="presult" value=" '%' + result + '%' "></bind>
                 AND result like #{presult}
             </if>
-            <if test=" startTime != null and startTime != '' and endTime != null and endTime != '' ">
-                <bind name="ptime" value=" startTime + 'and' + endTime "></bind>
-                AND create_time between #{ptime}
+            <if test=" startTime != null and startTime != ''">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test=" endTime != null and endTime != '' ">
+                AND create_time &lt;= #{endTime}
             </if>
         </where>
         order by create_time desc
