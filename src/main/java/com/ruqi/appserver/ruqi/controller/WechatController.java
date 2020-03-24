@@ -2,7 +2,6 @@ package com.ruqi.appserver.ruqi.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
 import com.ruqi.appserver.ruqi.bean.BaseBean;
 import com.ruqi.appserver.ruqi.bean.BaseMapBean;
 import com.ruqi.appserver.ruqi.bean.BasePageBean;
@@ -18,6 +17,7 @@ import com.ruqi.appserver.ruqi.service.WechatService;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
+import com.ruqi.appserver.ruqi.utils.WxUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
@@ -78,7 +79,7 @@ public class WechatController {
         if (MyStringUtils.isEmpty(accessToken)) {
             logger.info("--->获取accessToken失败，请检查具体原因");
         } else {
-            logger.info("--->获取到了accessToken");
+            logger.info("--->获取到了accessToken: " + accessToken);
         }
 
         return accessToken;
@@ -241,25 +242,34 @@ public class WechatController {
         return result;
     }
 
-// 写一个回调接口，接收xml返回记录模板消息发送结果
-
     /**
      * 微信模板消息发送后接收微信 回调消息发送结果
      */
     @RequestMapping(value = "/msgRedirectUri")
-    public String msgRedirectUri() {
-        // TODO: 2020/3/17 xml格式数据返回，读取MsgID和Status，数据库中更新消息的result字段。
-        return "";
+    public String msgRedirectUri(HttpServletRequest request) {
+        String content = request.getQueryString();
+        String result = "";
+        try {
+            result = WxUtils.checkSignature(content);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        logger.info("--->msgRedirectUri result=" + result);
+
+        // xml格式数据返回，读取MsgID和Status，数据库中更新消息的result字段。
+        return result;
     }
 
     /**
      * 查询微信公众号消息发送记录列表
      */
-    @ApiOperation(value = "查询获取微信公众号消息接收者列表", notes = "")
+    @ApiOperation(value = "查询获取微信公众号消息发送记录列表", notes = "")
     @ApiImplicitParams({
             @ApiImplicitParam(dataType = "Integer", name = "page", value = "页码，从1开始")
             , @ApiImplicitParam(dataType = "Integer", name = "limit", value = "size，如10")
             , @ApiImplicitParam(dataType = "string", name = "openid", value = "微信openid")
+            , @ApiImplicitParam(dataType = "string", name = "msgid", value = "微信msgid")
             , @ApiImplicitParam(dataType = "string", name = "details", value = "消息内容")
             , @ApiImplicitParam(dataType = "string", name = "remark", value = "备注")
             , @ApiImplicitParam(dataType = "string", name = "result", value = "消息发送结果")
@@ -268,14 +278,14 @@ public class WechatController {
     })
     @RequestMapping(value = "/msg/list", method = RequestMethod.GET)
     @ResponseBody
-    public BaseBean<BasePageBean<WechatMsgEntity>> getReceiverList(@RequestParam(defaultValue = "1") Integer page,
-                                                                   @RequestParam(defaultValue = "10") Integer limit, String openid,
-                                                                   String details, String remark, String result, String startTime, String endTime) {
+    public BaseBean<BasePageBean<WechatMsgEntity>> getMsgList(@RequestParam(defaultValue = "1") Integer page,
+                                                              @RequestParam(defaultValue = "10") Integer limit, String openid, String msgid,
+                                                              String details, String remark, String result, String startTime, String endTime) {
         BaseBean<BasePageBean<WechatMsgEntity>> resultBean = new BaseBean<>();
 
         // 页码从1开始，但是sql中从0开始
-        List<WechatMsgEntity> receiverEntities = wechatMsgService.queryMsgList(page - 1, limit, openid, details, remark, result, startTime, endTime);
-        long totalSize = wechatMsgService.queryMsgSize(openid, details, remark, result, startTime, endTime);
+        List<WechatMsgEntity> receiverEntities = wechatMsgService.queryMsgList(page - 1, limit, openid, msgid, details, remark, result, startTime, endTime);
+        long totalSize = wechatMsgService.queryMsgSize(openid, msgid, details, remark, result, startTime, endTime);
         resultBean.data = new BasePageBean<>(page, limit, totalSize, receiverEntities);
 
 //        logger.info("--->" + new Gson().toJson(receiverEntities));
@@ -290,14 +300,15 @@ public class WechatController {
      */
     @ApiOperation(value = "更新微信公众号消息接收者信息", notes = "备注")
     @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "WechatMsgEntity", name = "wechatMsgEntity", value = "修改备注信息的消息记录", paramType = "body")
+            @ApiImplicitParam(dataType = "WechatMsgEntity", name = "wechatMsgEntity", value = "修改备注信息的消息记录", paramType = "application/json;")
     })
     @RequestMapping(value = "/msg/update", method = RequestMethod.POST)
     @ResponseBody
     public BaseMapBean updateMsgRemark(@RequestBody WechatMsgEntity wechatMsgEntity) {
         BaseMapBean result = new BaseMapBean();
 
-        wechatMsgService.updateMsgRemark(wechatMsgEntity);
+        long id = wechatMsgService.updateMsgRemark(wechatMsgEntity);
+        logger.info("--->updateMsgRemark=" + id);
 
         return result;
     }
