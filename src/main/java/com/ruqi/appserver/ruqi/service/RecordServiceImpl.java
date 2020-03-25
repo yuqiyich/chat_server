@@ -32,10 +32,9 @@ public class RecordServiceImpl implements IRecordService {
                 && data.getContent() != null
                 && !MyStringUtils.isEmpty(data.getAppInfo().getAppKey())) {//
 //           int appId=appInfoWrapper.getAppIdByKey("BB392D26CF521EFD");
-            logger.info( ";appInfo:"+AppInfo.class.getClassLoader().getClass().getName());
+            logger.info( "appInfoSevice:"+appInfoSevice.getClass().getClassLoader());
             AppInfo appInfo = appInfoSevice.getAppInfoByKey(data.getAppInfo().getAppKey());
-            logger.info("appInfo id:" +"" + (appInfo!=null?appInfo.getAppId():0)+ ";appInfo:"+AppInfo.class.getClassLoader().getClass().getName());
-
+            logger.info("appInfo id:" +"" + (appInfo!=null?appInfo.getAppId():0));
             if (appInfo != null && appInfo.getAppId() > 0) {
                 RiskInfo riskInfo = data.getContent();
                 riskInfo.setAppId(appInfo.getAppId());
