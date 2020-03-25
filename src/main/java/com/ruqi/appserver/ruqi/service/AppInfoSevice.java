@@ -11,7 +11,7 @@ public class AppInfoSevice {
     @Autowired
     private AppInfoWrapper appInfoWrapper;
 
-    @Cacheable(key = "#key", value = "appInfo", unless = "#result eq null")
+    @Cacheable(key = "#key", value = "app_info", unless = "#result eq null")
     public AppInfo getAppInfoByKey(String key) {
         return appInfoWrapper.getAppInfoByKey(key);
     }
