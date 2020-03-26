@@ -1,5 +1,5 @@
 ## APP记录平台项目说明
-该项目基于JDK1.8 + SpringBoot2.2.4 + Mybatis1.3.0 + Mysql8.0.11 + Swagger2.9.2 + fastjson1.2.47 + layui2.5.6开发，用于开发如祺出行客户端APP记录平台相关功能，记录应用安全、数据等信息以实现安全统计报警分析、应用数据统计、性能体验优化等。
+该项目基于JDK1.8 + SpringBoot2.2.4 + Mybatis1.3.0 + Mysql8.0.11 + Swagger2.9.2 + fastjson1.2.47 + layui2.5.6 + thymeleaf + redis开发，用于开发如祺出行客户端APP记录平台相关功能，记录应用安全、数据等信息以实现安全统计报警分析、应用数据统计、性能体验优化等。
 
 ### 开发环境搭建
 #### IDE
@@ -77,6 +77,7 @@ mac系统，命令行`ssh wxgzh@10.3.1.3`，输入密码登录服务器。
 * com.ruqi.appserver.ruqi.network目录放网络相关
 * com.ruqi.appserver.ruqi.service放api接口等逻辑的实现代码相关。
 * com.ruqi.appserver.ruqi.utils工具类。
+* com.ruqi.appserver.ruqi.schedule放定时任务等。
 * resources/sql目录下放数据库表对应的sql语句。
 
 ### 第三方插件功能说明

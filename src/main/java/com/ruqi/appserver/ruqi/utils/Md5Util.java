@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Md5Util {
     private static final String TAG = "Md5Util";
+
     /**
      * MD5加密字符串（32位大写）
      *
@@ -44,14 +45,19 @@ public class Md5Util {
     }
 
     /**
-     *对字符串加盐后再md5值，然后截取后16位
+     * 对字符串加盐后再md5值，然后截取后16位
      *
      * @param string 准备md5的字符串
-     * @param slat 加盐值
+     * @param slat   加盐值
      * @return
      */
-    public static String md5StrBySalt(String string,String slat){
-        return Md5Util.md5Encrypt32Upper(string+slat);
+    public static String md5StrBySalt(String string, String slat) {
+        return Md5Util.md5Encrypt32Upper(string + slat);
+    }
+
+    public static String commonMd5(String str) {
+        String slat = "2020*.ruqi#!888";
+        return Md5Util.md5Encrypt32Upper(str + slat);
     }
 
 }

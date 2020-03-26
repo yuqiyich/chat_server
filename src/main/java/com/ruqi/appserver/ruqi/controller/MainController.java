@@ -12,9 +12,9 @@ public class MainController {
     @Value("${spring.profiles.active}")
     private String mEnv = "";
 
-    @RequestMapping(value = "/")
+    @RequestMapping(value = "/main.html")
     public String index(Model model) {
         model.addAttribute("env", mEnv);
-        return "index";
+        return "main";
     }
 }

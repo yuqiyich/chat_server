@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.UserEntity;
+import com.ruqi.appserver.ruqi.dao.entity.UserInfoEntity;
 
 import java.util.List;
 
@@ -18,4 +19,10 @@ public interface IUserService {
     void update(UserEntity user);
 
     void delete(Long id);
+
+    UserInfoEntity findUser(UserInfoEntity userInfoEntity);
+
+    void updateAllUserToken();
+
+    UserInfoEntity findUserByToken(String token);
 }
