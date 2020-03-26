@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录-如祺APP记录平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <!-- load css -->
+    <link rel="stylesheet" href="/js/layui2.5.6/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="/css/login.css" media="all">
+</head>
+<body style="background-color: #393939">
+<div class="layui-canvs"></div>
+<div class="layui-layout layui-layout-login">
+    <h1>
+        <strong>如祺APP记录平台</strong>
+        <em>Management System</em>
+    </h1>
+    <div class="layui-user-icon larry-login" style="margin-top: 20px;">
+        <input type="text" maxlength="20" id="accountInput" placeholder="账号" class="login_txtbx" value="admin"/>
+    </div>
+    <div style="display: block;position: relative;">
+        <div class="layui-pwd-icon larry-login">
+            <input type="password" id="pwdinput" name="pwdinput" maxlength="20" placeholder="密码"
+                   class="login_txtbx"/>
+        </div>
+        <p style="float: right; position: absolute; right: 5px; top: 15px;" id="passwordeye"
+           class="layui-icon layui-icon-password"/>
+    </div>
+    <div class="layui-submit larry-login">
+        <input type="button" value="立即登录" id="submit_btn" class="submit_btn"/>
+    </div>
+    <div class="layui-login-text" style="margin-top: 40px;">
+        <p>© 2020 广州宸祺出行科技有限公司 版权所有</p>
+        <p>粤ICP备19017498号-1 <a href="https://www.ruqimobility.com/" title=""><u>如祺出行</u></a></p>
+    </div>
+</div>
+<script type="text/javascript" src="/js/layui2.5.6/layui.all.js"></script>
+<script type="text/javascript">
+    'use strict';
+    layui.use(['jquery'], function () {
+        window.jQuery = window.$ = layui.jquery;
+
+        $(".layui-canvs").width($(window).width());
+        $(".layui-canvs").height($(window).height());
+
+    });
+</script>
+<script src="/js/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+    $(function () {
+        //登录链接测试，使用时可删除
+        $("#submit_btn").click(function () {
+            var userData = new Object();
+            userData.account = $("#accountInput").val();
+            userData.password = $("#pwdinput").val();
+            $.ajax({
+                type: "POST",
+                url: "/user/login",
+                data: JSON.stringify(userData),//请求的参数
+                dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+                contentType: 'application/json;charset=utf-8',
+                success: function (dataResult) {
+                    if (null != dataResult) {
+                        if (dataResult.errorCode == 0) {
+                            console.log("--->登录成功");
+                            // console.log("--->user:" + JSON.stringify(dataResult.data));
+                            // 存储
+                            location.href = "/main.html";
+                        } else {
+                            console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
+                            layer.msg('登录失败:' + dataResult.errorMsg);
+                        }
+                    }
+                }
+            });
+        });
+
+        $("#passwordeye").click(function () {
+            var passwordeye = document.getElementById("passwordeye");
+            var showPwd = document.getElementById("pwdinput");
+
+            if (showPwd.type == 'password') {
+                passwordeye.style.color = "#ffffff";
+                showPwd.type = "text";
+            } else {
+                passwordeye.style.color = "#000000";
+                showPwd.type = "password";
+            }
+        });
+    });
+</script>
+</body>
+</html>

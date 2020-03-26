@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.w3.org/1999/xhtml">
-
 <head>
     <meta charset="utf-8"/>
     <title>如祺移动端管理后台</title>
@@ -47,7 +46,7 @@
             <li class="layui-nav-item">
                 <a href="javascript:;">
                     <i class="layui-icon layui-icon-user"></i>
-                    张三
+                    <lable id="user_nickname"></lable>
                 </a>
                 <dl class="layui-nav-child">
                     <!-- <dd><a href="javascript:;" lay-href="./userinfo.html"><i class="layui-icon layui-icon-form"></i>基本资料</a></dd> -->
@@ -59,8 +58,7 @@
             <!-- <li class="layui-nav-item">
                     <a href="javascript:;">锁屏<i class="layui-icon layui-icon-password"></i></a>
                 </li> -->
-            <!-- <li class="layui-nav-item"><a href="./login.html">退出</a></li> -->
-            <li class="layui-nav-item"><a>退出</a></li>
+            <li class="layui-nav-item"><a onclick="return logout()" href="login.html">退出</a></li>
         </ul>
     </div>
     <!--左侧-->
@@ -121,11 +119,51 @@
     </div>
     <!--底部-->
     <div class="layui-footer">© 2020 如祺
-        <lable th:utext="${env}"></lable>
+        <lable th:text="${env}"></lable>
     </div>
 </div>
 
 <script src="/js/layui2.5.6/layui.js" charset="utf-8"></script>
+<script type="text/javascript">
+    // 根据token查询用户信息。每次刷新也会去重新获取，不论是否存在session，可以及时更新用户最新信息？
+    window.onload = function () {
+        $.ajax({
+                type: "GET",
+                url: "/user/info",
+                data: "",//请求的参数
+                headers: {
+                    "Content-Type": "application/json;charset=utf-8",
+                    "token": getCookie("token"),
+                },
+                contentType: 'application/json;charset=utf-8',
+                dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+                success: function (dataResult) {
+                    if (null != dataResult) {
+                        if (dataResult.errorCode == 0) {
+                            var userObj = "[[${session.user}]]";
+                            if (null != userObj && "" != userObj) {
+                                var nicknameStr = "[[${session.user.nickname}]]";
+                                document.getElementById("user_nickname").innerText = nicknameStr;
+                            } else {
+                                console.log("--->session获取失败");
+                            }
+                        } else {
+                            console.log("--->token获取用户信息失败");
+                        }
+                    }
+                }
+            }
+        )
+        ;
+    }
+    ;
+
+    logout = function () {
+        document.cookie = "token=";
+        return true;
+    };
+</script>
+<script src="/js/jquery-3.4.1.min.js" charset="utf-8"></script>
 <script>
     layui.use(['element', 'layer'], function () {
         var element = layui.element

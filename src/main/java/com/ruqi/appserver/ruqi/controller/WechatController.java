@@ -245,21 +245,22 @@ public class WechatController {
     /**
      * 微信模板消息发送后接收微信 回调消息发送结果
      */
-    @RequestMapping(value = "/msgRedirectUri")
-    public String msgRedirectUri(HttpServletRequest request) {
-        String content = request.getQueryString();
-        String result = "";
-        try {
-            result = WxUtils.checkSignature(content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        logger.info("--->msgRedirectUri result=" + result);
-
-        // xml格式数据返回，读取MsgID和Status，数据库中更新消息的result字段。
-        return result;
-    }
+//    @ApiOperation(value = "微信模板消息发送后接收微信 回调消息发送结果", notes = "不使用")
+//    @RequestMapping(value = "/msgRedirectUri", method = RequestMethod.GET)
+//    public String msgRedirectUri(HttpServletRequest request) {
+//        String content = request.getQueryString();
+//        String result = "";
+//        try {
+//            result = WxUtils.checkSignature(content);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        logger.info("--->msgRedirectUri result=" + result);
+//
+//        // xml格式数据返回，读取MsgID和Status，数据库中更新消息的result字段。
+//        return result;
+//    }
 
     /**
      * 查询微信公众号消息发送记录列表

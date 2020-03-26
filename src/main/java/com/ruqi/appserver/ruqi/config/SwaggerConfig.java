@@ -46,7 +46,8 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("APP记录平台接口文档")
-                .description("安卓端数据上报")
+                .description("Cookie 参数说明：(登录、安全上报不需要)\n" +
+                        "参数名：token 参数类型: String 参数说明：令牌")
                 .termsOfServiceUrl("")
                 .version("1.0")
                 .build();
