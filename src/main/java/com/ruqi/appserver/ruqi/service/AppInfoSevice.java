@@ -3,8 +3,6 @@ package com.ruqi.appserver.ruqi.service;
 import com.ruqi.appserver.ruqi.bean.AppInfo;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -29,10 +27,10 @@ public class AppInfoSevice {
         AppInfo resultAppInfo=null;
         if (redisService.existsKey(key)){
             resultAppInfo = (AppInfo) redisService.getKey(key);
-            redisService.expireKey(key,APP_CACHE_EXPIRE_MAX, TimeUnit.SECONDS);//
+            redisService.expireKey(key,APP_CACHE_EXPIRE_MAX, TimeUnit.DAYS);//
         } else {
             resultAppInfo = appInfoWrapper.getAppInfoByKey(key);
-            redisService.putKey(key,resultAppInfo,APP_CACHE_EXPIRE_MAX, TimeUnit.SECONDS);
+            redisService.putKey(key,resultAppInfo,APP_CACHE_EXPIRE_MAX, TimeUnit.DAYS);
         }
         return resultAppInfo;
     }
