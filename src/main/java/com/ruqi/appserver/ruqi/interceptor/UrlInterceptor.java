@@ -26,8 +26,7 @@ public class UrlInterceptor extends BaseInterceptor {
 //        logger.info("mSwaggerEnable:" + mSwaggerEnable);
         if (url.contains("swagger-ui.html")) {
             if (!mSwaggerEnable) {
-                String newUrl = "/error";
-                response.sendRedirect(newUrl);
+                redirtTo(request, response, URL_ERROR);
                 return false;
             } else {
                 return true;
@@ -37,24 +36,22 @@ public class UrlInterceptor extends BaseInterceptor {
         String userToken = getToken(request);
 
         if (MyStringUtils.isEmpty(userToken)) {
-            if (!url.contains("/login.html") && (!url.contains(".html") || url.contains("/main.html"))) {
-                String newUrl = "/login.html";
-                response.sendRedirect(newUrl);
+            if (!url.contains(URL_LOGIN) && (!url.contains(".html") || url.contains(URL_MAIN))) {
+                redirtTo(request, response, URL_LOGIN);
                 return false;
             }
         } else {
             boolean isValid = isTokenValid(userToken);
-            if (isValid && url.contains("/login.html")) {
-                String newUrl = "/main.html";
-                response.sendRedirect(newUrl);
+            if (isValid && url.contains(URL_LOGIN)) {
+                redirtTo(request, response, URL_MAIN);
                 return false;
-            } else if (!isValid && !url.contains("/login.html")) {
-                String newUrl = "/login.html";
-                response.sendRedirect(newUrl);
+            } else if (!isValid && !url.contains(URL_LOGIN)) {
+                redirtTo(request, response, URL_LOGIN);
                 return false;
             }
         }
 
         return true;
     }
+
 }

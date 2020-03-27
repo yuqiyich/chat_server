@@ -44,6 +44,7 @@ public class APIInterceptor extends BaseInterceptor {
                 response.getWriter().write(JSON.toJSONString(result));
                 return false;
             } else {
+                // TODO: 2020/3/26
                 // 优先redis中读取用户信息。
                 UserInfoEntity userInfoEntity = userService.findUserByToken(token);
                 request.setAttribute("userData", userInfoEntity);
