@@ -5,6 +5,7 @@ import com.ruqi.appserver.ruqi.bean.UserEntity;
 import com.ruqi.appserver.ruqi.dao.entity.UserInfoEntity;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
 import com.ruqi.appserver.ruqi.service.IUserService;
+import com.ruqi.appserver.ruqi.service.RedisUtil;
 import com.ruqi.appserver.ruqi.utils.Md5Util;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @Api(tags = "用户访问模块")
@@ -30,6 +32,9 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @ApiOperation(value = "获取所有用户")
     @RequestMapping(value = "/findall", method = RequestMethod.GET)
@@ -51,7 +56,7 @@ public class UserController {
 //        logger.info("--->password=" + userInfoEntity.password);
         UserInfoEntity userInfoEntityResult = userService.findUser(userInfoEntity);
         if (null != userInfoEntityResult) {
-            if (userInfoEntityResult.isValid()) {
+            if (userInfoEntityResult.userIsValid()) {
                 // 数据库存在用户。这里简单的数据库固定死token，返回给前端，前端自己保存和销毁；定时token每天更新变化一次，简单的安全防护。
                 // 如果想做单点登录可以每次都重置token值更新数据库；不做单点登录则可以只读取token，token需要有有效期则另外处理。
                 result.data = userInfoEntityResult;
@@ -65,6 +70,9 @@ public class UserController {
 
                     HttpSession session = request.getSession(true);
                     session.setAttribute("user", userInfoEntityResult);
+
+                    redisUtil.putKey(RedisUtil.GROUP_USER_INFO, userInfoEntityResult.token,
+                            userInfoEntityResult, RedisUtil.EXPIRE_WEEK, TimeUnit.SECONDS);
                 } catch (Exception e) {
                     logger.info("--->Exception:" + e);
                     e.printStackTrace();
@@ -88,7 +96,7 @@ public class UserController {
         UserInfoEntity userInfoEntity = (UserInfoEntity) request.getAttribute("userData");
 //        logger.info("--->/user/info userInfoEntity:" + userInfoEntity);
         if (null != userInfoEntity) {
-            if (userInfoEntity.isValid()) {
+            if (userInfoEntity.userIsValid()) {
                 // 数据库存在用户。这里简单的数据库固定死token，返回给前端，前端自己保存和销毁；定时token每月1号0点更新变化一次，简单的安全防护。
                 // 如果想做单点登录可以每次都重置token值更新数据库；不做单点登录则可以只读取token，token需要有有效期则另外处理。
                 result.data = userInfoEntity;
@@ -97,7 +105,6 @@ public class UserController {
                 try {
                     HttpSession session = request.getSession(true);
                     session.setAttribute("user", userInfoEntity);
-//                    session.setAttribute("nickname", userInfoEntityResult.nickname);
                 } catch (Exception e) {
                     logger.info("--->Exception:" + e);
                     e.printStackTrace();

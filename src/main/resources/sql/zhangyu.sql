@@ -52,6 +52,8 @@ select
 from
 		wechat_msg_receiver
 
+SELECT * FROM user WHERE token = "006590abdcfc4b6bbb2de700e2760ce2"
+
 select id, openid, msgid, remark, msg_details, result, create_time, modify_time from wechat_msg_record order by create_time desc limit 0, 10
 
  select id, openid, msgid, remark, msg_details, result, create_time, modify_time

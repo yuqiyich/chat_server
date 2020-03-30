@@ -7,10 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class UserServiceImpl implements IUserService {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public List<UserEntity> findAll() {
@@ -49,6 +53,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserInfoEntity findUserByToken(String token) {
-        return userMapper.findUserByToken(token);
+        return (UserInfoEntity) redisUtil.getKey(RedisUtil.GROUP_USER_INFO, token);
     }
+
 }

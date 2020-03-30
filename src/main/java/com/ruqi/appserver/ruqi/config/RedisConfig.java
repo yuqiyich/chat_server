@@ -4,6 +4,7 @@ import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruqi.appserver.ruqi.service.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -58,6 +59,7 @@ public class RedisConfig extends CachingConfigurerSupport {
             }
         };
     }
+
     /**
      * 管理缓存
      *
@@ -72,23 +74,23 @@ public class RedisConfig extends CachingConfigurerSupport {
         ClassLoader cacheLoader = Thread.currentThread().getContextClassLoader();
         RedisSerializationContext.SerializationPair<Object> objectSerializationPair = RedisSerializationContext.SerializationPair.fromSerializer(new GenericFastJsonRedisSerializer());
 
-        RedisCacheConfiguration cacheConfiguration=RedisCacheConfiguration.defaultCacheConfig(cacheLoader)
+        RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig(cacheLoader)
                 .serializeValuesWith(objectSerializationPair);
         cacheConfiguration = cacheConfiguration.entryTtl(Duration.ofDays(1))     // 设置缓存的默认过期时间，也是使用Duration设置
                 .disableCachingNullValues();     // 不缓存空值
 
         // 设置一个初始化的缓存空间set集合
         Set<String> cacheNames = new HashSet<>();
-        cacheNames.add("user_info");
+        cacheNames.add(RedisUtil.GROUP_USER_INFO);
         cacheNames.add("app_info");
 
         // 对每个缓存空间应用不同的配置
         Map<String, RedisCacheConfiguration> configMap = new HashMap<>();
-        configMap.put("user_info", cacheConfiguration.entryTtl(Duration.ofMinutes(30)));
+        configMap.put(RedisUtil.GROUP_USER_INFO, cacheConfiguration.entryTtl(Duration.ofDays(7)));
         configMap.put("app_info", cacheConfiguration.entryTtl(Duration.ofDays(30)));
 
-        logger.info("cache class Loader:"+cacheLoader+"my cache RedisCacheConfiguration :"+cacheConfiguration);
-           RedisCacheManager cacheManager = RedisCacheManager.builder(redisConnectionFactory)     // 使用自定义的缓存配置初始化一个cacheManager
+        logger.info("cache class Loader:" + cacheLoader + "my cache RedisCacheConfiguration :" + cacheConfiguration);
+        RedisCacheManager cacheManager = RedisCacheManager.builder(redisConnectionFactory)     // 使用自定义的缓存配置初始化一个cacheManager
                 .initialCacheNames(cacheNames)  // 注意这两句的调用顺序，一定要先调用该方法设置初始化的缓存名，再初始化相关的配置
                 .withInitialCacheConfigurations(configMap)
                 .cacheDefaults(cacheConfiguration)
