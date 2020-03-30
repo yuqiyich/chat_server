@@ -1,15 +1,16 @@
 package com.ruqi.appserver.ruqi.interceptor;
 
+import com.ruqi.appserver.ruqi.service.IUserService;
+import com.ruqi.appserver.ruqi.service.RedisUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -20,6 +21,12 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
     protected final String URL_LOGIN = "/login.html";
     protected final String URL_MAIN = "/main.html";
     protected final String URL_ERROR = "/error";
+
+    @Autowired
+    protected IUserService userService;
+
+    @Autowired
+    protected RedisUtil redisUtil;
 
     protected void redirtTo(HttpServletRequest request, HttpServletResponse response, String url) {
         logger.info("--->request.url=" + request.getRequestURL().toString() + ", redirtTo:" + url);
@@ -51,11 +58,11 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
         if (MyStringUtils.isEmpty(token)) {
             return false;
         }
-        List<String> tokenList = new ArrayList<>();
-        // TODO: 2020/3/26 redis读取数据库的处理
-        tokenList.add("8a243fba1fed17178262d074ce2b3255");
-        tokenList.add("6725d22ad3048777cdf9cfe9424579c2");
-        return tokenList.contains(token);
+
+        boolean existsKey = redisUtil.existsKey(RedisUtil.GROUP_USER_INFO, token);
+
+//        logger.info("--->existsKey " + token + ":" + existsKey);
+        return existsKey;
     }
 
 }

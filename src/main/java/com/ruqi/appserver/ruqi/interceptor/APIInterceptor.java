@@ -4,10 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.ruqi.appserver.ruqi.bean.BaseBean;
 import com.ruqi.appserver.ruqi.dao.entity.UserInfoEntity;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
-import com.ruqi.appserver.ruqi.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,9 +16,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class APIInterceptor extends BaseInterceptor {
     private Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    private IUserService userService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -44,10 +39,12 @@ public class APIInterceptor extends BaseInterceptor {
                 response.getWriter().write(JSON.toJSONString(result));
                 return false;
             } else {
-                // TODO: 2020/3/26
                 // 优先redis中读取用户信息。
                 UserInfoEntity userInfoEntity = userService.findUserByToken(token);
-                request.setAttribute("userData", userInfoEntity);
+//                logger.info("--->userInfoEntity=" + JSON.toJSONString(userInfoEntity));
+                if (null != userInfoEntity) {
+                    request.setAttribute("userData", userInfoEntity);
+                }
             }
         }
 //        else {

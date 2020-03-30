@@ -34,7 +34,4 @@ public interface UserMapper {
     @Update("UPDATE user SET token=Md5(rand() + id) WHERE user_status=1")
     void updateAllUserToken();
 
-    @Select("SELECT * FROM user WHERE token = #{token}")
-    @Results({@Result(property = "userStatus", column = "user_status")})
-    UserInfoEntity findUserByToken(String token);
 }
