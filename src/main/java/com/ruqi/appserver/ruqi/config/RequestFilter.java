@@ -3,6 +3,7 @@ package com.ruqi.appserver.ruqi.config;
 
 import com.ruqi.appserver.ruqi.network.RequestWrapper;
 import com.ruqi.appserver.ruqi.network.ResponseWrapper;
+import com.ruqi.appserver.ruqi.utils.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -26,7 +27,7 @@ import java.io.IOException;
 /**
  * 注册过滤器
  * */
-@WebFilter(filterName = "RequestResponseLogFilter", urlPatterns = "/*")
+@WebFilter(filterName = "RequestResponseLogFilter", urlPatterns = "/record/*")
 public class RequestFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(RequestFilter.class);
 
@@ -37,7 +38,7 @@ public class RequestFilter extends OncePerRequestFilter {
         String url = request.getRequestURI();
         RequestWrapper requestWrapper = null;
 
-
+        logger.info("========================》  IP:" + IpUtil.getIpAddr(request));
         StringBuilder sb = new StringBuilder();
         if (request instanceof HttpServletRequest) {
             requestWrapper = new RequestWrapper(request);
