@@ -18,9 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 public class BaseInterceptor extends HandlerInterceptorAdapter {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected final String URL_LOGIN = "/login.html";
-    protected final String URL_MAIN = "/main.html";
-    protected final String URL_ERROR = "/error";
+    protected final String URL_LOGIN = "login.html";
+    protected final String URL_MAIN = "main.html";
+    protected final String URL_ERROR = "error";
 
     @Autowired
     protected IUserService userService;
