@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -35,6 +36,9 @@ public class UserController {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     @ApiOperation(value = "获取所有用户")
     @RequestMapping(value = "/findall", method = RequestMethod.GET)
@@ -64,7 +68,7 @@ public class UserController {
                 // 在客户端存储用户个性化信息，方便用户下次再访问网站时使用
                 try {
                     Cookie cookie = new Cookie("token", URLEncoder.encode(userInfoEntityResult.token, "utf-8"));
-                    cookie.setPath("/");
+                    cookie.setPath(contextPath);
                     cookie.setMaxAge(60 * 60 * 24); // cookie有效期1天
                     response.addCookie(cookie);
 
