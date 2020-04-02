@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <title>如祺移动端管理后台</title>
-    <link rel="stylesheet" href="/js/layui2.5.6/css/layui.css">
+    <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
     <link rel="stylesheet" href="css/index.css"/>
     <script>
         //iframe高度自适应
@@ -123,13 +123,13 @@
     </div>
 </div>
 
-<script src="/js/layui2.5.6/layui.js" charset="utf-8"></script>
+<script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
 <script type="text/javascript">
     // 根据token查询用户信息。每次刷新也会去重新获取，不论是否存在session，可以及时更新用户最新信息？
     window.onload = function () {
         $.ajax({
                 type: "GET",
-                url: "/user/info",
+                url: "user/info",
                 data: "",//请求的参数
                 headers: {
                     "Content-Type": "application/json;charset=utf-8",
@@ -163,7 +163,7 @@
         return true;
     };
 </script>
-<script src="/js/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>
 <script>
     layui.use(['element', 'layer'], function () {
         var element = layui.element

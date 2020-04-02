@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>危险报警查询列表</title>
-    <link rel="stylesheet" href="/js/layui2.5.6/css/layui.css">
+    <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
     <style>
         body {
             padding: 20px; /*overflow-y: scroll;*/
@@ -84,7 +84,7 @@
 
 <table id="developerTable" lay-filter="developerTable"></table>
 
-<script src="/js/layui2.5.6/layui.js" charset="utf-8"></script>
+<script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
 <script type="text/html" id="barOperator">
     <a class="layui-btn layui-btn-xs" lay-event="user_edit">查看</a>
     <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
@@ -262,7 +262,7 @@
                     var jsonStr = itemData.openid;
                     $.ajax({
                         type: "POST",
-                        url: "/wechat/template/testSend",
+                        url: "wechat/template/testSend",
                         data: jsonStr,//请求的参数
                         dataType: "json",//以json格式返回的数据，不是json就把此行去掉
                         contentType: 'application/json;charset=utf-8',
