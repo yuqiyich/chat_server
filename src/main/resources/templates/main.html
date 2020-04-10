@@ -139,22 +139,15 @@
                 dataType: "json",//以json格式返回的数据，不是json就把此行去掉
                 success: function (dataResult) {
                     if (null != dataResult) {
-                        if (dataResult.errorCode == 0) {
-                            var userObj = "[[${session.user}]]";
-                            if (null != userObj && "" != userObj) {
-                                var nicknameStr = "[[${session.user.nickname}]]";
-                                document.getElementById("user_nickname").innerText = nicknameStr;
-                            } else {
-                                console.log("--->session获取失败");
-                            }
+                        if (dataResult.errorCode == 0 && null != dataResult.data) {
+                            document.getElementById("user_nickname").innerText = dataResult.data.nickname;
                         } else {
                             console.log("--->token获取用户信息失败");
                         }
                     }
                 }
             }
-        )
-        ;
+        );
     }
     ;
 

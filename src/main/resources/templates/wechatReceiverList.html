@@ -207,7 +207,7 @@
         table.render({
             elem: '#developerTable'
             , title: '微信公众号消息通知接收者表'
-            , url: '/wechat/receiver/list'
+            , url: 'wechat/receiver/list'
             , page: {curr: 1}
             , limit: 10
             , limits: [10, 30, 50, 100]
@@ -318,7 +318,7 @@
                 case 'showQrcodeView':
                     layer.open({
                         type: 1,
-                        content: "<div style='text-align: center;'><p>扫码绑定微信账号<br>（还需关注公众号才能接收消息）</p><img style='width:120px; height: 120px;' src='/img/wechat_bind.png' /></div>"
+                        content: "<div style='text-align: center;'><p>扫码绑定微信账号<br>（还需关注公众号才能接收消息）</p><img style='width:120px; height: 120px;' src='img/wechat_bind.png' /></div>"
                     });
                     break;
                 case 'testSendAllMsg':
