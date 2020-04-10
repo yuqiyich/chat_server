@@ -21,4 +21,16 @@ public class UserInfoEntity {
     public boolean userIsValid() {
         return "1".equals(userStatus);
     }
+
+    @Override
+    public String toString() {
+        return "UserInfoEntity{" +
+                "id=" + id +
+                ", account='" + account + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", userStatus='" + userStatus + '\'' +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }
