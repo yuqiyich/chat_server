@@ -236,7 +236,7 @@ function formatDateTime(date) {
     time.setTime(time.setHours(time.getHours()));
 
     time = getLocalTime(time, -8);
-    console.log("time: " + time)
+    // console.log("time: " + time)
 
     var Y = time.getFullYear() + '-';
     var M = this.addZero(time.getMonth() + 1) + '-';

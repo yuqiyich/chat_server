@@ -252,8 +252,8 @@
                 return {
                     "code": res.errorCode
                     , "msg": res.errorMsg
-                    , "count": res.data.totalSize
-                    , "data": res.data.list
+                    , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
+                    , "data": null != res.data && null != res.data.list ? res.data.list : null
                 };
             }
         });
