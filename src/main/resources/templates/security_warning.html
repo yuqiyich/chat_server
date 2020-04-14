@@ -14,7 +14,7 @@
 </head>
 
 <body>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>
 
 <form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">
     <div class="layui-form-item">
@@ -246,8 +246,8 @@
                 return {
                     "code": res.errorCode
                     , "msg": res.errorMsg
-                    , "count": res.data.totalSize
-                    , "data": res.data.list
+                    , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
+                    , "data": null != res.data && null != res.data.list ? res.data.list : null
                 };
             }
         });
