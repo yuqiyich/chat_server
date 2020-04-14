@@ -69,7 +69,7 @@ public class UserController {
                 try {
                     Cookie cookie = new Cookie("token", URLEncoder.encode(userInfoEntityResult.token, "utf-8"));
                     cookie.setPath(contextPath);
-                    cookie.setMaxAge(60 * 60 * 24); // cookie有效期1天
+                    cookie.setMaxAge(60 * 60 * 24 * 7); // cookie有效期7天
                     response.addCookie(cookie);
 
                     HttpSession session = request.getSession(true);
