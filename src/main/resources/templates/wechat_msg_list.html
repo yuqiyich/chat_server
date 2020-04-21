@@ -187,7 +187,6 @@
                 startTime = time.toString().substring(0, time.toString().indexOf(" ~ "));
                 endTime = time.toString().substring(time.toString().indexOf(" ~ ") + 3, time.toString().length);
             }
-            // console.log("time=" + time + ", startTime=" + startTime + ", endTime=" + endTime);
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('wechatMsgTable', {
