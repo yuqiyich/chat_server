@@ -1,0 +1,26 @@
+@startuml
+
+header 20200426
+
+title 网页拦截流程图
+
+participant 前端
+participant 服务器
+
+前端 -> 服务器 : 网页请求
+note left : 所有.html结尾的网页（error.html除外）
+activate 服务器
+服务器 --> 服务器 : 包含"swagger-ui.html"，若配置swagger为关则跳转error\n否则直接打开网址
+服务器 --> 服务器 : 获取请求里附带的token信息
+服务器 --> 前端 : 跳转到登录界面"login.html"
+note right : token为空，url不包含".html"或url包含"main.html"
+服务器 --> 服务器 : 验证token是否有效（redis，user_info组中判断是否存在这个token值的key）
+服务器 --> 前端 : 跳转到登录界面"login.html"
+note right : token无效，且url不包含"login.html"
+服务器 --> 前端 : 跳转到主界面"main.html"
+note right : token有效，url包含"login.html"
+服务器 --> 前端 : 正常打开需要打开的界面
+note right : 其他正常情况
+deactivate 服务器
+
+@enduml
