@@ -63,6 +63,12 @@
             </div>
         </div>
         <div class="layui-inline">
+            <label class="layui-form-label">设备ID</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" class="layui-input" id="deviceID">
+            </div>
+        </div>
+        <div class="layui-inline">
             <label class="layui-form-label">上传时间段</label>
             <div class="layui-input-inline" style="width: 300px;">
                 <input type="text"  id="duringTime" name="duringTime"
@@ -116,7 +122,9 @@
                         "content": {
                             "appVersionName": $("#appVersion").val(),
                             "duringTime": $("#duringTime").val(),
-                            "deviceModel": $("#deviceModel").val()
+                            "deviceModel": $("#deviceModel").val(),
+                            "deviceBrand": $("#deviceBrand").val(),
+                            "deviceId": $("#deviceID").val()
                         }
                    }
                 }, 'data');
@@ -141,7 +149,9 @@
                         "content": {
                             "appVersionName": $("#appVersion").val(),
                             "duringTime": $("#duringTime").val(),
-                            "deviceModel": $("#deviceModel").val()
+                            "deviceModel": $("#deviceModel").val(),
+                            "deviceBrand": $("#deviceBrand").val(),
+                            "deviceId": $("#deviceID").val()
                         }
                     }
                 }, 'data');
