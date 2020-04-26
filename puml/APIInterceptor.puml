@@ -1,0 +1,23 @@
+@startuml
+
+header 20200426
+
+title 网页拦截流程图
+
+participant 前端
+participant 服务器
+
+前端 -> 服务器 : 接口API请求
+note left : 所有接口API请求\n（.html、error、csrf、.css、.js、.jpg、.png、\n/cs、/js、/img、/record/uploadData、/user/login、\n/wechatH5/authorize、/wechatH5/redirectUri除外）
+activate 服务器
+服务器 --> 服务器 : 包含"swagger"，直接访问，swagger组件中需要的一些东西
+服务器 --> 服务器 : 获取请求里附带的token信息
+服务器 --> 前端 : 返回错误，code：10003，msg：TOKEN无效，请重新登录
+note right : token无效，为空或者redis的user_info组内找不到这个key
+服务器 --> 服务器 : redis中user_info组内根据token的key查找用户信息
+note left : 若能获取到且不为空，保存用户信息对象在请求request\n的userData属性内。api接口内则能直接使用相关用户信息
+服务器 --> 前端 : 正常访问api接口获取返回值
+note right : 其他正常情况
+deactivate 服务器
+
+@enduml
