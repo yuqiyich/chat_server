@@ -82,11 +82,13 @@ public class RedisConfig extends CachingConfigurerSupport {
         // 设置一个初始化的缓存空间set集合
         Set<String> cacheNames = new HashSet<>();
         cacheNames.add(RedisUtil.GROUP_USER_INFO);
+        cacheNames.add(RedisUtil.GROUP_APP_VERSION_NAME);
         cacheNames.add("app_info");
 
         // 对每个缓存空间应用不同的配置
         Map<String, RedisCacheConfiguration> configMap = new HashMap<>();
         configMap.put(RedisUtil.GROUP_USER_INFO, cacheConfiguration.entryTtl(Duration.ofDays(7)));
+        configMap.put(RedisUtil.GROUP_APP_VERSION_NAME, cacheConfiguration.entryTtl(Duration.ofDays(7)));
         configMap.put("app_info", cacheConfiguration.entryTtl(Duration.ofDays(30)));
 
         logger.info("cache class Loader:" + cacheLoader + "my cache RedisCacheConfiguration :" + cacheConfiguration);

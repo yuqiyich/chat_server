@@ -58,6 +58,11 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
+    public List<String> queryAppVersionNameForLayui() {
+        return riskInfoWrapper.queryAppVersionNameForLayui("0");
+    }
+
+    @Override
     public List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit, RecordInfo<RiskInfo> riskParams) {
         return riskInfoWrapper.queryRiskList(pageIndex * limit, limit, riskParams);
     }

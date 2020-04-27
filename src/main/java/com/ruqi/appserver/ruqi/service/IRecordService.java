@@ -14,4 +14,6 @@ public interface IRecordService {
     List<RecordRiskInfo> queryListForLayUi(int pageIndex, int limit, RecordInfo<RiskInfo> params);
     List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit, RecordInfo<RiskInfo> params);
     int queryTotalSize(RecordInfo<RiskInfo> params);
+
+    List<String> queryAppVersionNameForLayui();
 }
