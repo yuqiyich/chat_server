@@ -20,13 +20,18 @@ deactivate 服务器
 end
 
 group 查询
+前端 -> 服务器 : 调用接口"/record/queryAppVersionNameForLayui"，请求版本列表数据
+activate 服务器
+服务器 --> 服务器 : 数据库中查询版本数据，redis缓存在app_version_name组（缓存时效1天）
+服务器 -> 前端 : 返回有数据的版本号（简单处理，不区分应用类型）
+deactivate 服务器
 前端 -> 服务器 : 调用接口"/record/queryRiskListForLayui"，分页请求数据
 note left : 不会做拦截
 activate 服务器
 服务器 --> 服务器 : 根据搜索条件，数据库中查数据
 note left : 筛选条件：应用类型、app版本、设备型号、\n设备品牌、手机号、设备id、时间段
-deactivate 服务器
 服务器 --> 前端 : 返回满足条件要求的数据列表
+deactivate 服务器
 
 end
 
