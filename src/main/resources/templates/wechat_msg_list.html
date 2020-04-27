@@ -16,7 +16,7 @@
 </head>
 
 <body>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>
 
 <form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">
 
@@ -187,7 +187,6 @@
                 startTime = time.toString().substring(0, time.toString().indexOf(" ~ "));
                 endTime = time.toString().substring(time.toString().indexOf(" ~ ") + 3, time.toString().length);
             }
-            console.log("time=" + time + ", startTime=" + startTime + ", endTime=" + endTime);
             layui.use('table', function () {
                 var table = layui.table;
                 table.reload('wechatMsgTable', {
@@ -238,7 +237,7 @@
             elem: '#wechatMsgTable'
             , title: '微信公众号消息列表'
             // , height: 115
-            , url: '/wechat/msg/list'
+            , url: 'wechat/msg/list'
             , page: {curr: 1}
             , limit: 10
             , limits: [10, 30, 50, 100]
@@ -277,8 +276,8 @@
                 return {
                     "code": res.errorCode
                     , "msg": res.errorMsg
-                    , "count": res.data.totalSize
-                    , "data": res.data.list
+                    , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
+                    , "data": null != res.data && null != res.data.list ? res.data.list : null
                 };
             }
         });

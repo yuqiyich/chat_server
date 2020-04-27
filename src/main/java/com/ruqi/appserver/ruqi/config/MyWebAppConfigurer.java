@@ -27,13 +27,13 @@ public class MyWebAppConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // html网页，拦截处理需要登录有token
-        registry.addInterceptor(UrlInterceptor()).addPathPatterns("/**.html")
+        registry.addInterceptor(UrlInterceptor()).addPathPatterns("/**/*.html")
                 .excludePathPatterns("/error.html")
         ;
 
         // 非html网页，就是API接口。拦截处理没有token时统一返回token无效
         registry.addInterceptor(APIInterceptor()).addPathPatterns("/**")
-                .excludePathPatterns("/**.html", "/", "/error", "/csrf")
+                .excludePathPatterns("/**/*.html", "/", "/error", "/csrf")
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg")
                 .excludePathPatterns("/css/**", "/js/**", "/img/**")//排除样式、脚本、图片等资源文件
                 .excludePathPatterns("/record/uploadData") // 排除安全上报接口

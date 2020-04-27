@@ -69,7 +69,7 @@ public class UserController {
                 try {
                     Cookie cookie = new Cookie("token", URLEncoder.encode(userInfoEntityResult.token, "utf-8"));
                     cookie.setPath(contextPath);
-                    cookie.setMaxAge(60 * 60 * 24); // cookie有效期1天
+                    cookie.setMaxAge(60 * 60 * 24 * 7); // cookie有效期7天
                     response.addCookie(cookie);
 
                     HttpSession session = request.getSession(true);
@@ -100,6 +100,7 @@ public class UserController {
         UserInfoEntity userInfoEntity = (UserInfoEntity) request.getAttribute("userData");
 //        logger.info("--->/user/info userInfoEntity:" + userInfoEntity);
         if (null != userInfoEntity) {
+//            logger.info("userInfoEntity.userIsValid():" + userInfoEntity.userIsValid());
             if (userInfoEntity.userIsValid()) {
                 // 数据库存在用户。这里简单的数据库固定死token，返回给前端，前端自己保存和销毁；定时token每月1号0点更新变化一次，简单的安全防护。
                 // 如果想做单点登录可以每次都重置token值更新数据库；不做单点登录则可以只读取token，token需要有有效期则另外处理。
@@ -109,6 +110,9 @@ public class UserController {
                 try {
                     HttpSession session = request.getSession(true);
                     session.setAttribute("user", userInfoEntity);
+//                    session.setAttribute("username", userInfoEntity.nickname);
+
+//                    logger.info("--->/user/info session:" + session.getAttribute("user").toString());
                 } catch (Exception e) {
                     logger.info("--->Exception:" + e);
                     e.printStackTrace();

@@ -26,19 +26,21 @@ public class RecordServiceImpl implements IRecordService {
     @Override
     @Async("taskExecutor")
     public void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime, String requestIp) {
-        logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime() );
+        logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime());
         if (data.getRecordType() == RiskEnum.RUNTIME_RISK.getId()
                 && data.getAppInfo() != null
                 && data.getContent() != null
                 && !MyStringUtils.isEmpty(data.getAppInfo().getAppKey())) {//
 //           int appId=appInfoWrapper.getAppIdByKey("BB392D26CF521EFD");
-            logger.info( "appInfoSevice:"+appInfoSevice.getClass().getClassLoader());
+            logger.info("appInfoSevice:" + appInfoSevice.getClass().getClassLoader());
             AppInfo appInfo = appInfoSevice.getAppInfoByKey(data.getAppInfo().getAppKey());
-            logger.info("appInfo id:" +"" + (appInfo!=null?appInfo.getAppId():0));
+            logger.info("appInfo id:" + "" + (appInfo != null ? appInfo.getAppId() : 0));
             if (appInfo != null && appInfo.getAppId() > 0) {
                 RiskInfo riskInfo = data.getContent();
                 riskInfo.setAppId(appInfo.getAppId());
                 riskInfo.setRequestIp(requestIp);
+                // 记录时间使用服务器的时间
+                riskInfo.setCreateTime(uploadTime);
                 saveRiskUserInfo(data.getUserInfo());
                 saveRiskInfo(data.getContent());
             } else {

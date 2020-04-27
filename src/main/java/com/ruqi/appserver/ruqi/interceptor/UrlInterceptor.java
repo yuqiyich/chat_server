@@ -35,6 +35,7 @@ public class UrlInterceptor extends BaseInterceptor {
 
         String userToken = getToken(request);
 
+//        logger.info("userToken:" + userToken);
         if (MyStringUtils.isEmpty(userToken)) {
             if (!url.contains(URL_LOGIN) && (!url.contains(".html") || url.contains(URL_MAIN))) {
                 redirtTo(request, response, URL_LOGIN);
@@ -42,6 +43,7 @@ public class UrlInterceptor extends BaseInterceptor {
             }
         } else {
             boolean isValid = isTokenValid(userToken);
+//            logger.info("userToken isValid:" + isValid + ", url:" + url);
             if (isValid && url.contains(URL_LOGIN)) {
                 redirtTo(request, response, URL_MAIN);
                 return false;
