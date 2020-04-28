@@ -41,7 +41,10 @@ public class RecordServiceImpl implements IRecordService {
                 riskInfo.setRequestIp(requestIp);
                 // 记录时间使用服务器的时间
                 riskInfo.setCreateTime(uploadTime);
-                saveRiskUserInfo(data.getUserInfo());
+                if (data.getUserInfo() != null) {//user 信息没有就不保存
+                    data.getUserInfo().setAppId(appInfo.getAppId());
+                    saveRiskUserInfo(data.getUserInfo());
+                }
                 saveRiskInfo(data.getContent());
             } else {
                 logger.info("this appKey[" + data.getAppInfo().getAppKey() + "] not exists,throw this msg");
