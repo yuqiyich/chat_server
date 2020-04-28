@@ -73,6 +73,7 @@ public interface RiskInfoWrapper {
             "<if test='riskInfo.content!=null and riskInfo.content.deviceModel!=null and riskInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{riskInfo.content.deviceModel}, '%')</if>",
             "<if test='riskInfo.content!=null and riskInfo.content.deviceBrand!=null and riskInfo.content.deviceBrand!=\"\" '>AND device_brand like concat('%', #{riskInfo.content.deviceBrand}, '%')</if>",
             "<if test='riskInfo.content!=null and riskInfo.content.deviceId!=null and riskInfo.content.deviceId!=\"\" '>AND device_id like concat('%', #{riskInfo.content.deviceId}, '%')</if>",
+            "<if test='riskInfo.content!=null and riskInfo.content.riskType!=null and riskInfo.content.riskType!=\"\" '>AND risk_type like concat('%', #{riskInfo.content.riskType}, '%')</if>",
             "<if test='riskInfo.appInfo!=null and riskInfo.appInfo.appId!=null and riskInfo.appInfo.appId>0 '>AND app_id = #{riskInfo.appInfo.appId}</if>",
             "<if test='riskInfo.content!=null and riskInfo.content.startDate!=null '>AND create_time &gt; #{riskInfo.content.startDate}</if>",
             "<if test='riskInfo.content!=null and riskInfo.content.endDate!=null  '>AND create_time &lt; #{riskInfo.content.endDate}</if>",
@@ -123,6 +124,7 @@ public interface RiskInfoWrapper {
             "<if test='riskInfo.content!=null and riskInfo.content.deviceModel!=null and riskInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{riskInfo.content.deviceModel}, '%')</if>",
             "<if test='riskInfo.content!=null and riskInfo.content.deviceBrand!=null and riskInfo.content.deviceBrand!=\"\" '>AND device_brand like concat('%', #{riskInfo.content.deviceBrand}, '%')</if>",
             "<if test='riskInfo.content!=null and riskInfo.content.deviceId!=null and riskInfo.content.deviceId!=\"\" '>AND device_id like concat('%', #{riskInfo.content.deviceId}, '%')</if>",
+            "<if test='riskInfo.content!=null and riskInfo.content.riskType!=null and riskInfo.content.riskType!=\"\" '>AND risk_type like concat('%', #{riskInfo.content.riskType}, '%')</if>",
             "<if test='riskInfo.appInfo!=null and riskInfo.appInfo.appId!=null and riskInfo.appInfo.appId>0 '>AND app_id = #{riskInfo.appInfo.appId}</if>",
             "<if test='riskInfo.content!=null and riskInfo.content.startDate!=null '>AND create_time &gt; #{riskInfo.content.startDate}</if>",
             "<if test='riskInfo.content!=null and riskInfo.content.endDate!=null  '>AND create_time &lt; #{riskInfo.content.endDate}</if>",
@@ -136,4 +138,8 @@ public interface RiskInfoWrapper {
     @Select({"SELECT DISTINCT(app_versionname) FROM risk_record WHERE app_versionname!='NULL'"})
     @Cacheable(key = "#type", value = RedisUtil.GROUP_APP_VERSION_NAME, unless = "#result eq null")
     List<String> queryAppVersionNameForLayui(String type);
+
+    @Select({"SELECT DISTINCT(risk_type) FROM risk_record WHERE risk_type!='NULL'"})
+    @Cacheable(key = "#type", value = RedisUtil.GROUP_APP_VERSION_NAME, unless = "#result eq null")
+    List<String> queryRiskTypeForLayui(String type);
 }

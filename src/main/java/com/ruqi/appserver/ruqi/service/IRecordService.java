@@ -16,4 +16,6 @@ public interface IRecordService {
     int queryTotalSize(RecordInfo<RiskInfo> params);
 
     List<String> queryAppVersionNameForLayui();
+
+    List<String> queryRiskTypeForLayui();
 }
