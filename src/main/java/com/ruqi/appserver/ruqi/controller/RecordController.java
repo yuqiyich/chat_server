@@ -37,6 +37,21 @@ public class RecordController {
      *
      * @return
      */
+    @ApiOperation(value = "查询记录到数据的风险类型", notes = "")
+    @RequestMapping(value = "/queryRiskTypeForLayui", method = RequestMethod.GET)
+    @ResponseBody
+    public BaseBean<List<String>> queryRiskTypeForLayui() {
+        BaseBean<List<String>> result = new BaseBean<>();
+        List<String> riskTypeListList = recordService.queryRiskTypeForLayui();
+        result.data = riskTypeListList;
+        return result;
+    }
+
+    /**
+     * 查询记录到数据的版本号名称(for web 的layui的table控件接口)
+     *
+     * @return
+     */
     @ApiOperation(value = "查询记录到数据的版本号名称", notes = "")
     @RequestMapping(value = "/queryAppVersionNameForLayui", method = RequestMethod.GET)
     @ResponseBody
@@ -59,7 +74,7 @@ public class RecordController {
 
 
     /**
-     * 查询获取微信公众号消息接收者列表
+     * 查询报警列表
      *
      * @return
      */
@@ -78,7 +93,7 @@ public class RecordController {
     }
 
     /**
-     * 查询获取微信公众号消息接收者列表(for web 的layui的table控件接口)
+     * 查询报警列表(for web 的layui的table控件接口)
      *
      * @return
      */
@@ -96,4 +111,5 @@ public class RecordController {
 
         return result;
     }
+
 }
