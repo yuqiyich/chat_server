@@ -17,10 +17,10 @@ public interface UserMapper {
     @Results({@Result(property = "userId", column = "user_id"), @Result(property = "userName", column = "user_name")})
     UserEntity getOne(Long id);
 
-    @Insert("insert into risk_user(user_id,user_phone,nick_name,user_name) values(#{userId},#{userPhone},#{nickName},#{userName})")
+    @Insert("insert into risk_user(user_id,user_phone,nick_name,user_name,app_id) values(#{userId},#{userPhone},#{nickName},#{userName},#{appId})")
     int insert(UserEntity user);
 
-    @Update("UPDATE risk_user SET user_name=#{userName},nick_name=#{nickName} WHERE user_id =#{userId}")
+    @Update("UPDATE risk_user SET user_name=#{userName},nick_name=#{nickName},app_id=#{appId} WHERE user_id =#{userId}")
     void update(UserEntity user);
 
     @Delete("DELETE FROM risk_user WHERE user_id =#{id}")

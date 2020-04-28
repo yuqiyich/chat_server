@@ -8,6 +8,8 @@ public class UserEntity {
     public String userPhone;
     public String riskType;
 
+    public int appId;
+
     public long getUserId() {
         return userId;
     }
@@ -54,5 +56,13 @@ public class UserEntity {
 
     public void setRiskType(String riskType) {
         this.riskType = riskType;
+    }
+
+    public int getAppId() {
+        return appId;
+    }
+
+    public void setAppId(int appId) {
+        this.appId = appId;
     }
 }
