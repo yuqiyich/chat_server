@@ -207,10 +207,12 @@
         }), i)
     }, e.layui = new o
 }(window);
+
 //-------------------------------张宇自定义-----------------------------------
 function addZero(num) {
     return num < 10 ? '0' + num : num;
 };
+
 //得到标准时区的时间的函数
 function getLocalTime(date, i) {
     //参数i为时区值数字，比如北京为东八区则输进8,西5输入-5
@@ -223,30 +225,55 @@ function getLocalTime(date, i) {
     var utcTime = len + offset;
     return new Date(utcTime + 3600000 * i);
 }
+
 function formatDateTime(date) {
     if (null == date) {
         return "";
     }
 
-    // g， 执行全局匹配，寻找所有匹配
-    // var reg = new RegExp( '-' , "g" )
-    // var newDate = date.replace(reg, '/');
+    date = new Date(date);
+    var o = {
+        'M+': date.getMonth() + 1, //month
+        'd+': date.getDate(), //day
+        'H+': date.getHours(), //hour+8小时
+        'm+': date.getMinutes(), //minute
+        's+': date.getSeconds(), //second
+        'q+': Math.floor((date.getMonth() + 3) / 3), //quarter
+        'S': date.getMilliseconds() //millisecond
+    };
+    var format = "yyyy-MM-dd HH:mm:ss";
+    if (/(y+)/.test(format))
+        format = format.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
 
-    var time = new Date(Date.parse(myTime(date)));
-    time.setTime(time.setHours(time.getHours()));
+    for (var k in o)
+        if (new RegExp('(' + k + ')').test(format))
+            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length));
 
-    time = getLocalTime(time, -8);
-    // console.log("time: " + time)
+    return format;
+    // var time = new Date(Date.parse(myTime(date)));
+    //
+    // time.setMinutes(time.getMinutes() - time.getTimezoneOffset());
+    //
+    // time.setTime(time.setHours(time.getHours()));
+    //
+    // console.log("time: " + time.toJSON())
+    // time = getLocalTime(time, +8);
+    // console.log("time: " + time.toJSON())
+    //
+    // return time.toJSON().substr(0, 19).replace('T', ' ').substr(0, 19);
 
-    var Y = time.getFullYear() + '-';
-    var M = this.addZero(time.getMonth() + 1) + '-';
-    var D = this.addZero(time.getDate()) + ' ';
-    var h = this.addZero(time.getHours()) + ':';
-    var m = this.addZero(time.getMinutes()) + ':';
-    var s = this.addZero(time.getSeconds());
 
-    return Y + M + D + h + m + s;
+    //
+    // var Y = time.getFullYear() + '-';
+    // var M = this.addZero(time.getMonth() + 1) + '-';
+    // var D = this.addZero(time.getDate()) + ' ';
+    // var h = this.addZero(time.getHours()) + ':';
+    // var m = this.addZero(time.getMinutes()) + ':';
+    // var s = this.addZero(time.getSeconds());
+    //
+    // return Y + M + D + h + m + s;
 };
+
 function myTime(date) {
     var arr = date.split("T");
     var d = arr[0];
