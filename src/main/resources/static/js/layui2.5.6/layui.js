@@ -231,17 +231,18 @@ function formatDateTime(date) {
         return "";
     }
 
-    date = new Date(date);
+    date = new Date(Date.parse(myTime(date)));
     var o = {
         'M+': date.getMonth() + 1, //month
         'd+': date.getDate(), //day
-        'H+': date.getHours(), //hour+8小时
+        'H+': date.getHours() + 8, //hour+8小时
         'm+': date.getMinutes(), //minute
         's+': date.getSeconds(), //second
         'q+': Math.floor((date.getMonth() + 3) / 3), //quarter
         'S': date.getMilliseconds() //millisecond
     };
-    var format = "yyyy-MM-dd HH:mm:ss";
+    // 不要用-，要用/  IE浏览器会无法解析
+    var format = "yyyy/MM/dd HH:mm:ss";
     if (/(y+)/.test(format))
         format = format.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
 
