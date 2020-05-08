@@ -7,6 +7,7 @@ import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -34,21 +35,26 @@ public class AnalyseServices {
     @Autowired
     WechatController mWechatController;
 
+    @Value("${spring.profiles.active}")
+    private String mEnv = "";
+
     @Async("taskExecutor")
     @Scheduled(fixedDelay = INTERVAL)
     public void periodCheckSecurity() throws InterruptedException {
-        Logger logger = LoggerFactory.getLogger(getClass());
-        List<AppInfo> appInfos = appInfoWrapper.getAllApps();
-        if (!CollectionUtils.isEmpty(appInfos)) {
-            for (AppInfo appInfo : appInfos) {
-                if (appInfo.getAppId() == 1 || appInfo.getAppId() == 2) {
-                    int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), new Date(System.currentTimeMillis() - INTERVAL), new Date());
-                    if (count >= MAX_THRESHOLD) {
-                        logger.debug("risk count:" + count);
-                        mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
-                                "在过去的" + (INTERVAL / 60 / 1000) + "分钟内" + count + "条多开设备", "请至APP记录平台查看完整详细信息", null);
-                    } else {
-                        logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
+        if ("prod".equals(mEnv)) {
+            Logger logger = LoggerFactory.getLogger(getClass());
+            List<AppInfo> appInfos = appInfoWrapper.getAllApps();
+            if (!CollectionUtils.isEmpty(appInfos)) {
+                for (AppInfo appInfo : appInfos) {
+                    if (appInfo.getAppId() == 1 || appInfo.getAppId() == 2) {
+                        int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), new Date(System.currentTimeMillis() - INTERVAL), new Date());
+                        if (count >= MAX_THRESHOLD) {
+                            logger.debug("risk count:" + count);
+                            mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
+                                    "在过去的" + (INTERVAL / 60 / 1000) + "分钟内" + count + "条多开设备", "请至APP记录平台查看完整详细信息", null);
+                        } else {
+                            logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
+                        }
                     }
                 }
             }
