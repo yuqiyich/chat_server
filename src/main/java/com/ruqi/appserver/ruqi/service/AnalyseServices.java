@@ -4,15 +4,18 @@ import com.ruqi.appserver.ruqi.bean.AppInfo;
 import com.ruqi.appserver.ruqi.controller.WechatController;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
+import com.ruqi.appserver.ruqi.utils.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import sun.net.util.IPAddressUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +30,9 @@ public class AnalyseServices {
 
     @Autowired
     RiskInfoWrapper riskInfoWrapper;
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     @Autowired
     AppInfoWrapper appInfoWrapper;
@@ -46,7 +52,7 @@ public class AnalyseServices {
                     if (count >= MAX_THRESHOLD) {
                         logger.debug("risk count:" + count);
                         mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
-                                "在过去的" + (INTERVAL / 60 / 1000) + "分钟内" + count + "条多开设备", "请至APP记录平台查看完整详细信息", null);
+                                "在过去的" + (INTERVAL / 60 / 1000) + "分钟内" + count + "条多开设备["+applicationContext.getEnvironment().getActiveProfiles()[0]+"],发送ip:"+IpUtil.getLocalIP(), "请至APP记录平台查看完整详细信息", null);
                     } else {
                         logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
                     }
