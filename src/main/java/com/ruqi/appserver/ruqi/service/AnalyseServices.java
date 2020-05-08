@@ -14,8 +14,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.xml.crypto.Data;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -43,13 +41,15 @@ public class AnalyseServices {
         List<AppInfo> appInfos = appInfoWrapper.getAllApps();
         if (!CollectionUtils.isEmpty(appInfos)) {
             for (AppInfo appInfo : appInfos) {
-                int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), new Date(System.currentTimeMillis() - INTERVAL), new Date());
-                if (count >= MAX_THRESHOLD) {
-                    logger.debug("risk count:" + count);
-                    mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
-                            "在过去的" + (INTERVAL / 60 / 1000) + "分钟内" + count + "条多开设备", "请至APP记录平台查看完整详细信息", null);
-                } else {
-                    logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
+                if (appInfo.getAppId() == 1 || appInfo.getAppId() == 2) {
+                    int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), new Date(System.currentTimeMillis() - INTERVAL), new Date());
+                    if (count >= MAX_THRESHOLD) {
+                        logger.debug("risk count:" + count);
+                        mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
+                                "在过去的" + (INTERVAL / 60 / 1000) + "分钟内" + count + "条多开设备", "请至APP记录平台查看完整详细信息", null);
+                    } else {
+                        logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
+                    }
                 }
             }
         }

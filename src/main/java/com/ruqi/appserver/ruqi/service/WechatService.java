@@ -24,6 +24,7 @@ public class WechatService {
 
     /**
      * 已过期或者token为空，返回空。后续需要进行重新api请求获取和保存。
+     * tips：可能存在其他地方也获取token，导致这里的token实际已过期，则在发送消息时会失败，暂不处理。
      *
      * @return
      */
