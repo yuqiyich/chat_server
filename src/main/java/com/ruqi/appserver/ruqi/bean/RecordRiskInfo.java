@@ -5,42 +5,42 @@ import java.util.Date;
 
 /**
  * 为了适配layui table 控件的数据控制
- *
  */
-public class RecordRiskInfo  {
+public class RecordRiskInfo {
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    private int id;
-    public int getAppId() {
-        return appId;
-    }
+    private long id;
 
-    public void setAppId(int appId) {
-        this.appId = appId;
-    }
-
-    public String getAppKey() {
-        return appKey;
-    }
-
-    public void setAppKey(String appKey) {
-        this.appKey = appKey;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
+//    public int getAppId() {
+//        return appId;
+//    }
+//
+//    public void setAppId(int appId) {
+//        this.appId = appId;
+//    }
+//
+//    public String getAppKey() {
+//        return appKey;
+//    }
+//
+//    public void setAppKey(String appKey) {
+//        this.appKey = appKey;
+//    }
+//
+//    public String getPackageName() {
+//        return packageName;
+//    }
+//
+//    public void setPackageName(String packageName) {
+//        this.packageName = packageName;
+//    }
 
     public String getAppName() {
         return appName;
@@ -50,15 +50,15 @@ public class RecordRiskInfo  {
         this.appName = appName;
     }
 
-    private int appId;
-    private String appKey;
-    private String packageName;
+//    private int appId;
+//    private String appKey;
+//    private String packageName;
     private String appName;
 
 
     public long userId;
     public String nickName;
-    public String userName;
+//    public String userName;
     public int riskLevel;
     public String userPhone;
     public String riskType;
@@ -71,13 +71,13 @@ public class RecordRiskInfo  {
         this.nickName = nickName;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+//    public String getUserName() {
+//        return userName;
+//    }
+//
+//    public void setUserName(String userName) {
+//        this.userName = userName;
+//    }
 
     public int getRiskLevel() {
         return riskLevel;
@@ -130,9 +130,11 @@ public class RecordRiskInfo  {
     public void setScene(String sence) {
         this.scene = sence;
     }
+
     public String getExt() {
         return ext;
     }
+
     public void setExt(String ext) {
         this.ext = ext;
     }
@@ -185,7 +187,6 @@ public class RecordRiskInfo  {
     public void setLocationName(String locationName) {
         this.locationName = locationName;
     }
-
 
 
     public Date getCreateTime() {

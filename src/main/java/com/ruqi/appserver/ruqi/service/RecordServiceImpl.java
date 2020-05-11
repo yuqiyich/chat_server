@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
@@ -22,13 +23,14 @@ public class RecordServiceImpl implements IRecordService {
     UserMapper userWrapper;
     @Autowired
     RiskInfoWrapper riskInfoWrapper;
+    @Autowired
+    DotEventInfoWrapper dotEventInfoWrapper;
 
     @Override
     @Async("taskExecutor")
-    public void saveRecord(RecordInfo<RiskInfo> data, Date uploadTime, String requestIp) {
+    public <T extends BaseRecordInfo> void saveRecord(RecordInfo<T> data, Date uploadTime, String requestIp) {
         logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime());
-        if (data.getRecordType() == RiskEnum.RUNTIME_RISK.getId()
-                && data.getAppInfo() != null
+        if (data.getAppInfo() != null
                 && data.getContent() != null
                 && !MyStringUtils.isEmpty(data.getAppInfo().getAppKey())) {//
 //           int appId=appInfoWrapper.getAppIdByKey("BB392D26CF521EFD");
@@ -36,25 +38,41 @@ public class RecordServiceImpl implements IRecordService {
             AppInfo appInfo = appInfoSevice.getAppInfoByKey(data.getAppInfo().getAppKey());
             logger.info("appInfo id:" + "" + (appInfo != null ? appInfo.getAppId() : 0));
             if (appInfo != null && appInfo.getAppId() > 0) {
-                RiskInfo riskInfo = data.getContent();
-                riskInfo.setAppId(appInfo.getAppId());
-                riskInfo.setRequestIp(requestIp);
+                data.getContent().setAppId(appInfo.getAppId());
+                data.getContent().setRequestIp(requestIp);
                 // 记录时间使用服务器的时间
-                riskInfo.setCreateTime(uploadTime);
-                if (data.getUserInfo() != null) {//user 信息没有就不保存
-                    data.getUserInfo().setAppId(appInfo.getAppId());
-                    saveRiskUserInfo(data.getUserInfo());
+                data.getContent().setCreateTime(uploadTime);
+                if (data.getRecordType() == RecordTypeEnum.RUNTIME_RISK.getId()
+                        && data.getContent() instanceof RiskInfo) {
+                    RiskInfo riskInfo = (RiskInfo) data.getContent();
+                    if (data.getUserInfo() != null) {//user 信息没有就不保存
+                        data.getUserInfo().setAppId(appInfo.getAppId());
+                        saveRiskUserInfo(data.getUserInfo());
+                    }
+                    saveRiskInfo(riskInfo);
+                } else if (data.getRecordType() == RecordTypeEnum.RECOMMEND_POINT_RISK.getId() && data.getContent() instanceof DotEventInfo) {
+                    saveDotEventRecord((DotEventInfo) data.getContent());
                 }
-                saveRiskInfo(data.getContent());
             } else {
                 logger.info("this appKey[" + data.getAppInfo().getAppKey() + "] not exists,throw this msg");
             }
         }
     }
 
+    private void saveDotEventRecord(DotEventInfo dotEventInfo) {
+        if (dotEventInfo != null) {
+            dotEventInfoWrapper.insertDotEventRecord(dotEventInfo);
+        }
+    }
+
     @Override
     public List<RecordRiskInfo> queryListForLayUi(int pageIndex, int limit, RecordInfo<RiskInfo> params) {
         return riskInfoWrapper.queryListForLayUi(pageIndex * limit, limit, params);
+    }
+
+    @Override
+    public List<RecordDotEventInfo> queryEventRecmdPointListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
+        return dotEventInfoWrapper.queryEventRecmdPointListForLayui(pageIndex * limit, limit, params);
     }
 
     @Override
@@ -73,8 +91,13 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
-    public int queryTotalSize(RecordInfo<RiskInfo> riskParams) {
+    public long queryTotalSize(RecordInfo<RiskInfo> riskParams) {
         return riskInfoWrapper.queryTotalSize(riskParams, 9);
+    }
+
+    @Override
+    public long queryTotalSizeEventRecmdPoint(RecordInfo<DotEventInfo> recordInfo) {
+        return dotEventInfoWrapper.queryTotalSizeEventRecmdPoint(recordInfo);
     }
 
     private void saveRiskUserInfo(UserEntity userInfo) {

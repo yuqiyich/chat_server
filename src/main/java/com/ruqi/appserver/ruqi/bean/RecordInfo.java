@@ -5,7 +5,7 @@ package com.ruqi.appserver.ruqi.bean;
  *
  * @author yich
  */
-public class RecordInfo<T extends RiskInfo> {
+public class RecordInfo<T extends BaseRecordInfo> {
     public int getPage() {
         return page;
     }
@@ -22,11 +22,11 @@ public class RecordInfo<T extends RiskInfo> {
         this.limit = limit;
     }
 
-    private int page=1;
-    private int limit=10;
+    private int page = 1;
+    private int limit = 10;
     private AppInfo appInfo;//应用表
     private UserEntity userInfo;//用户信息表
-    private int RecordType = RiskEnum.RUNTIME_RISK.getId();//默认记录类型
+    private int RecordType = RecordTypeEnum.RUNTIME_RISK.getId();//默认记录类型
     private T content;//核心数据字段
 
     public AppInfo getAppInfo() {

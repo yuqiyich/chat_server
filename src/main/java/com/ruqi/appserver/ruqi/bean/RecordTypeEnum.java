@@ -1,7 +1,10 @@
 package com.ruqi.appserver.ruqi.bean;
 
-public enum RiskEnum {
-    RUNTIME_RISK("device_runtime_risk", 1, 0);
+public enum RecordTypeEnum {
+    // 设备安全相关
+    RUNTIME_RISK("device_runtime_risk", 1, 0),
+    // 乘客端 推荐点失败降级生效记录
+    RECOMMEND_POINT_RISK("recommend_point_risk", 1001, 0);
 
 
     public int getId() {
@@ -32,7 +35,7 @@ public enum RiskEnum {
     private String name;
     private int level;
 
-    RiskEnum(String name, int id, int level) {
+    RecordTypeEnum(String name, int id, int level) {
         this.name = name;
         this.id = id;
         this.level = level;

@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>报警详细列表</title>
+    <title>推荐点降级生效记录</title>
     <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
     <style>
         body {
-            padding: 20px; /*overflow-y: scroll;*/
+            padding: 20px;
         }
     </style>
 </head>
@@ -31,10 +31,13 @@
             </div>
         </div>
         <div class="layui-inline">
-            <label class="layui-form-label">风险类型</label>
+            <label class="layui-form-label">生效类型</label>
             <div class="layui-input-inline" style="width: 100px;">
-                <select id="riskType">
+                <select id="eventKey">
                     <option value="">所有类型</option>
+                    <option value="FALLBACK_SUCCESS_TX_RECOMMEND">腾讯推荐点生效</option>
+                    <option value="FALLBACK_SUCCESS_TX_GEO">腾讯GEO点生效</option>
+                    <option value="FALLBACK_SUCCESS_RUQI_APP">如祺缓存解析点生效</option>
                 </select>
             </div>
         </div>
@@ -100,74 +103,6 @@
 <script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
 <script type="text/html" id="barOperator">
     <a class="layui-btn layui-btn-xs" lay-event="user_edit">查看</a>
-    <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
-</script>
-<script>
-    layui.use(['form', 'layedit', 'laydate'], function () {
-        var form = layui.form
-            , layer = layui.layer
-            , layedit = layui.layedit
-            , laydate = layui.laydate;
-
-        // var data = form.val("wechat_info");
-
-        //监听提交
-        // 搜索
-        form.on('submit(search)', function (data) {
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload('developerTable', {
-                    page: {curr: 1}
-                    , where: {
-                        "appInfo": {
-                            "appId": $("#appIdSelect").val(),
-                        },
-                        "userInfo": {
-                            // "userName": $("#userName").val(),
-                            "userPhone": $("#phoneNum").val(),
-                        },
-                        "content": {
-                            "appVersionName": $("#appVersion").val(),
-                            "duringTime": $("#duringTime").val(),
-                            "deviceModel": $("#deviceModel").val(),
-                            "deviceBrand": $("#deviceBrand").val(),
-                            "deviceId": $("#deviceID").val(),
-                            "riskType": $("#riskType").val()
-                        }
-                    }
-                }, 'data');
-            });
-            return false;
-        });
-        // 重置搜索
-        form.on('submit(resetSearch)', function (data) {
-            document.getElementById("filterForm").reset();
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload('developerTable', {
-                    page: {curr: 1}
-                    , where: {
-                        "appInfo": {
-                            "appId": $("#appIdSelect").val(),
-                        },
-                        "userInfo": {
-                            // "userName": $("#userName").val(),
-                            "userPhone": $("#phoneNum").val(),
-                        },
-                        "content": {
-                            "appVersionName": $("#appVersion").val(),
-                            "duringTime": $("#duringTime").val(),
-                            "deviceModel": $("#deviceModel").val(),
-                            "deviceBrand": $("#deviceBrand").val(),
-                            "deviceId": $("#deviceID").val(),
-                            "riskType": $("#riskType").val()
-                        }
-                    }
-                }, 'data');
-            });
-            return false;
-        });
-    });
 </script>
 <script>
     onload = function () {
@@ -191,43 +126,78 @@
                 }
             }
         });
-
-        $.ajax({
-            type: "GET",
-            url: "record/queryRiskTypeForLayui",
-            data: "",//请求的参数
-            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-            contentType: 'application/json;charset=utf-8',
-            success: function (dataResult) {
-                if (null != dataResult) {
-                    if (dataResult.errorCode == 0) {
-                        let riskTypeList = dataResult.data;
-                        for (var riskType of riskTypeList) {
-                            $("#riskType").append("<option value=" + riskType + ">" + riskType + "</option>");
-                        }
-                        renderForm();
-                    } else {
-                        console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
-                    }
-                }
-            }
-        });
     }
 
     //重新渲染表单
     function renderForm() {
         document.getElementById("filterForm").reset();
-        // layui.use('filterForm', function(){
-        //     var form = layui.form();//高版本建议把括号去掉，有的低版本，需要加()
-        //     form.render();
-        // });
     }
+</script>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form;
+
+        //监听提交
+        // 搜索
+        form.on('submit(search)', function (data) {
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload('developerTable', {
+                    page: {curr: 1}
+                    , where: {
+                        "appInfo": {
+                            "appId": $("#appIdSelect").val(),
+                        },
+                        "userInfo": {
+                            "userPhone": $("#phoneNum").val(),
+                        },
+                        "content": {
+                            "appVersionName": $("#appVersion").val(),
+                            "duringTime": $("#duringTime").val(),
+                            "deviceModel": $("#deviceModel").val(),
+                            "deviceBrand": $("#deviceBrand").val(),
+                            "deviceId": $("#deviceID").val(),
+                            "eventKey": $("#eventKey").val()
+                        }
+                    }
+                }, 'data');
+            });
+            return false;
+        });
+        // 重置搜索
+        form.on('submit(resetSearch)', function (data) {
+            document.getElementById("filterForm").reset();
+            layui.use('table', function () {
+                var table = layui.table;
+                table.reload('developerTable', {
+                    page: {curr: 1}
+                    , where: {
+                        "appInfo": {
+                            "appId": $("#appIdSelect").val(),
+                        },
+                        "userInfo": {
+                            "userPhone": $("#phoneNum").val(),
+                        },
+                        "content": {
+                            "appVersionName": $("#appVersion").val(),
+                            "duringTime": $("#duringTime").val(),
+                            "deviceModel": $("#deviceModel").val(),
+                            "deviceBrand": $("#deviceBrand").val(),
+                            "deviceId": $("#deviceID").val(),
+                            "eventKey": $("#eventKey").val()
+                        }
+                    }
+                }, 'data');
+            });
+            return false;
+        });
+    });
 </script>
 <script>
     layui.use('laydate', function () {
         var laydate = layui.laydate;
 
-        //执行一个laydate实例
+//执行一个laydate实例
         laydate.render({
             elem: '#duringTime' //指定元素
             , type: 'datetime'
@@ -236,56 +206,49 @@
         });
     });
 
-
     layui.use('table', function () {
         var table = layui.table;
 
         var tableIns = table.render({
             elem: '#developerTable'
-            // ,height:400
-            // ,height: 'full - 20'
-            //,width: 600
-            , title: '报警信息列表'
-            , url: 'record/queryRiskListForLayui'
+            , title: '推荐点降级生效记录'
+            , url: 'record/queryEventRecmdPointListForLayui'
             , method: 'post'
             , contentType: 'application/json'
-            // ,text: '无数据'
-            //,size: 'lg'
             , page: {curr: 1}
-            // ,autoSort: false
-            // ,loading: false
-            // ,totalRow: true
             , limit: 10
             , limits: [10, 30, 50, 100]
             , toolbar: '#toolbarDemo'
-            // ,toolbar: true
-            // 右上角工具条
+// 右上角工具条
             , defaultToolbar: ['filter', 'exports', 'print'
-                // , {
-                // title: '帮助'
-                // ,layEvent: 'LAYTABLE_TIPS'
-                // ,icon: 'layui-icon-tips'
-                // }
                 , {
                     title: '刷新'
                     , layEvent: 'reloadData'
                     , icon: 'layui-icon-refresh'
                 }
-                // , {
-                // title: '添加'
-                // ,layEvent: 'showQrcodeView'
-                // ,icon: 'layui-icon-add-1'
-                // }
             ]
             , cols: [
                 [
                     {field: 'id', title: 'ID', fixed: 'left', width: 72, unresize: true, sort: true, align: 'center'}
-                    , {minWidth: 110, field: 'riskType', title: '风险类型', sort: false, align: 'center'}
+                    , {
+                    minWidth: 110, field: 'eventKey', title: '生效类型', templet: function (d) {
+                        switch (d.eventKey) {
+                            case "FALLBACK_SUCCESS_TX_RECOMMEND":
+                                return "腾讯推荐点生效";
+                            case "FALLBACK_SUCCESS_TX_GEO":
+                                return "腾讯GEO点生效";
+                            case "FALLBACK_SUCCESS_RUQI_APP":
+                                return "如祺缓存解析点生效";
+                            default:
+                                return "";
+                        }
+                    }, sort: false, align: 'center'
+                }
                     , {minWidth: 106, field: 'userId', title: '用户id', sort: false, align: 'center'}
                     , {minWidth: 124, field: 'userPhone', title: '用户手机', sort: false, align: 'center'}
                     , {minWidth: 124, field: 'nickName', title: '用户名称', sort: false, align: 'center'}
                     , {minWidth: 100, field: 'deviceId', title: '设备id', sort: false, align: 'center'}
-                    , {minWidth: 100, field: 'riskDetail', title: '风险详情', sort: false, align: 'center'}
+                    , {minWidth: 100, field: 'eventDetail', title: '详情', sort: false, align: 'center'}
                     , {
                     minWidth: 180, field: 'createTime', templet: function (d) {
                         return formatDateTime(d.createTime);
@@ -304,21 +267,8 @@
                     , {minWidth: 90, field: 'deviceBrand', title: '设备品牌', sort: false, align: 'center'}
                     , {minWidth: 100, field: 'requestIp', title: '请求ip', sort: false, align: 'center'}
                     , {minWidth: 100, field: 'ext', title: '备注', sort: false, align: 'center'}
-                    //     , {
-                    //     toolbar: '#barOperator',
-                    //     fixed: 'right',
-                    //     title: '操作',
-                    //     width: 80,
-                    //     unresize: false,
-                    //     sort: false,
-                    //     align: 'center'
-                    // }
                 ]
             ]
-            // ,response: {
-            // 	statusName: 'errorCode'
-            // 	,statusCode: 0
-            // }
             , parseData: function (res) {
                 return {
                     "code": res.errorCode
@@ -329,95 +279,23 @@
             }
         });
 
-        //监听工具条
-        table.on('tool(developerTable)', function (obj) {
-            selectedData = obj.data;
-            var itemData = obj.data;
-            // layer.alert(JSON.stringify(itemData));
-            switch (obj.event) {
-                case 'user_send_msg_test':
-                    var jsonStr = itemData.openid;
-                    $.ajax({
-                        type: "POST",
-                        url: "wechat/template/testSend",
-                        data: jsonStr,//请求的参数
-                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-                        contentType: 'application/json;charset=utf-8',
-                        success: function (dataResult) {
-                            if (null != dataResult) {
-                                if (dataResult.errorCode == 0) {
-                                    console.log("--->result dataResult.size:" + dataResult.data.size);
-                                    layer.msg('已成功发送');
-                                } else {
-                                    console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
-                                    layer.msg('发送失败:' + dataResult.errorMsg);
-                                }
-                            }
-                        }
-                    });
-                    break;
-            }
-        });
-
-        //工具栏事件
+//工具栏事件
         table.on('toolbar(developerTable)', function (obj) {
-            var checkStatus = table.checkStatus(obj.config.id);
             switch (obj.event) {
                 case 'reloadData':
                     table.reload('developerTable', {
                         page: {curr: 1}
-                        //,height: 300
-                        //,url: 'x'
                     }, 'data');
                     break;
             }
             ;
         });
 
-        // table.on('row(test)', function(obj){
-        // 	console.log(obj);
-        // 	//layer.closeAll('tips');
-        // });
-
-        // //监听表格行点击
-        // table.on('tr', function(obj){
-        // 	console.log(obj)
-        // });
-
-        // //监听表格复选框选择
-        // table.on('checkbox(test)', function(obj){
-        // 	console.log(obj)
-        // });
-
-        // //监听表格单选框选择
-        // table.on('radio(test)', function(obj){
-        // 	console.log(obj)
-        // });
-
-        // //监听表格单选框选择
-        // table.on('rowDouble(test)', function(obj){
-        // 	console.log(obj);
-        // });
-
-        // //监听单元格编辑
-        // table.on('edit(test)', function(obj){
-        // 	var value = obj.value //得到修改后的值
-        // 	,data = obj.data //得到所在行所有键值
-        // 	,field = obj.field; //得到字段
-
-        // 	console.log(obj)
-        // });
-
-        //监听排序
+//监听排序
         table.on('sort(developerTable)', function (obj) {
-            // 本地该页数据排序
+// 本地该页数据排序
             table.reload('developerTable', {
                 initSort: obj
-                //,page: {curr: 1} //重新从第一页开始
-                // ,where: { //重新请求服务端
-                // 	key: obj.field //排序字段
-                // 	,order: obj.type //排序方式
-                // }
             });
         });
 

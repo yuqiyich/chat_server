@@ -1,8 +1,10 @@
 package com.ruqi.appserver.ruqi.controller;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.service.IRecordService;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
+import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -63,12 +65,23 @@ public class RecordController {
     }
 
     @RequestMapping(value = "/uploadData", method = RequestMethod.POST)
-    public String saveData(@RequestBody RecordInfo<RiskInfo> content) {
+    public String uploadData(@RequestBody RecordInfo<RiskInfo> content) {
+        return saveData(content);
+    }
+
+    @RequestMapping(value = "/uploadDotEventData", method = RequestMethod.POST)
+    public String uploadDotEventData(@RequestBody RecordInfo<DotEventInfo> content) {
+        return saveData(content);
+    }
+
+    private String saveData(RecordInfo<? extends BaseRecordInfo> content) {
         //获取RequestAttributes
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         //从获取RequestAttributes中获取HttpServletRequest的信息
         HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
-        recordService.saveRecord(content, new Date(), IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
+        if (null != content && null != content.getContent()) {
+            recordService.saveRecord(content, new Date(), IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
+        }
         return "OK";
     }
 
@@ -106,8 +119,63 @@ public class RecordController {
     public BaseBean<BasePageBean<RecordRiskInfo>> getRiskInfoListForLayui(@RequestBody RecordInfo<RiskInfo> params) {
         BaseBean<BasePageBean<RecordRiskInfo>> result = new BaseBean<>();
         List<RecordRiskInfo> receiverEntities = recordService.queryListForLayUi(params.getPage() - 1, params.getLimit(), params);
+        for (RecordRiskInfo recordRiskInfo : receiverEntities) {
+            if (null != recordRiskInfo && !MyStringUtils.isEmpty(recordRiskInfo.userPhone) && recordRiskInfo.userPhone.length() == 11) {
+                recordRiskInfo.userPhone = recordRiskInfo.userPhone.substring(0, 3) + "****" + recordRiskInfo.userPhone.substring(7, 11);
+            }
+        }
         long totalSize = recordService.queryTotalSize(params);
         result.data = new BasePageBean<RecordRiskInfo>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
+        return result;
+    }
+
+    /**
+     * 推荐点降级生效记录列表(for web 的layui的table控件接口)
+     *
+     * @return
+     */
+    @ApiOperation(value = "查询推荐点降级生效记录列表", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型", required = false)
+    })
+    @RequestMapping(value = "/queryEventRecmdPointListForLayui", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventRecmdPointListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
+        BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
+        List<RecordDotEventInfo> receiverEntities = recordService.queryEventRecmdPointListForLayui(params.getPage() - 1, params.getLimit(), params);
+        for (RecordDotEventInfo recordDotEventInfo : receiverEntities) {
+            if (null != recordDotEventInfo && !MyStringUtils.isEmpty(recordDotEventInfo.userPhone) && recordDotEventInfo.userPhone.length() == 11) {
+                recordDotEventInfo.userPhone = recordDotEventInfo.userPhone.substring(0, 3) + "****" + recordDotEventInfo.userPhone.substring(7, 11);
+            }
+        }
+        long totalSize = recordService.queryTotalSizeEventRecmdPoint(params);
+        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
+        return result;
+    }
+
+    /**
+     * 查询报警总览列表(for web 的layui的table控件接口)
+     *
+     * @return
+     */
+    @ApiOperation(value = "查询报警总览列表", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "RecordInfo<RiskInfo>", name = "参数对象", value = "参数类型", required = false)
+    })
+    @RequestMapping(value = "/queryDeviceRiskOverviewInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<BasePageBean<DeviceRiskOverviewEntity>> getDeviceRiskOverviewInfo(@RequestBody RecordInfo<RiskInfo> params) {
+        BaseBean<BasePageBean<DeviceRiskOverviewEntity>> result = new BaseBean<>();
+//        List<RecordRiskInfo> receiverEntities = recordService.queryListForLayUi(params.getPage() - 1, params.getLimit(), params);
+//        for (RecordRiskInfo recordRiskInfo : receiverEntities) {
+//            if (null != recordRiskInfo && !MyStringUtils.isEmpty(recordRiskInfo.userPhone) && recordRiskInfo.userPhone.length() == 11) {
+//                recordRiskInfo.userPhone = recordRiskInfo.userPhone.substring(0, 3) + "****" + recordRiskInfo.userPhone.substring(7, 10);
+//            }
+//        }
+//        long totalSize = recordService.queryTotalSize(params);
+//        result.data = new BasePageBean<DeviceRiskOverviewEntity>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
 
         return result;
     }
