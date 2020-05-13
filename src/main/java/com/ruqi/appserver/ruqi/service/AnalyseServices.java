@@ -25,7 +25,7 @@ import java.util.List;
 public class AnalyseServices {
 
     private static final long INTERVAL = 1000 * 60 * 60;//上报时间间隔
-    private static final long MAX_THRESHOLD = 50;//最大上报数
+    private static final long MAX_THRESHOLD = 100; // 上报数阀值
 
     @Autowired
     RiskInfoWrapper riskInfoWrapper;

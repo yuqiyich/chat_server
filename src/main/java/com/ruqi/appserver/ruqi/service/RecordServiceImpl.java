@@ -1,9 +1,11 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
+import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,9 @@ public class RecordServiceImpl implements IRecordService {
                     RiskInfo riskInfo = (RiskInfo) data.getContent();
                     if (data.getUserInfo() != null) {//user 信息没有就不保存
                         data.getUserInfo().setAppId(appInfo.getAppId());
+                        if (!MyStringUtils.isEmpty(data.getUserInfo().getUserPhone())) {
+                            data.getUserInfo().setUserPhone(EncryptUtils.encode(data.getUserInfo().getUserPhone()));
+                        }
                         saveRiskUserInfo(data.getUserInfo());
                     }
                     saveRiskInfo(riskInfo);
@@ -68,6 +73,29 @@ public class RecordServiceImpl implements IRecordService {
     @Override
     public List<RecordRiskInfo> queryListForLayUi(int pageIndex, int limit, RecordInfo<RiskInfo> params) {
         return riskInfoWrapper.queryListForLayUi(pageIndex * limit, limit, params);
+    }
+
+    @Override
+    public List<DeviceRiskOverviewEntity> queryOverviewList(int pageIndex, int limit, RecordInfo<RiskOverviewInfo> params) {
+        if (null != params && null != params.getContent()) {
+            switch (params.getContent().overviewType) {
+                case RiskOverviewInfo.TYPE_RISK_TYPE:
+                    return riskInfoWrapper.queryOverviewRiskType(pageIndex * limit, limit, params);
+                case RiskOverviewInfo.TYPE_APP_VERSION:
+                    return riskInfoWrapper.queryOverviewAppVersion(pageIndex * limit, limit, params);
+                case RiskOverviewInfo.TYPE_DEVICE_MODEL:
+                    return riskInfoWrapper.queryOverviewDeviceModel(pageIndex * limit, limit, params);
+                case RiskOverviewInfo.TYPE_DEVICE_BRAND:
+                    return riskInfoWrapper.queryOverviewDeviceBrand(pageIndex * limit, limit, params);
+                case RiskOverviewInfo.TYPE_PHONE_NUM:
+                    return riskInfoWrapper.queryOverviewPhoneNum(pageIndex * limit, limit, params);
+                case RiskOverviewInfo.TYPE_DEVICE_ID:
+                    return riskInfoWrapper.queryOverviewDeviceId(pageIndex * limit, limit, params);
+                case RiskOverviewInfo.TYPE_ANDROID_VERSION:
+                    return riskInfoWrapper.queryOverviewAndroidVersion(pageIndex * limit, limit, params);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -100,11 +128,34 @@ public class RecordServiceImpl implements IRecordService {
         return dotEventInfoWrapper.queryTotalSizeEventRecmdPoint(recordInfo);
     }
 
+    @Override
+    public long queryOverviewTotalSize(RecordInfo<RiskOverviewInfo> recordInfo) {
+        if (null != recordInfo && null != recordInfo.getContent()) {
+            switch (recordInfo.getContent().overviewType) {
+                case RiskOverviewInfo.TYPE_RISK_TYPE:
+                    return riskInfoWrapper.queryOverviewRiskTypeTotalSize(recordInfo);
+                case RiskOverviewInfo.TYPE_APP_VERSION:
+                    return riskInfoWrapper.queryOverviewAppVersionTotalSize(recordInfo);
+                case RiskOverviewInfo.TYPE_DEVICE_MODEL:
+                    return riskInfoWrapper.queryOverviewDeviceModelTotalSize(recordInfo);
+                case RiskOverviewInfo.TYPE_DEVICE_BRAND:
+                    return riskInfoWrapper.queryOverviewDeviceBrandTotalSize(recordInfo);
+                case RiskOverviewInfo.TYPE_PHONE_NUM:
+                    return riskInfoWrapper.queryOverviewPhoneNumTotalSize(recordInfo);
+                case RiskOverviewInfo.TYPE_DEVICE_ID:
+                    return riskInfoWrapper.queryOverviewDeviceIdTotalSize(recordInfo);
+                case RiskOverviewInfo.TYPE_ANDROID_VERSION:
+                    return riskInfoWrapper.queryOverviewAndroidVersionTotalSize(recordInfo);
+            }
+        }
+        return 0;
+    }
+
     private void saveRiskUserInfo(UserEntity userInfo) {
         if (userInfo != null) {
             long userID = userInfo.getUserId();
             if (userID > 0) {
-                UserEntity userEntity = userWrapper.getOne(userID);
+                UserEntity userEntity = userWrapper.getOne(userID, userInfo.getAppId());
                 if (userEntity != null) {
                     userWrapper.update(userInfo);
                 } else {
