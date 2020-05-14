@@ -67,14 +67,60 @@
 <script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
 <script src="js/base-table-page.js" charset="utf-8"></script>
 <script>
+    let cols_arr = [
+        [
+            {type: 'numbers', title: '序号', fixed: 'left', width: 72, unresize: true, sort: true, align: 'center'},
+            {minWidth: 140, field: 'riskType', templet: null, title: '风险类型', sort: false, align: 'center'},
+            {width: 5, unresize: true},
+            {minWidth: 110, field: 'totalSize', title: '上报次数', sort: false, align: 'center'},
+            {minWidth: 140, field: 'appName', title: '应用名称', sort: false, align: 'center'},
+            {minWidth: 180, title: '首次上报时间', sort: false, align: 'center', templet: function (d) {
+                    return formatDateTime(d.minTime);}},
+            {minWidth: 180, title: '最近上报时间', sort: false, align: 'center', templet: function (d) {
+                    return formatDateTime(d.maxTime);}},
+        ]
+    ];
+</script>
+<script>
     layui.use(['form', 'layedit', 'laydate'], function () {
-        var form = layui.form;
+        var form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate;
+
+        // var data = form.val("wechat_info");
 
         //监听提交
         // 搜索
         form.on('submit(search)', function (data) {
             layui.use('table', function () {
                 var table = layui.table;
+
+                console.log("--->$(\"#overview_type\").val()=" + $("#overview_type").val());
+                switch ($("#overview_type").val()) {
+                    case "riskType":
+                        cols_arr[0][1] = {minWidth: 140, field: 'riskType', templet: null, title: '风险类型', sort: false, align: 'center'};
+                        break;
+                    case "appVersion":
+                        cols_arr[0][1] = {minWidth: 110, field: 'appVersionCode', templet: null, title: 'app版本id', unresize: true, sort: false, align: 'center'};
+                        break;
+                    case "deviceModel":
+                        cols_arr[0][1] = {minWidth: 110, field: 'deviceModel', templet: null, title: '设备型号', sort: false, align: 'center'};
+                        break;
+                    case "deviceBrand":
+                        cols_arr[0][1] = {minWidth: 90, field: 'deviceBrand', templet: null, title: '设备品牌', unresize: true, sort: false, align: 'center'};
+                        break;
+                    case "phoneNum":
+                        cols_arr[0][1] = {minWidth: 160, title: '用户手机', sort: false, align: 'center', templet: function (d) {
+                                return d.userPhone + "(" + d.userId + ")";}};
+                        break;
+                    case "deviceID":
+                        cols_arr[0][1] = {minWidth: 120, field:'deviceId', templet: null, title:'设备ID', sort:false, align:'center'};
+                        break;
+                    case "androidVersion":
+                        cols_arr[0][1] = {minWidth: 72, field: 'systemVersion', templet: null, title: '系统版本', unresize: true, sort: false, align: 'center'};
+                        break;
+                }
                 table.reload('developerTable', {
                     page: {curr: 1}
                     , where: {
@@ -86,6 +132,7 @@
                             "overviewType": $("#overview_type").val()
                         }
                     }
+                    , cols: cols_arr
                 }, 'data');
             });
             return false;
@@ -95,6 +142,7 @@
             document.getElementById("filterForm").reset();
             layui.use('table', function () {
                 var table = layui.table;
+                cols_arr[0][1] = {minWidth: 140, field: 'riskType', templet: null, title: '风险类型', sort: false, align: 'center'};
                 table.reload('developerTable', {
                     page: {curr: 1}
                     , where: {
@@ -106,6 +154,7 @@
                             "overviewType": $("#overview_type").val()
                         }
                     }
+                    , cols: cols_arr
                 }, 'data');
             });
             return false;
@@ -116,7 +165,7 @@
     layui.use('table', function () {
         var table = layui.table;
 
-        var tableIns = table.render({
+        let tableIns = table.render({
             elem: '#developerTable'
             , title: '报警统计总览'
             , url: 'record/queryRiskOverview'
@@ -143,104 +192,57 @@
                     , icon: 'layui-icon-refresh'
                 }
             ]
-            , cols: [
-                [
-                    {
-                        type: 'numbers',
-                        title: '序号',
-                        fixed: 'left',
-                        width: 72,
-                        unresize: true,
-                        sort: true,
-                        align: 'center'
-                    }
-                    , {width: 140, field: 'riskType', title: '风险类型', sort: false, align: 'center'}
-                    , {
-                    width: 110,
-                    field: 'appVersionCode',
-                    title: 'app版本id',
-                    unresize: true,
-                    sort: false,
-                    align: 'center'
-                }
-                    , {minWidth: 110, field: 'deviceModel', title: '设备型号', sort: false, align: 'center'}
-                    , {width: 90, field: 'deviceBrand', title: '设备品牌', unresize: true, sort: false, align: 'center'}
-                    , {width: 124, field: 'userPhone', title: '用户手机', unresize: true, sort: false, align: 'center'}
-                    , {minWidth: 120, field: 'deviceId', title: '设备ID', sort: false, align: 'center'}
-                    , {
-                    width: 72,
-                    field: 'systemVersion',
-                    title: '系统版本',
-                    unresize: true,
-                    sort: false,
-                    align: 'center'
-                }
-                    , {width: 5, unresize: true}
-                    , {width: 110, field: 'totalSize', title: '上报次数', sort: false, align: 'center'}
-                    , {width: 140, field: 'appName', title: '应用名称', sort: false, align: 'center'}
-                    , {
-                    minWidth: 180, title: '首次上报时间', sort: false, align: 'center', templet: function (d) {
-                        return formatDateTime(d.minTime);
-                    }
-                }
-                    , {
-                    minWidth: 180, title: '最近上报时间', sort: false, align: 'center', templet: function (d) {
-                        return formatDateTime(d.maxTime);
-                    }
-                }
-                ]
-            ]
+            , cols: cols_arr
             , parseData: function (res) {
                 return {
                     "code": res.errorCode
                     , "msg": res.errorMsg
                     , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
                     , "data": null != res.data && null != res.data.list ? res.data.list : null
-                };
+                }
             }
         });
+    });
 
-        //工具栏事件
-        table.on('toolbar(developerTable)', function (obj) {
-            var checkStatus = table.checkStatus(obj.config.id);
-            switch (obj.event) {
-                case 'reloadData':
-                    table.reload('developerTable', {
-                        page: {curr: 1}
-                        //,height: 300
-                        //,url: 'x'
-                    }, 'data');
-                    break;
-            }
-            ;
-
-            //监听排序
-            table.on('sort(developerTable)', function (obj) {
-                // 本地该页数据排序
+    //工具栏事件
+    table.on('toolbar(developerTable)', function (obj) {
+        var checkStatus = table.checkStatus(obj.config.id);
+        switch (obj.event) {
+            case 'reloadData':
                 table.reload('developerTable', {
-                    initSort: obj
-                });
-            });
+                    page: {curr: 1}
+                    //,height: 300
+                    //,url: 'x'
+                }, 'data');
+                break;
+        };
 
-            var $ = layui.jquery, active = {
-                parseTable: function () {
-                    table.init('parse-table-demo', {
-                        limit: 3
-                    });
-                }
-                , add: function () {
-                    table.addRow('developerTable')
-                }
-            };
-            $('i').on('click', function () {
-                var type = $(this).data('type');
-                active[type] ? active[type].call(this) : '';
+        //监听排序
+        table.on('sort(developerTable)', function (obj) {
+            // 本地该页数据排序
+            table.reload('developerTable', {
+                initSort: obj
             });
-            $('.layui-btn').on('click', function () {
-                var type = $(this).data('type');
-                active[type] ? active[type].call(this) : '';
-            });
-        })
+        });
+
+        var $ = layui.jquery, active = {
+            parseTable: function () {
+                table.init('parse-table-demo', {
+                    limit: 3
+                });
+            }
+            , add: function () {
+                table.addRow('developerTable')
+            }
+        };
+        $('i').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        $('.layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
     });
 </script>
 </body>

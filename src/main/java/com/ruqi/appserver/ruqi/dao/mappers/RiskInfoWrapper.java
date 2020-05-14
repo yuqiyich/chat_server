@@ -271,7 +271,7 @@ public interface RiskInfoWrapper {
     long queryOverviewDeviceBrandTotalSize(@Param("recordInfo") RecordInfo<RiskOverviewInfo> recordInfo);
 
     @Select({"<script>",
-            "SELECT user_phone, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info, risk_user WHERE 1=1 ",
+            "SELECT risk_record.user_id, user_phone, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info, risk_user WHERE 1=1 ",
             "AND risk_record.app_id=app_info.app_id AND risk_record.user_id=risk_user.user_id AND risk_record.app_id=risk_user.app_id ",
             "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
             "<if test='recordInfo.content!=null'>",
@@ -282,6 +282,7 @@ public interface RiskInfoWrapper {
             "</script>"
     })
     @Results({
+            @Result(property = "userId", column = "user_id"),
             @Result(property = "userPhone", column = "user_phone"),
             @Result(property = "totalSize", column = "total_size"),
             @Result(property = "appName", column = "app_name"),

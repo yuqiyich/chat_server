@@ -24,6 +24,7 @@ public class DeviceRiskOverviewEntity {
     //    public String appVersionName;
     public String deviceModel;
     public String deviceBrand;
+    public long userId;
     public String userPhone;
 
     public String deviceId;
