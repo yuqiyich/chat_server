@@ -3,11 +3,10 @@ package com.ruqi.appserver.ruqi.dao.mappers;
 import com.ruqi.appserver.ruqi.bean.RecordInfo;
 import com.ruqi.appserver.ruqi.bean.RecordRiskInfo;
 import com.ruqi.appserver.ruqi.bean.RiskInfo;
+import com.ruqi.appserver.ruqi.bean.RiskOverviewInfo;
+import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.service.RedisUtil;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
@@ -37,12 +36,11 @@ public interface RiskInfoWrapper {
             "order by create_time desc",
             "limit #{pageIndex}, #{limit}) as a,",
             "app_info as b,risk_user as c ",
-            " where a.app_id =b.app_id and a.user_id=c.user_id",
+            " where a.app_id =b.app_id and a.user_id=c.user_id and a.app_id=c.app_id ",
             "<if test='riskInfo.userInfo!=null and riskInfo.userInfo.userPhone!=null and riskInfo.userInfo.userPhone!=\"\" '>AND c.user_phone = #{riskInfo.userInfo.userPhone}</if>",
             "order by create_time desc",
             "</script>"})
     @Results({@Result(property = "userInfo.userId", column = "user_id"),
-            @Result(property = "userInfo.userName", column = "user_name"),
             @Result(property = "userInfo.nickName", column = "nick_name"),
             @Result(property = "userInfo.userPhone", column = "user_phone"),
             @Result(property = "appInfo.appId", column = "app_id"),
@@ -79,13 +77,12 @@ public interface RiskInfoWrapper {
             "<if test='riskInfo.content!=null and riskInfo.content.endDate!=null  '>AND create_time &lt; #{riskInfo.content.endDate}</if>",
             "order by create_time desc) as a,",
             "app_info as b,risk_user as c ",
-            " where a.app_id =b.app_id and a.user_id=c.user_id",
+            " where a.app_id =b.app_id and a.user_id=c.user_id and a.app_id=c.app_id ",
             "<if test='riskInfo.userInfo!=null and riskInfo.userInfo.userPhone!=null and riskInfo.userInfo.userPhone!=\"\" '>AND c.user_phone like concat('%', #{riskInfo.userInfo.userPhone}, '%')</if>",
             "order by create_time desc limit #{pageIndex}, #{limit}",
             "</script>"})
     @Results({@Result(property = "id", column = "id"),
             @Result(property = "userId", column = "user_id"),
-//            @Result(property = "userName", column = "user_name"),
             @Result(property = "nickName", column = "nick_name"),
             @Result(property = "userPhone", column = "user_phone"),
 //            @Result(property = "appId", column = "app_id"),
@@ -128,7 +125,7 @@ public interface RiskInfoWrapper {
             "<if test='riskInfo.content!=null and riskInfo.content.endDate!=null  '>AND create_time &lt; #{riskInfo.content.endDate}</if>",
             ") as a,",
             "app_info as b,risk_user as c ",
-            " where a.app_id =b.app_id and a.user_id=c.user_id",
+            " where a.app_id =b.app_id and a.user_id=c.user_id and a.app_id=c.app_id ",
             "<if test='riskInfo.userInfo!=null and riskInfo.userInfo.userPhone!=null and riskInfo.userInfo.userPhone!=\"\" '>AND c.user_phone like concat('%', #{riskInfo.userInfo.userPhone}, '%')</if>",
             "</script>"})
     int queryTotalSize(RecordInfo<RiskInfo> riskInfo, int temp);
@@ -140,4 +137,237 @@ public interface RiskInfoWrapper {
     @Select({"SELECT DISTINCT(risk_type) FROM risk_record WHERE risk_type!='NULL'"})
     @Cacheable(key = "#type", value = RedisUtil.GROUP_APP_VERSION_NAME, unless = "#result eq null")
     List<String> queryRiskTypeForLayui(String type);
+
+    @Select({"<script>",
+            "SELECT risk_type, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info WHERE 1=1 ",
+            "AND risk_record.app_id=app_info.app_id ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY risk_type, risk_record.app_id ORDER BY total_size DESC limit #{pageIndex}, #{limit}",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "riskType", column = "risk_type"),
+            @Result(property = "totalSize", column = "total_size"),
+            @Result(property = "appName", column = "app_name"),
+            @Result(property = "minTime", column = "min_time"),
+            @Result(property = "maxTime", column = "max_time"),
+    })
+    List<DeviceRiskOverviewEntity> queryOverviewRiskType(int pageIndex, int limit, RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM (SELECT risk_type FROM risk_record WHERE 1=1 ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY risk_type, app_id) as ta",
+            "</script>"
+    })
+    long queryOverviewRiskTypeTotalSize(@Param("recordInfo") RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({"<script>",
+            "SELECT app_versioncode, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info WHERE 1=1 ",
+            "AND risk_record.app_id=app_info.app_id ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY app_versioncode, risk_record.app_id ORDER BY total_size DESC limit #{pageIndex}, #{limit}",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "appVersionCode", column = "app_versioncode"),
+            @Result(property = "totalSize", column = "total_size"),
+            @Result(property = "appName", column = "app_name"),
+            @Result(property = "minTime", column = "min_time"),
+            @Result(property = "maxTime", column = "max_time"),
+    })
+    List<DeviceRiskOverviewEntity> queryOverviewAppVersion(int pageIndex, int limit, RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM (SELECT app_versioncode FROM risk_record WHERE 1=1 ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY app_versioncode, app_id) as ta",
+            "</script>"
+    })
+    long queryOverviewAppVersionTotalSize(@Param("recordInfo") RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({"<script>",
+            "SELECT device_model, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info WHERE 1=1 ",
+            "AND risk_record.app_id=app_info.app_id ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY device_model, risk_record.app_id ORDER BY total_size DESC limit #{pageIndex}, #{limit}",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "deviceModel", column = "device_model"),
+            @Result(property = "totalSize", column = "total_size"),
+            @Result(property = "appName", column = "app_name"),
+            @Result(property = "minTime", column = "min_time"),
+            @Result(property = "maxTime", column = "max_time"),
+    })
+    List<DeviceRiskOverviewEntity> queryOverviewDeviceModel(int pageIndex, int limit, RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM (SELECT device_model FROM risk_record WHERE 1=1 ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY device_model, app_id) as ta",
+            "</script>"
+    })
+    long queryOverviewDeviceModelTotalSize(@Param("recordInfo") RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({"<script>",
+            "SELECT device_brand, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info WHERE 1=1 ",
+            "AND risk_record.app_id=app_info.app_id ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY device_brand, risk_record.app_id ORDER BY total_size DESC limit #{pageIndex}, #{limit}",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "deviceBrand", column = "device_brand"),
+            @Result(property = "totalSize", column = "total_size"),
+            @Result(property = "appName", column = "app_name"),
+            @Result(property = "minTime", column = "min_time"),
+            @Result(property = "maxTime", column = "max_time"),
+    })
+    List<DeviceRiskOverviewEntity> queryOverviewDeviceBrand(int pageIndex, int limit, RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM (SELECT device_brand FROM risk_record WHERE 1=1 ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY device_brand, app_id) as ta",
+            "</script>"
+    })
+    long queryOverviewDeviceBrandTotalSize(@Param("recordInfo") RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({"<script>",
+            "SELECT risk_record.user_id, user_phone, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info, risk_user WHERE 1=1 ",
+            "AND risk_record.app_id=app_info.app_id AND risk_record.user_id=risk_user.user_id AND risk_record.app_id=risk_user.app_id ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY user_phone, risk_record.app_id ORDER BY total_size DESC limit #{pageIndex}, #{limit}",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "userId", column = "user_id"),
+            @Result(property = "userPhone", column = "user_phone"),
+            @Result(property = "totalSize", column = "total_size"),
+            @Result(property = "appName", column = "app_name"),
+            @Result(property = "minTime", column = "min_time"),
+            @Result(property = "maxTime", column = "max_time"),
+    })
+    List<DeviceRiskOverviewEntity> queryOverviewPhoneNum(int pageIndex, int limit, RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM (SELECT user_phone FROM risk_record, risk_user WHERE 1=1 ",
+            "AND risk_record.user_id=risk_user.user_id AND risk_record.app_id=risk_user.app_id ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY user_phone, risk_record.app_id) as ta",
+            "</script>"
+    })
+    long queryOverviewPhoneNumTotalSize(@Param("recordInfo") RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({"<script>",
+            "SELECT device_id, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info WHERE 1=1 ",
+            "AND risk_record.app_id=app_info.app_id ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY device_id, risk_record.app_id ORDER BY total_size DESC limit #{pageIndex}, #{limit}",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "deviceId", column = "device_id"),
+            @Result(property = "totalSize", column = "total_size"),
+            @Result(property = "appName", column = "app_name"),
+            @Result(property = "minTime", column = "min_time"),
+            @Result(property = "maxTime", column = "max_time"),
+    })
+    List<DeviceRiskOverviewEntity> queryOverviewDeviceId(int pageIndex, int limit, RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM (SELECT device_id FROM risk_record WHERE 1=1 ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY device_id, risk_record.app_id) as ta",
+            "</script>"
+    })
+    long queryOverviewDeviceIdTotalSize(@Param("recordInfo") RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({"<script>",
+            "SELECT system_version, app_name, COUNT(1) as total_size, MIN(create_time) as min_time, MAX(create_time) as max_time FROM risk_record, app_info WHERE 1=1 ",
+            "AND risk_record.app_id=app_info.app_id ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY system_version, risk_record.app_id ORDER BY total_size DESC limit #{pageIndex}, #{limit}",
+            "</script>"
+    })
+    @Results({
+            @Result(property = "systemVersion", column = "system_version"),
+            @Result(property = "totalSize", column = "total_size"),
+            @Result(property = "appName", column = "app_name"),
+            @Result(property = "minTime", column = "min_time"),
+            @Result(property = "maxTime", column = "max_time"),
+    })
+    List<DeviceRiskOverviewEntity> queryOverviewAndroidVersion(int pageIndex, int limit, RecordInfo<RiskOverviewInfo> recordInfo);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM (SELECT system_version FROM risk_record WHERE 1=1 ",
+            "<if test='recordInfo.appInfo!=null and recordInfo.appInfo.appId!=null and recordInfo.appInfo.appId>0 '>AND risk_record.app_id = #{recordInfo.appInfo.appId} </if>",
+            "<if test='recordInfo.content!=null'>",
+            "<if test='recordInfo.content.startDate!=null '>AND create_time &gt; #{recordInfo.content.startDate} </if>",
+            "<if test='recordInfo.content.endDate!=null  '>AND create_time &lt; #{recordInfo.content.endDate} </if>",
+            "</if>",
+            "GROUP BY system_version, risk_record.app_id) as ta",
+            "</script>"
+    })
+    long queryOverviewAndroidVersionTotalSize(@Param("recordInfo") RecordInfo<RiskOverviewInfo> recordInfo);
 }

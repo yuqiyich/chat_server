@@ -12,7 +12,7 @@ import java.util.List;
 public interface IUserService {
     List<UserEntity> findAll();
 
-    UserEntity getOne(long id);
+    UserEntity getOne(long id, int appId);
 
     int insert(UserEntity user);
 

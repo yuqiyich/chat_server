@@ -3,6 +3,7 @@ package com.ruqi.appserver.ruqi.controller;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.service.IRecordService;
+import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import io.swagger.annotations.Api;
@@ -101,7 +102,7 @@ public class RecordController {
         BaseBean<BasePageBean<RecordInfo<RiskInfo>>> result = new BaseBean<>();
         List<RecordInfo<RiskInfo>> receiverEntities = recordService.queryList(params.getPage() - 1, params.getLimit(), params);
         long totalSize = recordService.queryTotalSize(params);
-        result.data = new BasePageBean<RecordInfo<RiskInfo>>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
         return result;
     }
 
@@ -118,14 +119,52 @@ public class RecordController {
     @ResponseBody
     public BaseBean<BasePageBean<RecordRiskInfo>> getRiskInfoListForLayui(@RequestBody RecordInfo<RiskInfo> params) {
         BaseBean<BasePageBean<RecordRiskInfo>> result = new BaseBean<>();
+        if (null != params && null != params.getUserInfo() && !MyStringUtils.isEmpty(params.getUserInfo().userPhone)) {
+            params.getUserInfo().userPhone = EncryptUtils.encode(params.getUserInfo().userPhone);
+        }
         List<RecordRiskInfo> receiverEntities = recordService.queryListForLayUi(params.getPage() - 1, params.getLimit(), params);
-        for (RecordRiskInfo recordRiskInfo : receiverEntities) {
-            if (null != recordRiskInfo && !MyStringUtils.isEmpty(recordRiskInfo.userPhone) && recordRiskInfo.userPhone.length() == 11) {
-                recordRiskInfo.userPhone = recordRiskInfo.userPhone.substring(0, 3) + "****" + recordRiskInfo.userPhone.substring(7, 11);
+        if (null != receiverEntities) {
+            for (RecordRiskInfo recordRiskInfo : receiverEntities) {
+                if (null != recordRiskInfo && !MyStringUtils.isEmpty(recordRiskInfo.userPhone)) {
+                    recordRiskInfo.userPhone = EncryptUtils.decode(recordRiskInfo.userPhone);
+                    if (recordRiskInfo.userPhone.length() == 11) {
+                        recordRiskInfo.userPhone = recordRiskInfo.userPhone.substring(0, 3) + "****" + recordRiskInfo.userPhone.substring(7, 11);
+                    }
+                }
             }
         }
         long totalSize = recordService.queryTotalSize(params);
-        result.data = new BasePageBean<RecordRiskInfo>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
+        return result;
+    }
+
+    /**
+     * 查询设备风险总览列表(for web 的layui的table控件接口)
+     *
+     * @return
+     */
+    @ApiOperation(value = "查询设备风险总览列表", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "RecordInfo<RiskOverviewInfo>", name = "参数对象", value = "参数类型", required = true)
+    })
+    @RequestMapping(value = "/queryRiskOverview", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<BasePageBean<DeviceRiskOverviewEntity>> queryRiskOverview(@RequestBody RecordInfo<RiskOverviewInfo> params) {
+        BaseBean<BasePageBean<DeviceRiskOverviewEntity>> result = new BaseBean<>();
+        List<DeviceRiskOverviewEntity> deviceRiskOverviewEntityList = recordService.queryOverviewList(params.getPage() - 1, params.getLimit(), params);
+        if (null != deviceRiskOverviewEntityList) {
+            for (DeviceRiskOverviewEntity deviceRiskOverviewEntity : deviceRiskOverviewEntityList) {
+                if (null != deviceRiskOverviewEntity && !MyStringUtils.isEmpty(deviceRiskOverviewEntity.userPhone)) {
+                    deviceRiskOverviewEntity.userPhone = EncryptUtils.decode(deviceRiskOverviewEntity.userPhone);
+                    if (deviceRiskOverviewEntity.userPhone.length() == 11) {
+                        deviceRiskOverviewEntity.userPhone = deviceRiskOverviewEntity.userPhone.substring(0, 3) + "****" + deviceRiskOverviewEntity.userPhone.substring(7, 11);
+                    }
+                }
+            }
+        }
+        long totalSize = recordService.queryOverviewTotalSize(params);
+        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, deviceRiskOverviewEntityList);
 
         return result;
     }
@@ -144,38 +183,8 @@ public class RecordController {
     public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventRecmdPointListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
         List<RecordDotEventInfo> receiverEntities = recordService.queryEventRecmdPointListForLayui(params.getPage() - 1, params.getLimit(), params);
-        for (RecordDotEventInfo recordDotEventInfo : receiverEntities) {
-            if (null != recordDotEventInfo && !MyStringUtils.isEmpty(recordDotEventInfo.userPhone) && recordDotEventInfo.userPhone.length() == 11) {
-                recordDotEventInfo.userPhone = recordDotEventInfo.userPhone.substring(0, 3) + "****" + recordDotEventInfo.userPhone.substring(7, 11);
-            }
-        }
         long totalSize = recordService.queryTotalSizeEventRecmdPoint(params);
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
-
-        return result;
-    }
-
-    /**
-     * 查询报警总览列表(for web 的layui的table控件接口)
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询报警总览列表", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<RiskInfo>", name = "参数对象", value = "参数类型", required = false)
-    })
-    @RequestMapping(value = "/queryDeviceRiskOverviewInfo", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseBean<BasePageBean<DeviceRiskOverviewEntity>> getDeviceRiskOverviewInfo(@RequestBody RecordInfo<RiskInfo> params) {
-        BaseBean<BasePageBean<DeviceRiskOverviewEntity>> result = new BaseBean<>();
-//        List<RecordRiskInfo> receiverEntities = recordService.queryListForLayUi(params.getPage() - 1, params.getLimit(), params);
-//        for (RecordRiskInfo recordRiskInfo : receiverEntities) {
-//            if (null != recordRiskInfo && !MyStringUtils.isEmpty(recordRiskInfo.userPhone) && recordRiskInfo.userPhone.length() == 11) {
-//                recordRiskInfo.userPhone = recordRiskInfo.userPhone.substring(0, 3) + "****" + recordRiskInfo.userPhone.substring(7, 10);
-//            }
-//        }
-//        long totalSize = recordService.queryTotalSize(params);
-//        result.data = new BasePageBean<DeviceRiskOverviewEntity>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
 
         return result;
     }

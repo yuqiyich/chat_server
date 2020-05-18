@@ -67,9 +67,9 @@
             </div>
         </div>
         <div class="layui-inline">
-            <label class="layui-form-label">用户手机</label>
+            <label class="layui-form-label">用户ID</label>
             <div class="layui-input-inline" style="width: 100px;">
-                <input type="text" class="layui-input" id="phoneNum">
+                <input type="text" class="layui-input" id="userId">
             </div>
         </div>
         <div class="layui-inline">
@@ -101,6 +101,7 @@
 <table id="developerTable" lay-filter="developerTable"></table>
 
 <script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
+<script src="js/base-table-page.js" charset="utf-8"></script>
 <script type="text/html" id="barOperator">
     <a class="layui-btn layui-btn-xs" lay-event="user_edit">查看</a>
 </script>
@@ -149,7 +150,7 @@
                             "appId": $("#appIdSelect").val(),
                         },
                         "userInfo": {
-                            "userPhone": $("#phoneNum").val(),
+                            "userId": $("#userId").val(),
                         },
                         "content": {
                             "appVersionName": $("#appVersion").val(),
@@ -176,7 +177,7 @@
                             "appId": $("#appIdSelect").val(),
                         },
                         "userInfo": {
-                            "userPhone": $("#phoneNum").val(),
+                            "userId": $("#userId").val(),
                         },
                         "content": {
                             "appVersionName": $("#appVersion").val(),
@@ -195,128 +196,125 @@
 </script>
 <script>
     layui.use('laydate', function () {
-        var laydate = layui.laydate;
+        layui.use('table', function () {
+            var table = layui.table;
 
-//执行一个laydate实例
-        laydate.render({
-            elem: '#duringTime' //指定元素
-            , type: 'datetime'
-            , range: '~' //或 range: '~' 来自定义分割字符
-
-        });
-    });
-
-    layui.use('table', function () {
-        var table = layui.table;
-
-        var tableIns = table.render({
-            elem: '#developerTable'
-            , title: '推荐点降级生效记录'
-            , url: 'record/queryEventRecmdPointListForLayui'
-            , method: 'post'
-            , contentType: 'application/json'
-            , page: {curr: 1}
-            , limit: 10
-            , limits: [10, 30, 50, 100]
-            , toolbar: '#toolbarDemo'
+            var tableIns = table.render({
+                elem: '#developerTable'
+                , title: '推荐点降级生效记录'
+                , url: 'record/queryEventRecmdPointListForLayui'
+                , method: 'post'
+                , contentType: 'application/json'
+                , page: {curr: 1}
+                , limit: 10
+                , limits: [10, 30, 50, 100]
+                , toolbar: '#toolbarDemo'
 // 右上角工具条
-            , defaultToolbar: ['filter', 'exports', 'print'
-                , {
-                    title: '刷新'
-                    , layEvent: 'reloadData'
-                    , icon: 'layui-icon-refresh'
-                }
-            ]
-            , cols: [
-                [
-                    {field: 'id', title: 'ID', fixed: 'left', width: 72, unresize: true, sort: true, align: 'center'}
+                , defaultToolbar: ['filter', 'exports', 'print'
                     , {
-                    minWidth: 110, field: 'eventKey', title: '生效类型', templet: function (d) {
-                        switch (d.eventKey) {
-                            case "FALLBACK_SUCCESS_TX_RECOMMEND":
-                                return "腾讯推荐点生效";
-                            case "FALLBACK_SUCCESS_TX_GEO":
-                                return "腾讯GEO点生效";
-                            case "FALLBACK_SUCCESS_RUQI_APP":
-                                return "如祺缓存解析点生效";
-                            default:
-                                return "";
-                        }
-                    }, sort: false, align: 'center'
-                }
-                    , {minWidth: 106, field: 'userId', title: '用户id', sort: false, align: 'center'}
-                    , {minWidth: 124, field: 'userPhone', title: '用户手机', sort: false, align: 'center'}
-                    , {minWidth: 124, field: 'nickName', title: '用户名称', sort: false, align: 'center'}
-                    , {minWidth: 100, field: 'deviceId', title: '设备id', sort: false, align: 'center'}
-                    , {minWidth: 100, field: 'eventDetail', title: '详情', sort: false, align: 'center'}
-                    , {
-                    minWidth: 180, field: 'createTime', templet: function (d) {
-                        return formatDateTime(d.createTime);
-                    }, title: '上报时间', sort: false, align: 'center'
-                }
-                    , {minWidth: 80, field: 'systemVersion', title: '系统版本', sort: false, align: 'center'}
-                    , {minWidth: 80, field: 'netState', title: '网络状态', sort: false, align: 'center'}
-                    , {minWidth: 90, field: 'locationLat', title: '经度', sort: false, align: 'center'}
-                    , {minWidth: 90, field: 'locationLng', title: '纬度', sort: false, align: 'center'}
-                    , {minWidth: 90, field: 'channel', title: '渠道', sort: false, align: 'center'}
-                    , {minWidth: 100, field: 'scene', title: '上传场景', sort: false, align: 'center'}
-                    , {minWidth: 110, field: 'appVersionCode', title: 'app版本id', sort: false, align: 'center'}
-                    , {minWidth: 100, field: 'appVersionName', title: 'app版本名称', sort: false, align: 'center'}
-                    , {minWidth: 110, field: 'appName', title: '应用名称', sort: false, align: 'center'}
-                    , {minWidth: 100, field: 'deviceModel', title: '设备型号', sort: false, align: 'center'}
-                    , {minWidth: 90, field: 'deviceBrand', title: '设备品牌', sort: false, align: 'center'}
-                    , {minWidth: 100, field: 'requestIp', title: '请求ip', sort: false, align: 'center'}
-                    , {minWidth: 100, field: 'ext', title: '备注', sort: false, align: 'center'}
+                        title: '刷新'
+                        , layEvent: 'reloadData'
+                        , icon: 'layui-icon-refresh'
+                    }
                 ]
-            ]
-            , parseData: function (res) {
-                return {
-                    "code": res.errorCode
-                    , "msg": res.errorMsg
-                    , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
-                    , "data": null != res.data && null != res.data.list ? res.data.list : null
-                };
-            }
-        });
+                , cols: [
+                    [
+                        {
+                            field: 'id',
+                            title: 'ID',
+                            fixed: 'left',
+                            width: 72,
+                            unresize: true,
+                            sort: true,
+                            align: 'center'
+                        }
+                        , {
+                        minWidth: 110, field: 'eventKey', title: '生效类型', templet: function (d) {
+                            switch (d.eventKey) {
+                                case "FALLBACK_SUCCESS_TX_RECOMMEND":
+                                    return "腾讯推荐点生效";
+                                case "FALLBACK_SUCCESS_TX_GEO":
+                                    return "腾讯GEO点生效";
+                                case "FALLBACK_SUCCESS_RUQI_APP":
+                                    return "如祺缓存解析点生效";
+                                default:
+                                    return "";
+                            }
+                        }, sort: false, align: 'center'
+                    }
+                        , {minWidth: 106, field: 'userId', title: '用户id', sort: false, align: 'center'}
+                        // , {minWidth: 124, field: 'userPhone', title: '用户手机', sort: false, align: 'center'}
+                        // , {minWidth: 124, field: 'nickName', title: '用户名称', sort: false, align: 'center'}
+                        , {minWidth: 100, field: 'deviceId', title: '设备id', sort: false, align: 'center'}
+                        , {minWidth: 100, field: 'eventDetail', title: '详情', sort: false, align: 'center'}
+                        , {
+                        minWidth: 180, field: 'createTime', templet: function (d) {
+                            return formatDateTime(d.createTime);
+                        }, title: '上报时间', sort: false, align: 'center'
+                    }
+                        , {minWidth: 80, field: 'systemVersion', title: '系统版本', sort: false, align: 'center'}
+                        , {minWidth: 80, field: 'netState', title: '网络状态', sort: false, align: 'center'}
+                        , {minWidth: 90, field: 'locationLat', title: '经度', sort: false, align: 'center'}
+                        , {minWidth: 90, field: 'locationLng', title: '纬度', sort: false, align: 'center'}
+                        , {minWidth: 90, field: 'channel', title: '渠道', sort: false, align: 'center'}
+                        , {minWidth: 110, field: 'appVersionCode', title: 'app版本id', sort: false, align: 'center'}
+                        , {minWidth: 100, field: 'appVersionName', title: 'app版本名称', sort: false, align: 'center'}
+                        , {minWidth: 110, field: 'appName', title: '应用名称', sort: false, align: 'center'}
+                        , {minWidth: 100, field: 'deviceModel', title: '设备型号', sort: false, align: 'center'}
+                        , {minWidth: 90, field: 'deviceBrand', title: '设备品牌', sort: false, align: 'center'}
+                        , {minWidth: 100, field: 'requestIp', title: '请求ip', sort: false, align: 'center'}
+                        , {minWidth: 100, field: 'ext', title: '备注', sort: false, align: 'center'}
+                    ]
+                ]
+                , parseData: function (res) {
+                    return {
+                        "code": res.errorCode
+                        , "msg": res.errorMsg
+                        , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
+                        , "data": null != res.data && null != res.data.list ? res.data.list : null
+                    };
+                }
+            });
 
 //工具栏事件
-        table.on('toolbar(developerTable)', function (obj) {
-            switch (obj.event) {
-                case 'reloadData':
-                    table.reload('developerTable', {
-                        page: {curr: 1}
-                    }, 'data');
-                    break;
-            }
-            ;
-        });
+            table.on('toolbar(developerTable)', function (obj) {
+                switch (obj.event) {
+                    case 'reloadData':
+                        table.reload('developerTable', {
+                            page: {curr: 1}
+                        }, 'data');
+                        break;
+                }
+                ;
+            });
 
 //监听排序
-        table.on('sort(developerTable)', function (obj) {
+            table.on('sort(developerTable)', function (obj) {
 // 本地该页数据排序
-            table.reload('developerTable', {
-                initSort: obj
-            });
-        });
-
-        var $ = layui.jquery, active = {
-            parseTable: function () {
-                table.init('parse-table-demo', {
-                    limit: 3
+                table.reload('developerTable', {
+                    initSort: obj
                 });
-            }
-            , add: function () {
-                table.addRow('developerTable')
-            }
-        };
-        $('i').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
-        });
-        $('.layui-btn').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
-        });
+            });
+
+            var $ = layui.jquery, active = {
+                parseTable: function () {
+                    table.init('parse-table-demo', {
+                        limit: 3
+                    });
+                }
+                , add: function () {
+                    table.addRow('developerTable')
+                }
+            };
+            $('i').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            $('.layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        })
     });
 </script>
 </body>

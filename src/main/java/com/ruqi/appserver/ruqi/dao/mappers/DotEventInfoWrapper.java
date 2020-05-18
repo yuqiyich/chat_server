@@ -19,6 +19,7 @@ public interface DotEventInfoWrapper {
             "SELECT * FROM",
             "(SELECT * FROM dot_event_record",
             "WHERE 1=1",
+            "<if test='dotEventInfo.userInfo!=null and dotEventInfo.userInfo.userId!=null and dotEventInfo.userInfo.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userPhone}</if>",
             "<if test='dotEventInfo.content==null '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_APP')</if>",
             "<if test='dotEventInfo.content!=null '>",
             "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName}</if>",
@@ -32,15 +33,14 @@ public interface DotEventInfoWrapper {
             "</if>",
             "<if test='dotEventInfo.appInfo!=null and dotEventInfo.appInfo.appId!=null and dotEventInfo.appInfo.appId>0 '>AND app_id = #{dotEventInfo.appInfo.appId}</if>",
             "order by create_time desc) as a,",
-            "app_info as b,risk_user as c ",
-            " where a.app_id =b.app_id and a.user_id=c.user_id",
-            "<if test='dotEventInfo.userInfo!=null and dotEventInfo.userInfo.userPhone!=null and dotEventInfo.userInfo.userPhone!=\"\" '>AND c.user_phone like concat('%', #{dotEventInfo.userInfo.userPhone}, '%')</if>",
+            "app_info as b ",
+            " where a.app_id =b.app_id ",
             "order by create_time desc limit #{pageIndex}, #{limit}",
             "</script>"})
     @Results({@Result(property = "id", column = "id"),
             @Result(property = "userId", column = "user_id"),
             @Result(property = "nickName", column = "nick_name"),
-            @Result(property = "userPhone", column = "user_phone"),
+            @Result(property = "userId", column = "user_id"),
             @Result(property = "appName", column = "app_name"),
             @Result(property = "deviceId", column = "device_id"),
             @Result(property = "eventDetail", column = "event_detail"),
@@ -65,6 +65,7 @@ public interface DotEventInfoWrapper {
             "SELECT count(*) FROM",
             "(SELECT * FROM dot_event_record",
             "WHERE 1=1",
+            "<if test='dotEventInfo.userInfo!=null and dotEventInfo.userInfo.userId!=null and dotEventInfo.userInfo.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userId} </if>",
             "<if test='dotEventInfo.content==null '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_APP')</if>",
             "<if test='dotEventInfo.content!=null '>",
             "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName}</if>",
@@ -78,13 +79,13 @@ public interface DotEventInfoWrapper {
             "</if>",
             "<if test='dotEventInfo.appInfo!=null and dotEventInfo.appInfo.appId!=null and dotEventInfo.appInfo.appId>0 '>AND app_id = #{dotEventInfo.appInfo.appId}</if>",
             ") as a,",
-            "app_info as b,risk_user as c ",
-            " where a.app_id =b.app_id and a.user_id=c.user_id",
-            "<if test='dotEventInfo.userInfo!=null and dotEventInfo.userInfo.userPhone!=null and dotEventInfo.userInfo.userPhone!=\"\" '>AND c.user_phone like concat('%', #{dotEventInfo.userInfo.userPhone}, '%')</if>",
+            "app_info as b ",
+            " where a.app_id =b.app_id ",
             "</script>"})
     /**
      * 不加temp报错：org.apache.ibatis.reflection.ReflectionException: There is no getter for property named "dotEventInfo"
      * 使用@Param("dotEventInfo")注解或者大于1个参数时不需要指定
      */
     long queryTotalSizeEventRecmdPoint(@Param("dotEventInfo") RecordInfo<DotEventInfo> dotEventInfo);
+
 }

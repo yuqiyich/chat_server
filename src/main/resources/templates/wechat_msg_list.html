@@ -63,7 +63,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">发送时间</label>
             <div class="layui-input-inline" style="width: 300px;">
-                <input type="text" id="filterTime" name="filterTime" lay-verify="filterTime" class="layui-input">
+                <input type="text" id="duringTime" name="duringTime" lay-verify="duringTime" class="layui-input">
             </div>
         </div>
         <div class="layui-inline">
@@ -100,6 +100,7 @@
 </div>
 
 <script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
+<script src="js/base-table-page.js" charset="utf-8"></script>
 <script type="text/html" id="tpl_user_status">
     {{#  if(d.userStatus == '1'){ }}
     启用
@@ -147,17 +148,6 @@
             , laydate = layui.laydate;
 
         // var data = form.val("wechat_info");
-
-
-        //执行一个laydate实例
-        laydate.render({
-            elem: '#filterTime' //指定元素
-            , type: 'datetime'
-            , range: '~' //或 range: '~' 来自定义分割字符
-            , min: '2020-3-1'
-            , max: 1 // 时间最大选择当天的第二天
-        });
-
         //监听提交
         // 更新备注
         form.on('submit(updateRemarkName)', function (data) {
@@ -180,7 +170,7 @@
         });
         // 搜索
         form.on('submit(search)', function (data) {
-            var time = $("#filterTime").val();
+            var time = $("#duringTime").val();
             var startTime = "";
             var endTime = "";
             if (time.indexOf(" ~ ") > -1) {

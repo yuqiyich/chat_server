@@ -231,11 +231,11 @@ function formatDateTime(date) {
         return "";
     }
 
-    date = new Date(Date.parse(myTime(date)));
+    date = new Date(Date.parse(myTime(date)) + 8 * 3600000); // +8小时
     var o = {
         'M+': date.getMonth() + 1, //month
         'd+': date.getDate(), //day
-        'H+': date.getHours() + 8, //hour+8小时
+        'H+': date.getHours(), //hour
         'm+': date.getMinutes(), //minute
         's+': date.getSeconds(), //second
         'q+': Math.floor((date.getMonth() + 3) / 3), //quarter

@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -26,4 +27,8 @@ public interface IRecordService {
     List<RecordDotEventInfo> queryEventRecmdPointListForLayui(int i, int limit, RecordInfo<DotEventInfo> params);
 
     long queryTotalSizeEventRecmdPoint(RecordInfo<DotEventInfo> params);
+
+    List<DeviceRiskOverviewEntity> queryOverviewList(int i, int limit, RecordInfo<RiskOverviewInfo> params);
+
+    long queryOverviewTotalSize(RecordInfo<RiskOverviewInfo> params);
 }

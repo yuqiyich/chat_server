@@ -22,8 +22,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserEntity getOne(long id) {
-        return userMapper.getOne(id);
+    public UserEntity getOne(long id, int appId) {
+        return userMapper.getOne(id, appId);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void delete(Long id) {
-        userMapper.delete(id);
+//        userMapper.delete(id);
     }
 
     @Override
