@@ -56,6 +56,7 @@ public class RecordServiceImpl implements IRecordService {
                     }
                     saveRiskInfo(riskInfo);
                 } else if (data.getRecordType() == RecordTypeEnum.RECOMMEND_POINT_RISK.getId() && data.getContent() instanceof DotEventInfo) {
+                    data.getContent().setUserId(data.getUserInfo().getUserId());
                     saveDotEventRecord((DotEventInfo) data.getContent());
                 }
             } else {
@@ -104,6 +105,11 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
+    public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
+        return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params);
+    }
+
+    @Override
     public List<String> queryAppVersionNameForLayui() {
         return riskInfoWrapper.queryAppVersionNameForLayui("versionNameList");
     }
@@ -126,6 +132,11 @@ public class RecordServiceImpl implements IRecordService {
     @Override
     public long queryTotalSizeEventRecmdPoint(RecordInfo<DotEventInfo> recordInfo) {
         return dotEventInfoWrapper.queryTotalSizeEventRecmdPoint(recordInfo);
+    }
+
+    @Override
+    public long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> recordInfo) {
+        return dotEventInfoWrapper.queryTotalSizeCommonEvent(recordInfo);
     }
 
     @Override

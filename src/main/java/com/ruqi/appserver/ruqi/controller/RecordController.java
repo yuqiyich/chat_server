@@ -176,7 +176,7 @@ public class RecordController {
      */
     @ApiOperation(value = "查询推荐点降级生效记录列表", notes = "")
     @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型", required = false)
+            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
     })
     @RequestMapping(value = "/queryEventRecmdPointListForLayui", method = RequestMethod.POST)
     @ResponseBody
@@ -184,6 +184,26 @@ public class RecordController {
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
         List<RecordDotEventInfo> receiverEntities = recordService.queryEventRecmdPointListForLayui(params.getPage() - 1, params.getLimit(), params);
         long totalSize = recordService.queryTotalSizeEventRecmdPoint(params);
+        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
+        return result;
+    }
+
+    /**
+     * 通用数据埋点记录列表(for web 的layui的table控件接口)
+     *
+     * @return
+     */
+    @ApiOperation(value = "通用数据埋点记录列表", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
+    })
+    @RequestMapping(value = "/queryCommonEventListForLayui", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<BasePageBean<RecordDotEventInfo>> queryCommonEventListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
+        BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
+        List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params);
+        long totalSize = recordService.queryTotalSizeCommonEvent(params);
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
 
         return result;
