@@ -192,14 +192,12 @@
                 , method: 'post'
                 , contentType: 'application/json'
                 , page: {curr: 1}
-                , where: {
-                    "appInfo": {
-                        "appId": "2",
-                    }
-                }
                 , limit: 10
                 , limits: [10, 30, 50, 100]
                 , where: {
+                    "appInfo": {
+                        "appId": "2",
+                    },
                     "content": {
                         "eventKey": "EVENT_MULIT_ORDER"
                     }
