@@ -119,10 +119,10 @@ public class RecordServiceImpl implements IRecordService {
         return riskInfoWrapper.queryRiskTypeForLayui("riskTypeList");
     }
 
-    @Override
-    public List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit, RecordInfo<RiskInfo> riskParams) {
-        return riskInfoWrapper.queryRiskList(pageIndex * limit, limit, riskParams);
-    }
+//    @Override
+//    public List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit, RecordInfo<RiskInfo> riskParams) {
+//        return riskInfoWrapper.queryRiskList(pageIndex * limit, limit, riskParams);
+//    }
 
     @Override
     public long queryTotalSize(RecordInfo<RiskInfo> riskParams) {

@@ -92,19 +92,19 @@ public class RecordController {
      *
      * @return
      */
-    @ApiOperation(value = "查询报警列表", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<RiskInfo>", name = "参数对象", value = "参数类型", required = false)
-    })
-    @RequestMapping(value = "/queryRiskList", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseBean<BasePageBean<RecordInfo<RiskInfo>>> getRiskInfoList(@RequestBody RecordInfo<RiskInfo> params) {
-        BaseBean<BasePageBean<RecordInfo<RiskInfo>>> result = new BaseBean<>();
-        List<RecordInfo<RiskInfo>> receiverEntities = recordService.queryList(params.getPage() - 1, params.getLimit(), params);
-        long totalSize = recordService.queryTotalSize(params);
-        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
-        return result;
-    }
+//    @ApiOperation(value = "查询报警列表", notes = "")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(dataType = "RecordInfo<RiskInfo>", name = "参数对象", value = "参数类型", required = false)
+//    })
+//    @RequestMapping(value = "/queryRiskList", method = RequestMethod.POST)
+//    @ResponseBody
+//    public BaseBean<BasePageBean<RecordInfo<RiskInfo>>> getRiskInfoList(@RequestBody RecordInfo<RiskInfo> params) {
+//        BaseBean<BasePageBean<RecordInfo<RiskInfo>>> result = new BaseBean<>();
+//        List<RecordInfo<RiskInfo>> receiverEntities = recordService.queryList(params.getPage() - 1, params.getLimit(), params);
+//        long totalSize = recordService.queryTotalSize(params);
+//        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+//        return result;
+//    }
 
     /**
      * 查询报警列表(for web 的layui的table控件接口)

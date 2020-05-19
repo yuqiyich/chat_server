@@ -64,9 +64,9 @@
             </div>
         </div>
         <div class="layui-inline">
-            <label class="layui-form-label">用户手机</label>
+            <label class="layui-form-label">用户ID</label>
             <div class="layui-input-inline" style="width: 100px;">
-                <input type="text" class="layui-input" id="phoneNum">
+                <input type="text" class="layui-input" id="userID">
             </div>
         </div>
         <div class="layui-inline">
@@ -123,17 +123,14 @@
                         "appInfo": {
                             "appId": $("#appIdSelect").val(),
                         },
-                        "userInfo": {
-                            // "userName": $("#userName").val(),
-                            "userPhone": $("#phoneNum").val(),
-                        },
                         "content": {
                             "appVersionName": $("#appVersion").val(),
                             "duringTime": $("#duringTime").val(),
                             "deviceModel": $("#deviceModel").val(),
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
-                            "riskType": $("#riskType").val()
+                            "riskType": $("#riskType").val(),
+                            "userId": $("#userID").val()
                         }
                     }
                 }, 'data');
@@ -151,17 +148,14 @@
                         "appInfo": {
                             "appId": $("#appIdSelect").val(),
                         },
-                        "userInfo": {
-                            // "userName": $("#userName").val(),
-                            "userPhone": $("#phoneNum").val(),
-                        },
                         "content": {
                             "appVersionName": $("#appVersion").val(),
                             "duringTime": $("#duringTime").val(),
                             "deviceModel": $("#deviceModel").val(),
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
-                            "riskType": $("#riskType").val()
+                            "riskType": $("#riskType").val(),
+                            "userId": $("#userID").val()
                         }
                     }
                 }, 'data');
@@ -401,11 +395,6 @@
             // 本地该页数据排序
             table.reload('developerTable', {
                 initSort: obj
-                //,page: {curr: 1} //重新从第一页开始
-                // ,where: { //重新请求服务端
-                // 	key: obj.field //排序字段
-                // 	,order: obj.type //排序方式
-                // }
             });
         });
 
