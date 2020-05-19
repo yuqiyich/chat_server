@@ -22,11 +22,8 @@
             <label class="layui-form-label">应用类型</label>
             <div class="layui-input-inline" style="width: 100px;">
                 <select id="appIdSelect">
-                    <option value="">所有应用</option>
                     <option value="2">如祺乘客</option>
-                    <option value="3">如祺乘客dev</option>
-                    <option value="1">如祺司机</option>
-                    <option value="4">如祺司机dev</option>
+                    <option value="3">如祺乘客dev</option
                 </select>
             </div>
         </div>
@@ -206,6 +203,11 @@
                 , method: 'post'
                 , contentType: 'application/json'
                 , page: {curr: 1}
+                , where: {
+                    "appInfo": {
+                        "appId": "2",
+                    }
+                }
                 , limit: 10
                 , limits: [10, 30, 50, 100]
                 , toolbar: '#toolbarDemo'
