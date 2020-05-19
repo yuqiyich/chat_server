@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>多开不预付费订单记录</title>
+    <title>车速异常记录</title>
     <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
     <style>
         body {
@@ -22,8 +22,8 @@
             <label class="layui-form-label">应用类型</label>
             <div class="layui-input-inline" style="width: 100px;">
                 <select id="appIdSelect">
-                    <option value="2">如祺乘客</option>
-                    <option value="3">如祺乘客dev</option>
+                    <option value="1">如祺司机</option>
+                    <option value="4">如祺司机dev</option>
                 </select>
             </div>
         </div>
@@ -144,7 +144,7 @@
                             "deviceModel": $("#deviceModel").val(),
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
-                            "eventKey": "EVENT_MULIT_ORDER"
+                            "eventKey": "EVENT_ABNORMAL_SPEED"
                         }
                     }
                 }, 'data');
@@ -171,7 +171,7 @@
                             "deviceModel": $("#deviceModel").val(),
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
-                            "eventKey": "EVENT_MULIT_ORDER"
+                            "eventKey": "EVENT_ABNORMAL_SPEED"
                         }
                     }
                 }, 'data');
@@ -194,14 +194,14 @@
                 , page: {curr: 1}
                 , where: {
                     "appInfo": {
-                        "appId": "2",
+                        "appId": "1",
                     }
                 }
                 , limit: 10
                 , limits: [10, 30, 50, 100]
                 , where: {
                     "content": {
-                        "eventKey": "EVENT_MULIT_ORDER"
+                        "eventKey": "EVENT_ABNORMAL_SPEED"
                     }
                 }
                 , toolbar: '#toolbarDemo'
