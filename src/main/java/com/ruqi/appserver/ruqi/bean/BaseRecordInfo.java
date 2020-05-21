@@ -7,6 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class BaseRecordInfo {
+    public static final String PLATFORM_ANDROID = "Android";
+    public static final String PLATFORM_IOS = "iOS";
+
     //device info
     public String deviceId;
     public String deviceBrand;
@@ -16,6 +19,7 @@ public class BaseRecordInfo {
     public int appVersionCode;
     public int appId;
     public String channel;
+    public String platform;
     //status info
     public Date createTime;
     public long userId;

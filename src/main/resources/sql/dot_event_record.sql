@@ -34,6 +34,7 @@ CREATE TABLE `dot_event_record` (
   `net_state` varchar(255) DEFAULT NULL COMMENT '网络状态',
   `location_lat` double DEFAULT NULL COMMENT '当前位置经度',
   `app_id` int(11) DEFAULT NULL COMMENT '应用的id',
+  `platform` varchar(20) DEFAULT NULL COMMENT '应用平台',
   `channel` varchar(255) DEFAULT NULL COMMENT '应用渠道',
   `location_lng` double DEFAULT NULL COMMENT '当前位置的纬度',
   `ext` varchar(255) DEFAULT NULL COMMENT '备注字段',

@@ -20,7 +20,7 @@
     <div class="layui-form-item">
         <div class="layui-inline">
             <label class="layui-form-label">应用类型</label>
-            <div class="layui-input-inline" style="width: 100px;">
+            <div class="layui-input-inline" style="width: 120px;">
                 <select id="appIdSelect">
                     <option value="1">如祺司机</option>
                     <option value="4">如祺司机dev</option>
@@ -132,13 +132,9 @@
                 table.reload('developerTable', {
                     page: {curr: 1}
                     , where: {
-                        "appInfo": {
-                            "appId": $("#appIdSelect").val(),
-                        },
-                        "userInfo": {
-                            "userId": $("#userId").val(),
-                        },
                         "content": {
+                            "userId": $("#userId").val(),
+                            "appId": $("#appIdSelect").val(),
                             "appVersionName": $("#appVersion").val(),
                             "duringTime": $("#duringTime").val(),
                             "deviceModel": $("#deviceModel").val(),
@@ -159,13 +155,9 @@
                 table.reload('developerTable', {
                     page: {curr: 1}
                     , where: {
-                        "appInfo": {
-                            "appId": $("#appIdSelect").val(),
-                        },
-                        "userInfo": {
-                            "userId": $("#userId").val(),
-                        },
                         "content": {
+                            "appId": $("#appIdSelect").val(),
+                            "userId": $("#userId").val(),
                             "appVersionName": $("#appVersion").val(),
                             "duringTime": $("#duringTime").val(),
                             "deviceModel": $("#deviceModel").val(),
@@ -195,10 +187,8 @@
                 , limit: 10
                 , limits: [10, 30, 50, 100]
                 , where: {
-                    "appInfo": {
-                        "appId": "1",
-                    },
                     "content": {
+                        "appId": "1",
                         "eventKey": "EVENT_ABNORMAL_SPEED"
                     }
                 }

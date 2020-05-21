@@ -55,7 +55,7 @@ public class RecordServiceImpl implements IRecordService {
                         saveRiskUserInfo(data.getUserInfo());
                     }
                     saveRiskInfo(riskInfo);
-                } else if (data.getRecordType() == RecordTypeEnum.RECOMMEND_POINT_RISK.getId() && data.getContent() instanceof DotEventInfo) {
+                } else if (data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId() && data.getContent() instanceof DotEventInfo) {
                     data.getContent().setUserId(data.getUserInfo().getUserId());
                     saveDotEventRecord((DotEventInfo) data.getContent());
                 }

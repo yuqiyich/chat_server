@@ -20,10 +20,20 @@
     <div class="layui-form-item">
         <div class="layui-inline">
             <label class="layui-form-label">应用类型</label>
-            <div class="layui-input-inline" style="width: 100px;">
+            <div class="layui-input-inline" style="width: 120px;">
                 <select id="appIdSelect">
                     <option value="2">如祺乘客</option>
                     <option value="3">如祺乘客dev</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">系统平台</label>
+            <div class="layui-input-inline" style="width: 120px;">
+                <select id="system_platform">
+                    <option value="">所有</option>
+                    <option value="Android">Android</option>
+                    <option value="iOS">iOS</option>
                 </select>
             </div>
         </div>
@@ -143,13 +153,10 @@
                 table.reload('developerTable', {
                     page: {curr: 1}
                     , where: {
-                        "appInfo": {
-                            "appId": $("#appIdSelect").val(),
-                        },
-                        "userInfo": {
-                            "userId": $("#userId").val(),
-                        },
                         "content": {
+                            "appId": $("#appIdSelect").val(),
+                            "platform": $("#system_platform").val(),
+                            "userId": $("#userId").val(),
                             "appVersionName": $("#appVersion").val(),
                             "duringTime": $("#duringTime").val(),
                             "deviceModel": $("#deviceModel").val(),
@@ -170,13 +177,10 @@
                 table.reload('developerTable', {
                     page: {curr: 1}
                     , where: {
-                        "appInfo": {
-                            "appId": $("#appIdSelect").val(),
-                        },
-                        "userInfo": {
-                            "userId": $("#userId").val(),
-                        },
                         "content": {
+                            "appId": $("#appIdSelect").val(),
+                            "platform": $("#system_platform").val(),
+                            "userId": $("#userId").val(),
                             "appVersionName": $("#appVersion").val(),
                             "duringTime": $("#duringTime").val(),
                             "deviceModel": $("#deviceModel").val(),
@@ -204,7 +208,7 @@
                 , contentType: 'application/json'
                 , page: {curr: 1}
                 , where: {
-                    "appInfo": {
+                    "content": {
                         "appId": "2",
                     }
                 }
@@ -244,6 +248,8 @@
                             }
                         }, sort: false, align: 'center'
                     }
+                        , {minWidth: 110, field: 'appName', title: '应用名称', sort: false, align: 'center'}
+                        , {minWidth: 110, field: 'platform', title: '系统平台', sort: false, align: 'center'}
                         , {minWidth: 106, field: 'userId', title: '用户id', sort: false, align: 'center'}
                         // , {minWidth: 124, field: 'userPhone', title: '用户手机', sort: false, align: 'center'}
                         // , {minWidth: 124, field: 'nickName', title: '用户名称', sort: false, align: 'center'}
@@ -261,7 +267,6 @@
                         , {minWidth: 90, field: 'channel', title: '渠道', sort: false, align: 'center'}
                         , {minWidth: 110, field: 'appVersionCode', title: 'app版本id', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'appVersionName', title: 'app版本名称', sort: false, align: 'center'}
-                        , {minWidth: 110, field: 'appName', title: '应用名称', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'deviceModel', title: '设备型号', sort: false, align: 'center'}
                         , {minWidth: 90, field: 'deviceBrand', title: '设备品牌', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'requestIp', title: '请求ip', sort: false, align: 'center'}

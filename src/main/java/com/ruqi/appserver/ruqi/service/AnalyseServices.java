@@ -61,6 +61,12 @@ public class AnalyseServices {
                             logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
                         }
                     }
+                    // 为什么只收到司机端数据，没有乘客端数据？
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

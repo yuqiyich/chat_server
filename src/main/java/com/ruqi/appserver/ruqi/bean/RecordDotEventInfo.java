@@ -9,6 +9,7 @@ public class RecordDotEventInfo {
 
     public long id;
     public String appName;
+    public String platform;
     public long userId;
     public String nickName;
     public int riskLevel;

@@ -65,11 +65,13 @@ public class RecordController {
         return result;
     }
 
+    @ApiOperation(value = "应用设备风险上报", notes = "")
     @RequestMapping(value = "/uploadData", method = RequestMethod.POST)
     public String uploadData(@RequestBody RecordInfo<RiskInfo> content) {
         return saveData(content);
     }
 
+    @ApiOperation(value = "通用简单埋点事件统计上报", notes = "")
     @RequestMapping(value = "/uploadDotEventData", method = RequestMethod.POST)
     public String uploadDotEventData(@RequestBody RecordInfo<DotEventInfo> content) {
         return saveData(content);
