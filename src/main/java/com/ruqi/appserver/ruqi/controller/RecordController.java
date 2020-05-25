@@ -192,6 +192,26 @@ public class RecordController {
     }
 
     /**
+     * 算路降级生效记录列表(for web 的layui的table控件接口)
+     *
+     * @return
+     */
+    @ApiOperation(value = "查询算路降级生效记录列表", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
+    })
+    @RequestMapping(value = "/queryEventNavListForLayui", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventNavListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
+        BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
+        List<RecordDotEventInfo> receiverEntities = recordService.queryEventNavListForLayui(params.getPage() - 1, params.getLimit(), params);
+        long totalSize = recordService.queryTotalSizeEventNav(params);
+        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
+        return result;
+    }
+
+    /**
      * 通用数据埋点记录列表(for web 的layui的table控件接口)
      *
      * @return

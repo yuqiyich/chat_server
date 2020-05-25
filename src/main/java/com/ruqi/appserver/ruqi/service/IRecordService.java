@@ -25,8 +25,10 @@ public interface IRecordService {
     List<String> queryRiskTypeForLayui();
 
     List<RecordDotEventInfo> queryEventRecmdPointListForLayui(int i, int limit, RecordInfo<DotEventInfo> params);
+    List<RecordDotEventInfo> queryEventNavListForLayui(int i, int limit, RecordInfo<DotEventInfo> params);
 
     long queryTotalSizeEventRecmdPoint(RecordInfo<DotEventInfo> params);
+    long queryTotalSizeEventNav(RecordInfo<DotEventInfo> params);
 
     List<DeviceRiskOverviewEntity> queryOverviewList(int i, int limit, RecordInfo<RiskOverviewInfo> params);
 

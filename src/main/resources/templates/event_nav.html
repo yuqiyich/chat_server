@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>推荐点降级生效记录</title>
+    <title>算路降级生效记录</title>
     <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
     <style>
         body {
@@ -22,8 +22,8 @@
             <label class="layui-form-label">应用类型</label>
             <div class="layui-input-inline" style="width: 120px;">
                 <select id="appIdSelect">
-                    <option value="2">如祺乘客</option>
-                    <option value="3">如祺乘客dev</option>
+                    <option value="1">如祺司机</option>
+                    <option value="4">如祺司机dev</option>
                 </select>
             </div>
         </div>
@@ -42,9 +42,10 @@
             <div class="layui-input-inline" style="width: 100px;">
                 <select id="eventKey">
                     <option value="">所有类型</option>
-                    <option value="FALLBACK_SUCCESS_TX_RECOMMEND">腾讯推荐点生效</option>
-                    <option value="FALLBACK_SUCCESS_TX_GEO">腾讯GEO点生效</option>
-                    <option value="FALLBACK_SUCCESS_RUQI_APP">如祺缓存解析点生效</option>
+                    <option value="FALLBACK_SUCCESS_TX_ROUTE_RETRY">无感知重试成功</option>
+                    <option value="FALLBACK_SUCCESS_TX_ROUTE_CACHE">缓存路线导航</option>
+                    <option value="FALLBACK_SUCCESS_ROUTE_GAODE">第三方导航高德</option>
+                    <option value="FALLBACK_SUCCESS_ROUTE_BAIDU">第三方导航百度</option>
                 </select>
             </div>
         </div>
@@ -202,14 +203,14 @@
 
             var tableIns = table.render({
                 elem: '#developerTable'
-                , title: '推荐点降级生效记录'
-                , url: 'record/queryEventRecmdPointListForLayui'
+                , title: '算路降级生效记录'
+                , url: 'record/queryEventNavListForLayui'
                 , method: 'post'
                 , contentType: 'application/json'
                 , page: {curr: 1}
                 , where: {
                     "content": {
-                        "appId": "2",
+                        "appId": "1",
                     }
                 }
                 , limit: 10
@@ -237,12 +238,14 @@
                         , {
                         minWidth: 140, field: 'eventKey', title: '生效类型', templet: function (d) {
                             switch (d.eventKey) {
-                                case "FALLBACK_SUCCESS_TX_RECOMMEND":
-                                    return "腾讯推荐点生效";
-                                case "FALLBACK_SUCCESS_TX_GEO":
-                                    return "腾讯GEO点生效";
-                                case "FALLBACK_SUCCESS_RUQI_APP":
-                                    return "如祺缓存解析点生效";
+                                case "FALLBACK_SUCCESS_TX_ROUTE_RETRY":
+                                    return "无感知重试成功";
+                                case "FALLBACK_SUCCESS_TX_ROUTE_CACHE":
+                                    return "缓存路线导航";
+                                case "FALLBACK_SUCCESS_ROUTE_GAODE":
+                                    return "第三方导航高德";
+                                case "FALLBACK_SUCCESS_ROUTE_BAIDU":
+                                    return "第三方导航百度";
                                 default:
                                     return "";
                             }

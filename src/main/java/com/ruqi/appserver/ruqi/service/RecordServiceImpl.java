@@ -105,6 +105,11 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
+    public List<RecordDotEventInfo> queryEventNavListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
+        return dotEventInfoWrapper.queryEventNavListForLayui(pageIndex * limit, limit, params);
+    }
+
+    @Override
     public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
         return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params);
     }
@@ -132,6 +137,11 @@ public class RecordServiceImpl implements IRecordService {
     @Override
     public long queryTotalSizeEventRecmdPoint(RecordInfo<DotEventInfo> recordInfo) {
         return dotEventInfoWrapper.queryTotalSizeEventRecmdPoint(recordInfo);
+    }
+
+    @Override
+    public long queryTotalSizeEventNav(RecordInfo<DotEventInfo> recordInfo) {
+        return dotEventInfoWrapper.queryTotalSizeEventNav(recordInfo);
     }
 
     @Override
