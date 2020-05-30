@@ -22,6 +22,7 @@ public class DateTimeUtils {
 
     public static Date getYesterdayStartDate(){
         Calendar cal=Calendar.getInstance();
+        cal.add(Calendar.DATE,-1);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -30,6 +31,7 @@ public class DateTimeUtils {
 
     public static Date getYesterdayEndDate(){
         Calendar cal=Calendar.getInstance();
+        cal.add(Calendar.DATE,-1);
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);

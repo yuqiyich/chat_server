@@ -159,7 +159,7 @@ public class WechatController {
             wechatTemplateMsgBean.data.remark.value = msgRemark; // 备注
             // wechatTemplateMsgBean.data.remark.color = "#FFBF13";
             String result = BaseHttpClient.doPost(UrlConstant.WeChatUrl.TEMPLATE_MSG_SEND + accessToken, wechatTemplateMsgBean);
-
+//            String result = "";
             // {"errcode":0,"errmsg":"ok","msgid":1226691075109289985}
 
             logger.info("--->发消息result=" + result);

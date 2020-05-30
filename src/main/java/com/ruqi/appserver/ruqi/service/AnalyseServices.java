@@ -10,26 +10,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-@Component
+@Configuration
 @EnableScheduling   // 1.开启定时任务
 public class AnalyseServices {
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final long INTERVAL = 1000 * 60 * 60;//上报时间间隔
-    private static final long MAX_DRIVER_THRESHOLD_OF_DAY = 50;//司机端最大上报数
-    private static final long MAX_CLIENT_THRESHOLD_OF_DAY = 50;//最大上报数
-    private static final long APP_CLIENT = 2;//乘客端应用id
     private static final long APP_DRIVER = 1;//司机端应用id
-    private static final String CRON_REG = "0 0 10 * * ? ";//
-    private static final String CRON_REG2 = "0 0 11 * * ? ";//
-
+    private static final long APP_CLIENT = 2;//乘客端应用id
+    private static final String CRON_REG = "0 0 9 * * ?";
 
     @Autowired
     RiskInfoWrapper riskInfoWrapper;
@@ -49,7 +44,7 @@ public class AnalyseServices {
             List<AppInfo> appInfos = appInfoWrapper.getAllApps();
             if (!CollectionUtils.isEmpty(appInfos)) {
                 for (AppInfo appInfo : appInfos) {
-                    if (appInfo.getAppId() == APP_CLIENT/* || appInfo.getAppId() == APP_DRIVER*/) {
+                    if (appInfo.getAppId() == APP_DRIVER || appInfo.getAppId() == APP_CLIENT) {
                         int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
                         if (count >= 0) {//不设阈值
                             logger.info("risk count:" + count);
@@ -64,24 +59,4 @@ public class AnalyseServices {
         }
     }
 
-    @Scheduled(cron = CRON_REG2)
-    public void periodCheckSecurity2() throws InterruptedException {
-        if ("prod".equals(mEnv)) {
-            List<AppInfo> appInfos = appInfoWrapper.getAllApps();
-            if (!CollectionUtils.isEmpty(appInfos)) {
-                for (AppInfo appInfo : appInfos) {
-                    if (appInfo.getAppId() == APP_DRIVER) {
-                        int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
-                        if (count >= 0) {//不设阈值
-                            logger.info("risk count:" + count);
-                            mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
-                                    "在过去的" + DateTimeUtils.getYesterday() + "一天内总共有" + count + "条设备风险数据[" + mEnv + "],发送ip:" + IpUtil.getLocalIP(), "请至APP记录平台查看完整详细信息", null);
-                        } else {
-                            logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

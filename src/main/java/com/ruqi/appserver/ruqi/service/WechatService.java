@@ -57,12 +57,17 @@ public class WechatService {
      * @param entity
      */
     public void updateAccessToken(WechatAccessTokenEntity entity) {
-        mWechatAccessTokenEntity = entity;
-        entity.accessToken = EncryptUtils.encode(entity.accessToken);
+        if (null != entity) {
+            mWechatAccessTokenEntity = entity;
 
-        // 先清除数据库，再插入这条数据
-        wechatMapper.clearDatas();
-        wechatMapper.insertData(entity);
+            WechatAccessTokenEntity entitySave = new WechatAccessTokenEntity();
+            entitySave.expiresTime = entity.expiresTime;
+            entitySave.accessToken = EncryptUtils.encode(entity.accessToken);
+
+            // 先清除数据库，再插入这条数据
+            wechatMapper.clearDatas();
+            wechatMapper.insertData(entitySave);
+        }
     }
 
     /**
