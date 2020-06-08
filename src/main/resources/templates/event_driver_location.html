@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>算路降级生效记录</title>
+    <title>司机定位缓存点生效记录</title>
     <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
     <style>
         body {
@@ -42,11 +42,10 @@
             <div class="layui-input-inline" style="width: 100px;">
                 <select id="eventKey">
                     <option value="">所有类型</option>
-                    <option value="FALLBACK_SUCCESS_TX_ROUTE_RETRY">无感知重试成功</option>
-                    <option value="FALLBACK_SUCCESS_TX_ROUTE_CACHE">缓存路线导航</option>
-                    <option value="FALLBACK_SUCCESS_ROUTE_GAODE">第三方导航高德</option>
-                    <option value="FALLBACK_SUCCESS_ROUTE_BAIDU">第三方导航百度</option>
-                    <option value="FALLBACK_SUCCESS_ROUTE_TENCENT">第三方导航腾讯</option>
+                    <option value="FALLBACK_SUCCESS_TX_HISTORY_LOCATION">SDK缓存兜底</option>
+                    <option value="FALLBACK_SUCCESS_TX_DEVICE_LOCATION">原生实时兜底</option>
+                    <option value="FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION">原生缓存兜底</option>
+                    <option value="FALLBACK_SUCCESS_APP_HISTORY_LOCATION">App缓存兜底</option>
                 </select>
             </div>
         </div>
@@ -204,8 +203,8 @@
 
             var tableIns = table.render({
                 elem: '#developerTable'
-                , title: '算路降级生效记录'
-                , url: 'record/queryEventNavListForLayui'
+                , title: '司机定位缓存点生效记录'
+                , url: 'record/queryEventDriverLocationListForLayui'
                 , method: 'post'
                 , contentType: 'application/json'
                 , page: {curr: 1}
@@ -239,16 +238,14 @@
                         , {
                         minWidth: 140, field: 'eventKey', title: '生效类型', templet: function (d) {
                             switch (d.eventKey) {
-                                case "FALLBACK_SUCCESS_TX_ROUTE_RETRY":
-                                    return "无感知重试成功";
-                                case "FALLBACK_SUCCESS_TX_ROUTE_CACHE":
-                                    return "缓存路线导航";
-                                case "FALLBACK_SUCCESS_ROUTE_GAODE":
-                                    return "第三方导航高德";
-                                case "FALLBACK_SUCCESS_ROUTE_BAIDU":
-                                    return "第三方导航百度";
-                                case "FALLBACK_SUCCESS_ROUTE_TENCENT":
-                                    return "第三方导航腾讯";
+                                case "FALLBACK_SUCCESS_TX_HISTORY_LOCATION":
+                                    return "SDK缓存兜底";
+                                case "FALLBACK_SUCCESS_TX_DEVICE_LOCATION":
+                                    return "原生实时兜底";
+                                case "FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION":
+                                    return "原生缓存兜底";
+                                case "FALLBACK_SUCCESS_APP_HISTORY_LOCATION":
+                                    return "App缓存兜底";
                                 default:
                                     return "";
                             }

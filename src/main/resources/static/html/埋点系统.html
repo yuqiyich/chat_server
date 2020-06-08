@@ -43,13 +43,17 @@
     &quot;netState&quot;: &quot;string&quot;, // 网络类型，如WIFI、4G等
     &quot;platform&quot;: &quot;iOS&quot;, // 必填。系统平台，如Android、iOS
     &quot;systemVersion&quot;: &quot;string&quot;, // 系统版本，如9.0
-    &quot;userId&quot;: 0 // 用户ID
+  },
+  &quot;userInfo&quot;: {
+    &quot;nickName&quot;:&quot;string&quot;, // 昵称
+    &quot;userId&quot;:&quot;string&quot;, // 用户ID
+    &quot;userPhone&quot;:&quot;string&quot; // 手机号
   },
   &quot;recordType&quot;: 1001 // 必填。记录类型，通用埋点上报固定传1001
 }
 </code></pre>
 <ul>
-    <li>返回值目前仅返回<code>OK</code>。未按照标准接口返回请求结果。业务侧异步调用接口上报数据后也不需关注接口请求结果。</li>
+    <li>返回值。目前返回<code>{ &quot;errorCode&quot;: 0, &quot;errorMsg&quot;: &quot;&quot; }</code>。未按照标准接口返回请求结果。业务侧异步调用接口上报数据后也不需关注接口请求结果。</li>
 </ul>
 <p>2、报表查看</p>
 <ul>

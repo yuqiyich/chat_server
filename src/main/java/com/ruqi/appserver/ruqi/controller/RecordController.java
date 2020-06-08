@@ -1,5 +1,6 @@
 package com.ruqi.appserver.ruqi.controller;
 
+import com.google.gson.Gson;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.service.IRecordService;
@@ -20,6 +21,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 记录埋点的控制器
@@ -67,17 +69,19 @@ public class RecordController {
 
     @ApiOperation(value = "应用设备风险上报", notes = "")
     @RequestMapping(value = "/uploadData", method = RequestMethod.POST)
-    public String uploadData(@RequestBody RecordInfo<RiskInfo> content) {
+    public BaseCodeMsgBean BaseBean(@RequestBody RecordInfo<RiskInfo> content) {
         return saveData(content);
     }
 
     @ApiOperation(value = "通用简单埋点事件统计上报", notes = "")
     @RequestMapping(value = "/uploadDotEventData", method = RequestMethod.POST)
-    public String uploadDotEventData(@RequestBody RecordInfo<DotEventInfo> content) {
+    public BaseCodeMsgBean uploadDotEventData(@RequestBody RecordInfo<DotEventInfo> content) {
         return saveData(content);
     }
 
-    private String saveData(RecordInfo<? extends BaseRecordInfo> content) {
+    private BaseCodeMsgBean saveData(RecordInfo<? extends BaseRecordInfo> content) {
+        BaseCodeMsgBean result = new BaseCodeMsgBean();
+
         //获取RequestAttributes
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         //从获取RequestAttributes中获取HttpServletRequest的信息
@@ -85,7 +89,8 @@ public class RecordController {
         if (null != content && null != content.getContent()) {
             recordService.saveRecord(content, new Date(), IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
         }
-        return "OK";
+
+        return result;
     }
 
 
@@ -183,9 +188,10 @@ public class RecordController {
     @RequestMapping(value = "/queryEventRecmdPointListForLayui", method = RequestMethod.POST)
     @ResponseBody
     public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventRecmdPointListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
+        String eventType = "recmdPoint";
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
-        List<RecordDotEventInfo> receiverEntities = recordService.queryEventRecmdPointListForLayui(params.getPage() - 1, params.getLimit(), params);
-        long totalSize = recordService.queryTotalSizeEventRecmdPoint(params);
+        List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params, eventType);
+        long totalSize = recordService.queryTotalSizeCommonEvent(params, eventType);
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
 
         return result;
@@ -203,9 +209,31 @@ public class RecordController {
     @RequestMapping(value = "/queryEventNavListForLayui", method = RequestMethod.POST)
     @ResponseBody
     public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventNavListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
+        String eventType = "nav";
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
-        List<RecordDotEventInfo> receiverEntities = recordService.queryEventNavListForLayui(params.getPage() - 1, params.getLimit(), params);
-        long totalSize = recordService.queryTotalSizeEventNav(params);
+        List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params, eventType);
+        long totalSize = recordService.queryTotalSizeCommonEvent(params, eventType);
+        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
+        return result;
+    }
+
+    /**
+     * 司机定位缓存点生效记录列表(for web 的layui的table控件接口)
+     *
+     * @return
+     */
+    @ApiOperation(value = "查询司机定位缓存点生效记录", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
+    })
+    @RequestMapping(value = "/queryEventDriverLocationListForLayui", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventDriverLocationListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
+        String eventType = "driverLocation";
+        BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
+        List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params, eventType);
+        long totalSize = recordService.queryTotalSizeCommonEvent(params, eventType);
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
 
         return result;
@@ -223,9 +251,10 @@ public class RecordController {
     @RequestMapping(value = "/queryCommonEventListForLayui", method = RequestMethod.POST)
     @ResponseBody
     public BaseBean<BasePageBean<RecordDotEventInfo>> queryCommonEventListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
+        String eventType = "";
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
-        List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params);
-        long totalSize = recordService.queryTotalSizeCommonEvent(params);
+        List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params, eventType);
+        long totalSize = recordService.queryTotalSizeCommonEvent(params, eventType);
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
 
         return result;

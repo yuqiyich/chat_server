@@ -55,8 +55,10 @@ public class RecordServiceImpl implements IRecordService {
                         saveRiskUserInfo(data.getUserInfo());
                     }
                     saveRiskInfo(riskInfo);
-                } else if (data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId() && data.getContent() instanceof DotEventInfo) {
-                    data.getContent().setUserId(data.getUserInfo().getUserId());
+                } else if (null != data.getContent() && data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId() && data.getContent() instanceof DotEventInfo) {
+                    if (null != data.getContent() && null != data.getUserInfo()) {
+                        data.getContent().setUserId(data.getUserInfo().getUserId());
+                    }
                     saveDotEventRecord((DotEventInfo) data.getContent());
                 }
             } else {
@@ -100,18 +102,8 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
-    public List<RecordDotEventInfo> queryEventRecmdPointListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
-        return dotEventInfoWrapper.queryEventRecmdPointListForLayui(pageIndex * limit, limit, params);
-    }
-
-    @Override
-    public List<RecordDotEventInfo> queryEventNavListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
-        return dotEventInfoWrapper.queryEventNavListForLayui(pageIndex * limit, limit, params);
-    }
-
-    @Override
-    public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
-        return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params);
+    public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params, String eventType) {
+        return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params, eventType);
     }
 
     @Override
@@ -124,29 +116,14 @@ public class RecordServiceImpl implements IRecordService {
         return riskInfoWrapper.queryRiskTypeForLayui("riskTypeList");
     }
 
-//    @Override
-//    public List<RecordInfo<RiskInfo>> queryList(int pageIndex, int limit, RecordInfo<RiskInfo> riskParams) {
-//        return riskInfoWrapper.queryRiskList(pageIndex * limit, limit, riskParams);
-//    }
-
     @Override
     public long queryTotalSize(RecordInfo<RiskInfo> riskParams) {
         return riskInfoWrapper.queryTotalSize(riskParams, 9);
     }
 
     @Override
-    public long queryTotalSizeEventRecmdPoint(RecordInfo<DotEventInfo> recordInfo) {
-        return dotEventInfoWrapper.queryTotalSizeEventRecmdPoint(recordInfo);
-    }
-
-    @Override
-    public long queryTotalSizeEventNav(RecordInfo<DotEventInfo> recordInfo) {
-        return dotEventInfoWrapper.queryTotalSizeEventNav(recordInfo);
-    }
-
-    @Override
-    public long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> recordInfo) {
-        return dotEventInfoWrapper.queryTotalSizeCommonEvent(recordInfo);
+    public long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> recordInfo, String eventType) {
+        return dotEventInfoWrapper.queryTotalSizeCommonEvent(recordInfo, eventType);
     }
 
     @Override
