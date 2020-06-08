@@ -1,30 +1,47 @@
-<h2><a href="#埋点系统" id="埋点系统">埋点系统</a></h2>
-<ul>
-    <li>提供一套简单的埋点记录上传查看机制，用于客户端统计客户端模块想要记录的数据。目前主要用于【推荐点降级生效记录】等功能。</li>
-</ul>
-<h3><a href="#通用基础介绍" id="通用基础介绍">通用基础介绍</a></h3>
-<p>1、目前项目部署环境仅一套，部署的服务器为公司项目测试环境的服务器，作为该项目唯一的一套环境（prod）。</p>
-<p>2、管理后台地址 <a href="https://weixintest.ruqimobility.com/manager/login.html">https://weixintest.ruqimobility.com/manager/login.html</a>，
-    登录账号：admin，密码：ruqi123456。</p>
-<p>3、API接口（暂未做数据加解密处理，目前提供给APP端使用的接口也不校验token）</p>
-<blockquote>
-    <p>HOST：https://weixintest.ruqimobility.com/<br />
-        PATH：manager/<br />
-        UrlSuffix：</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="file:///Users/zhangyu/.markdownNavigator/multimarkdown_layout-fx.css">
+    <style>
+        .container { width: 100%; }
+        .wiki-container { width: 100%; }
+        .wiki-body { width: 100%; }
+    </style>
+    <link rel="stylesheet" href="file:///Users/zhangyu/.markdownNavigator/multimarkdown_darcula-fx.css">
+    <link rel="stylesheet" href="file:///Users/zhangyu/.markdownNavigator/multimarkdown_hljs-darcula.css">
+    <title>埋点系统.md</title>
+    <script src="file:///Users/zhangyu/.markdownNavigator/multimarkdown_highlight.pack.js"></script>
+</head>
+<body>
+<article class="markdown-body">
+    <h2 id="埋点系统" md-pos="0-7"><span md-pos="3-7"><a href="#埋点系统" name="埋点系统" class="anchor"><span class="octicon octicon-link"></span></a>埋点系统</span></h2>
     <ul>
-        <li>record/uploadDotEventData （通用简单埋点事件统计上报）</li>
+        <li md-pos="9-71"><span md-pos="11-70">提供一套简单的埋点记录上传查看机制，用于客户端统计客户端模块想要记录的数据。目前主要用于【推荐点降级生效记录】等功能。</span></li>
     </ul>
-</blockquote>
-<p>4、Swagger地址（可在线简单测试接口，暂未详细标示字段注释、必填属性等）： <a href="https://weixintest.ruqimobility.com/manager/swagger-ui.html">https://weixintest.ruqimobility.com/manager/swagger-ui.html</a></p>
-<p>5、目前的APPKEY，同一个应用仅区分两个环境：dev、prod。对应客户端的开发、测试环境使用开发环境的key，正式环境使用正式环境的key。目前APPKEY值保存在数据库中。</p>
-<h3><a href="#详细介绍" id="详细介绍">详细介绍</a></h3>
-<p>1、接口详细说明</p>
-<ul>
-    <li>POST请求</li>
-    <li>上报接口URL完整路径：https://weixintest.ruqimobility.com/manager/record/uploadDotEventData</li>
-    <li>参数示例：</li>
-</ul>
-<pre><code>{
+    <h3 id="通用基础介绍" md-pos="71-81"><span md-pos="75-81"><a href="#通用基础介绍" name="通用基础介绍" class="anchor"><span class="octicon octicon-link"></span></a>通用基础介绍</span></h3>
+    <p md-pos="82-136"><span md-pos="82-135">1、目前项目部署环境仅一套，部署的服务器为公司项目测试环境的服务器，作为该项目唯一的一套环境（prod）。</span></p>
+    <p md-pos="137-286"><span md-pos="137-259">2、管理后台地址 <a href="https://weixintest.ruqimobility.com/manager/login.html" md-pos="146-258">https://weixintest.ruqimobility.com/manager/login.html</a>，</span>
+        <span md-pos="260-285">登录账号：admin，密码：ruqi123456。</span></p>
+    <p md-pos="287-331"><span md-pos="287-330">3、API接口（暂未做数据加解密处理，目前提供给APP端使用的接口也不校验token）</span></p>
+    <blockquote>
+        <p md-pos="334-411"><span md-pos="334-375">HOST：https://weixintest.ruqimobility.com/</span><br />
+            <span md-pos="378-393">PATH：manager/</span><br />
+            <span md-pos="396-408">UrlSuffix：</span></p>
+        <ul>
+            <li md-pos="413-456"><span md-pos="415-455">record/uploadDotEventData （通用简单埋点事件统计上报）</span></li>
+        </ul>
+    </blockquote>
+    <p md-pos="457-621"><span md-pos="457-558">4、Swagger地址（可在线简单测试接口，暂未详细标示字段注释、必填属性等）： <a href="https://weixintest.ruqimobility.com/manager/swagger-ui.html" md-pos="498-620">https://weixintest.ruqimobility.com/manager/swagger-ui.html</a></span></p>
+    <p md-pos="622-713"><span md-pos="622-712">5、目前的APPKEY，同一个应用仅区分两个环境：dev、prod。对应客户端的开发、测试环境使用开发环境的key，正式环境使用正式环境的key。目前APPKEY值保存在数据库中。</span></p>
+    <h3 id="详细介绍" md-pos="714-722"><span md-pos="718-722"><a href="#详细介绍" name="详细介绍" class="anchor"><span class="octicon octicon-link"></span></a>详细介绍</span></h3>
+    <p md-pos="723-732"><span md-pos="723-731">1、接口详细说明</span></p>
+    <ul>
+        <li md-pos="732-741"><span md-pos="734-740">POST请求</span></li>
+        <li md-pos="741-825"><span md-pos="743-824">上报接口URL完整路径：https://weixintest.ruqimobility.com/manager/record/uploadDotEventData</span></li>
+        <li md-pos="825-833"><span md-pos="827-832">参数示例：</span></li>
+    </ul>
+    <pre md-pos="833-1581"><code class="nohighlight" md-pos="837-1577">{
   &quot;appInfo&quot;: {
     &quot;appKey&quot;: &quot;&quot; // 必填。环境不同或应用不同则appKey不同
   },
@@ -52,16 +69,55 @@
   &quot;recordType&quot;: 1001 // 必填。记录类型，通用埋点上报固定传1001
 }
 </code></pre>
-<ul>
-    <li>返回值。目前返回<code>{ &quot;errorCode&quot;: 0, &quot;errorMsg&quot;: &quot;&quot; }</code>。未按照标准接口返回请求结果。业务侧异步调用接口上报数据后也不需关注接口请求结果。</li>
-</ul>
-<p>2、报表查看</p>
-<ul>
-    <li><strong>推荐点降级生效记录</strong></li>
-</ul>
-<ol>
-    <li>入口路径：登录管理后台，左侧菜单栏【数据埋点系统】-&gt;【推荐点降级生效记录】。</li>
-    <li>筛选条件：应用类型（乘客/乘客dev）、系统平台（Android/iOS）、生效类型（腾讯推荐点生效/腾讯GEO点生效/如祺缓存解析点生效）、app版本、设备型号、设备品牌、用户ID、设备ID、时间段。</li>
-    <li>数据查看：生效类型、应用名称、系统平台、用户ID、设备ID、详情、上报时间、系统版本、网络状态、经度、纬度、渠道、版本ID、版本名称、设备型号、设备品牌、IP、备注。</li>
-</ol>
-
+    <ul>
+        <li md-pos="1581-1673"><span md-pos="1583-1593">返回值。目前返回<code>{ </code></span><span md-pos="1596-1611"><code class="line-spliced">&quot;errorCode&quot;: 0, </code></span><span md-pos="1614-1628"><code class="line-spliced">&quot;errorMsg&quot;: &quot;&quot; </code></span><span md-pos="1629-1672"><code class="line-spliced">}</code>。未按照标准接口返回请求结果。业务侧异步调用接口上报数据后也不需关注接口请求结果。</span></li>
+    </ul>
+    <p md-pos="1674-1681"><span md-pos="1674-1680">2、报表查看</span></p>
+    <ul>
+        <li md-pos="1681-1697"><span md-pos="1683-1694"><strong>推荐点降级生效记录</strong></span></li>
+    </ul>
+    <ol>
+        <li md-pos="1697-1740"><span md-pos="1700-1739">入口路径：登录管理后台，左侧菜单栏【数据埋点系统】-&gt;【推荐点降级生效记录】。</span></li>
+        <li md-pos="1740-1845"><span md-pos="1743-1844">筛选条件：应用类型（乘客/乘客dev）、系统平台（Android/iOS）、生效类型（腾讯推荐点生效/腾讯GEO点生效/如祺缓存解析点生效）、app版本、设备型号、设备品牌、用户ID、设备ID、时间段。</span></li>
+        <li md-pos="1845-1932"><span md-pos="1848-1931">数据查看：生效类型、应用名称、系统平台、用户ID、设备ID、详情、上报时间、系统版本、网络状态、经度、纬度、渠道、版本ID、版本名称、设备型号、设备品牌、IP、备注。</span></li>
+    </ol>
+    <p md-pos="1933-1943"><span md-pos="1933-1942">3、事件Key说明</span></p>
+    <p md-pos="1944-1960"><span md-pos="1944-1957"><strong>乘客推荐点降级生效记录</strong></span></p>
+    <table md-pos="1961-2093">
+        <thead>
+        <tr md-pos="1961-1969"><th align="center" md-pos="1961-1965">KEY </th><th align="center" md-pos="1966-1969"> 说明</th></tr>
+        </thead>
+        <tbody>
+        <tr md-pos="1980-2019"><td align="center" md-pos="1980-2010">FALLBACK_SUCCESS_TX_RECOMMEND </td><td align="center" md-pos="2011-2019"> 腾讯推荐点生效</td></tr>
+        <tr md-pos="2020-2054"><td align="center" md-pos="2020-2044">FALLBACK_SUCCESS_TX_GEO </td><td align="center" md-pos="2045-2054"> 腾讯GEO点生效</td></tr>
+        <tr md-pos="2055-2092"><td align="center" md-pos="2055-2081">FALLBACK_SUCCESS_RUQI_APP </td><td align="center" md-pos="2082-2092"> 如祺缓存解析点生效</td></tr>
+        </tbody>
+    </table>
+    <p md-pos="2094-2109"><span md-pos="2094-2106"><strong>司机算路降级生效记录</strong></span></p>
+    <table md-pos="2110-2331">
+        <thead>
+        <tr md-pos="2110-2118"><th align="center" md-pos="2110-2114">KEY </th><th align="center" md-pos="2115-2118"> 说明</th></tr>
+        </thead>
+        <tbody>
+        <tr md-pos="2129-2170"><td align="center" md-pos="2129-2161">FALLBACK_SUCCESS_TX_ROUTE_RETRY </td><td align="center" md-pos="2162-2170"> 无感知重试成功</td></tr>
+        <tr md-pos="2171-2211"><td align="center" md-pos="2171-2203">FALLBACK_SUCCESS_TX_ROUTE_CACHE </td><td align="center" md-pos="2204-2211"> 缓存路线导航</td></tr>
+        <tr md-pos="2212-2250"><td align="center" md-pos="2212-2241">FALLBACK_SUCCESS_ROUTE_GAODE </td><td align="center" md-pos="2242-2250"> 第三方导航高德</td></tr>
+        <tr md-pos="2251-2289"><td align="center" md-pos="2251-2280">FALLBACK_SUCCESS_ROUTE_BAIDU </td><td align="center" md-pos="2281-2289"> 第三方导航百度</td></tr>
+        <tr md-pos="2290-2330"><td align="center" md-pos="2290-2321">FALLBACK_SUCCESS_ROUTE_TENCENT </td><td align="center" md-pos="2322-2330"> 第三方导航腾讯</td></tr>
+        </tbody>
+    </table>
+    <p md-pos="2332-2348"><span md-pos="2332-2345"><strong>司机定位缓存点生效记录</strong></span></p>
+    <table md-pos="2349-2558">
+        <thead>
+        <tr md-pos="2349-2357"><th align="center" md-pos="2349-2353">KEY </th><th align="center" md-pos="2354-2357"> 说明</th></tr>
+        </thead>
+        <tbody>
+        <tr md-pos="2368-2414"><td align="center" md-pos="2368-2405">FALLBACK_SUCCESS_TX_HISTORY_LOCATION </td><td align="center" md-pos="2406-2414"> SDK缓存兜底</td></tr>
+        <tr md-pos="2415-2459"><td align="center" md-pos="2415-2451">FALLBACK_SUCCESS_TX_DEVICE_LOCATION </td><td align="center" md-pos="2452-2459"> 原生实时兜底</td></tr>
+        <tr md-pos="2460-2509"><td align="center" md-pos="2460-2501">FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION </td><td align="center" md-pos="2502-2509"> 原生缓存兜底</td></tr>
+        <tr md-pos="2510-2557"><td align="center" md-pos="2510-2548">FALLBACK_SUCCESS_APP_HISTORY_LOCATION </td><td align="center" md-pos="2549-2557"> App缓存兜底</td></tr>
+        </tbody>
+    </table>
+</article>
+<script>hljs.initHighlightingOnLoad();</script></body>
+</html>
