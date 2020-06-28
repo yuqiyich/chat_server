@@ -4,14 +4,20 @@ header 20200316
 
 title 获取服务号token流程图
 
-group 获取服务号token
-:APP记录平台;
-if (本地检查是否存在有效token) then (存在，直接返回)
-elseif (数据库检查下啊是否存在有效token) then (存在，直接返回。且保存在本地)
-else (不存在)
-    : 请求微信平台接口获取到token、\n有效期，保存在本地、数据库;
-endif
-:APP记录平台拿到token;
-end group
+(*) --> [start process] "获取服务号Token"
+--> "一、本地有效Token"
+if "存在" then
+    -->[true] "返回服务号Token" as last
+    -left->[Ending process] (*)
+else
+    -->[false] "二、数据库有效Token" as db
+db --> if "存在" then
+    -->[true] "保存在本地"
+    --> last
+else
+    -->[falae] "三、请求微信平台接口获取到token、有效期"
+    -->"保存在本地、数据库"
+    --> last
+end if
 
 @enduml
