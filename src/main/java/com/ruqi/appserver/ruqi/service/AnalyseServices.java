@@ -46,10 +46,13 @@ public class AnalyseServices {
                 for (AppInfo appInfo : appInfos) {
                     if (appInfo.getAppId() == APP_DRIVER || appInfo.getAppId() == APP_CLIENT) {
                         int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
+                        int loginUserCount = riskInfoWrapper.countSecurityUserNum(appInfo.getAppId(), DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
                         if (count >= 0) {//不设阈值
                             logger.info("risk count:" + count);
                             mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
-                                    "在过去的" + DateTimeUtils.getYesterday() + "一天内总共有" + count + "条设备风险数据[" + mEnv + "],发送ip:" + IpUtil.getLocalIP(), "请至APP记录平台查看完整详细信息", null);
+                                    "在过去的" + DateTimeUtils.getYesterday() + "一天内总共有" + count
+                                            + "条设备风险数据[" + mEnv + "]，其中共" + loginUserCount + "个登录用户。发送ip:"
+                                            + IpUtil.getLocalIP(), "请至APP记录平台查看完整详细信息", null);
                         } else {
                             logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
                         }

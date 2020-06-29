@@ -23,6 +23,9 @@ public interface RiskInfoWrapper {
     @Select("select count(*) from risk_record where create_time > #{startTime} and create_time < #{endTime} and app_id=#{appId}")
     int countSecurityNum(int appId, Date startTime, Date endTime);
 
+    @Select("select count(DISTINCT(user_id)) from risk_record where create_time > #{startTime} and create_time < #{endTime} and app_id=#{appId}")
+    int countSecurityUserNum(int appId, Date startTime, Date endTime);
+
 //    @Select({"<script>",
 //            "SELECT * FROM",
 //            "(SELECT * FROM risk_record",
