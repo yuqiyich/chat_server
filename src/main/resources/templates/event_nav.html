@@ -47,6 +47,7 @@
                     <option value="FALLBACK_SUCCESS_ROUTE_GAODE">第三方导航高德</option>
                     <option value="FALLBACK_SUCCESS_ROUTE_BAIDU">第三方导航百度</option>
                     <option value="FALLBACK_SUCCESS_ROUTE_TENCENT">第三方导航腾讯</option>
+                    <option value="FALLBACK_FAIL_ROUTE">兜底失败</option>
                 </select>
             </div>
         </div>
@@ -85,6 +86,16 @@
             <label class="layui-form-label">设备ID</label>
             <div class="layui-input-inline" style="width: 100px;">
                 <input type="text" class="layui-input" id="deviceID">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">场景</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <select id="scene">
+                    <option value="">所有</option>
+                    <option value="1">接驾</option>
+                    <option value="2">送驾</option>
+                </select>
             </div>
         </div>
         <div class="layui-inline">
@@ -164,7 +175,8 @@
                             "deviceModel": $("#deviceModel").val(),
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
-                            "eventKey": $("#eventKey").val()
+                            "eventKey": $("#eventKey").val(),
+                            "scene": $("#scene").val(),
                         }
                     }
                 }, 'data');
@@ -188,7 +200,8 @@
                             "deviceModel": $("#deviceModel").val(),
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
-                            "eventKey": $("#eventKey").val()
+                            "eventKey": $("#eventKey").val(),
+                            "scene": $("#scene").val(),
                         }
                     }
                 }, 'data');
@@ -257,10 +270,24 @@
                         // , {minWidth: 140, field: 'appName', title: '应用名称', sort: false, align: 'center'}
                         , {minWidth: 110, field: 'platform', title: '系统平台', sort: false, align: 'center'}
                         , {minWidth: 106, field: 'userId', title: '用户ID', sort: false, align: 'center'}
+                        , {minWidth: 110, field: 'orderId', title: '订单ID', sort: false, align: 'center'}
+                        , {minWidth: 106, field: 'scene', title: '场景', templet: function (d) {
+                            switch (d.scene) {
+                                case "1":
+                                    return "接驾";
+                                case "2":
+                                    return "送驾";
+                                default:
+                                    if (d.scene) {
+                                        return d.scene;
+                                    } else {
+                                        return "";
+                                    }
+                            }
+                        }, sort: false, align: 'center'}
                         // , {minWidth: 124, field: 'userPhone', title: '用户手机', sort: false, align: 'center'}
                         // , {minWidth: 124, field: 'nickName', title: '用户名称', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'deviceId', title: '设备ID', sort: false, align: 'center'}
-                        , {minWidth: 100, field: 'eventDetail', title: '详情', sort: false, align: 'center'}
                         , {
                         minWidth: 180, field: 'createTime', templet: function (d) {
                             return formatDateTime(d.createTime);
@@ -270,12 +297,13 @@
                         , {minWidth: 80, field: 'netState', title: '网络状态', sort: false, align: 'center'}
                         , {minWidth: 90, field: 'locationLat', title: '经度', sort: false, align: 'center'}
                         , {minWidth: 90, field: 'locationLng', title: '纬度', sort: false, align: 'center'}
-                        , {minWidth: 90, field: 'channel', title: '渠道', sort: false, align: 'center'}
                         , {minWidth: 110, field: 'appVersionCode', title: 'app版本id', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'appVersionName', title: 'app版本名称', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'deviceModel', title: '设备型号', sort: false, align: 'center'}
                         , {minWidth: 90, field: 'deviceBrand', title: '设备品牌', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'requestIp', title: '请求ip', sort: false, align: 'center'}
+                        , {minWidth: 90, field: 'channel', title: '渠道', sort: false, align: 'center'}
+                        , {minWidth: 100, field: 'eventDetail', title: '详情', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'ext', title: '备注', sort: false, align: 'center'}
                     ]
                 ]

@@ -28,6 +28,9 @@ public class RecordServiceImpl implements IRecordService {
     @Autowired
     DotEventInfoWrapper dotEventInfoWrapper;
 
+//    @Autowired
+//    RecordInfoDAO recordInfoDAO;
+
     @Override
     @Async("taskExecutor")
     public <T extends BaseRecordInfo> void saveRecord(RecordInfo<T> data, Date uploadTime, String requestIp) {
@@ -55,6 +58,11 @@ public class RecordServiceImpl implements IRecordService {
                         saveRiskUserInfo(data.getUserInfo());
                     }
                     saveRiskInfo(riskInfo);
+
+                    String id = "121";
+                    data.setId(id);
+//                    recordInfoDAO.save(data);
+//                    recordInfoDAO.findById(id);
                 } else if (null != data.getContent() && data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId() && data.getContent() instanceof DotEventInfo) {
                     if (null != data.getContent() && null != data.getUserInfo()) {
                         data.getContent().setUserId(data.getUserInfo().getUserId());
@@ -104,6 +112,11 @@ public class RecordServiceImpl implements IRecordService {
     @Override
     public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params, String eventType) {
         return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params, eventType);
+    }
+
+    @Override
+    public List<String> queryEventDetails(String key) {
+        return dotEventInfoWrapper.queryEventDetails(key);
     }
 
     @Override

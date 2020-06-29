@@ -30,6 +30,9 @@ public interface IRecordService {
 
     List<RecordDotEventInfo> queryCommonEventListForLayui(int i, int limit, RecordInfo<DotEventInfo> params, String eventType);
 
+
+    List<String> queryEventDetails(String key);
+
     long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> params, String eventType);
 
 }

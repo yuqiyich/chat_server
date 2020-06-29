@@ -11,21 +11,24 @@ import java.util.List;
 @Repository
 public interface DotEventInfoWrapper {
 
-    @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,device_brand,system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode,device_model,request_ip) " +
-            "values(#{eventKey},#{userId},#{deviceId},#{eventDetail},#{createTime},#{deviceBrand},#{systemVersion},#{appVersionName},#{netState},#{locationLat},#{locationLng},#{channel},#{appId},#{platform},#{appVersionCode},#{deviceModel},#{requestIp})")
+    @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,device_brand,system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode,device_model,request_ip, order_id, scene) " +
+            "values(#{eventKey},#{userId},#{deviceId},#{eventDetail},#{createTime},#{deviceBrand},#{systemVersion},#{appVersionName},#{netState},#{locationLat},#{locationLng},#{channel},#{appId},#{platform},#{appVersionCode},#{deviceModel},#{requestIp},#{orderId},#{scene})")
     void insertDotEventRecord(DotEventInfo dotEventInfo);
 
     @Select({"<script>",
             "SELECT count(*) FROM",
             "(SELECT * FROM dot_event_record",
             "WHERE 1=1",
-            "<if test='dotEventInfo.content==null and eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT')</if>",
-            "<if test='dotEventInfo.content==null and eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_APP')</if>",
-            "<if test='dotEventInfo.content==null and eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' )</if>",
+            "<if test='dotEventInfo.content==null and eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE') </if>",
+            "<if test='dotEventInfo.content==null and eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT') </if>",
+            "<if test='dotEventInfo.content==null and eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION') </if>",
             "<if test='dotEventInfo.content!=null '>",
             "<if test='dotEventInfo.content.appId!=null and dotEventInfo.content.appId!=\"\" and dotEventInfo.content.appId>0 and (dotEventInfo.content.appId==\"1\" or  dotEventInfo.content.appId==\"2\")'>AND (app_id='1' or  app_id='2') </if>",
             "<if test='dotEventInfo.content.appId!=null and dotEventInfo.content.appId!=\"\" and dotEventInfo.content.appId>0 and (dotEventInfo.content.appId==\"3\" or  dotEventInfo.content.appId==\"4\")'>AND (app_id='3' or  app_id='4') </if>",
             "<if test='dotEventInfo.content.platform!=null and dotEventInfo.content.platform!=\"\" '>AND platform = #{dotEventInfo.content.platform}</if>",
+            "<if test='dotEventInfo.content.scene!=null and dotEventInfo.content.scene!=\"\" '>AND scene = #{dotEventInfo.content.scene}</if>",
+            "<if test='dotEventInfo.content.orderIdFilter==\"1\" '>AND order_id IS NOT NULL AND order_id!='' </if>",
+            "<if test='dotEventInfo.content.orderIdFilter==\"2\" '>AND (order_id IS NULL OR order_id='') </if>",
             "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userPhone}</if>",
             "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName}</if>",
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{dotEventInfo.content.deviceModel}, '%')</if>",
@@ -34,9 +37,9 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.startDate!=null '>AND create_time &gt; #{dotEventInfo.content.startDate}</if>",
             "<if test='dotEventInfo.content.endDate!=null '>AND create_time &lt; #{dotEventInfo.content.endDate}</if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey}</if>",
-            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT')</if>",
-            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_APP')</if>",
-            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' )</if>",
+            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE') </if>",
+            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT') </if>",
+            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION') </if>",
             "</if>",
             ") as a,",
             "app_info as b ",
@@ -52,22 +55,25 @@ public interface DotEventInfoWrapper {
             "SELECT * FROM",
             "(SELECT * FROM dot_event_record",
             "WHERE 1=1",
-            "<if test='dotEventInfo.content==null and eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT')</if>",
-            "<if test='dotEventInfo.content==null and eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_APP')</if>",
-            "<if test='dotEventInfo.content==null and eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' )</if>",
+            "<if test='dotEventInfo.content==null and eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE') </if>",
+            "<if test='dotEventInfo.content==null and eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT') </if>",
+            "<if test='dotEventInfo.content==null and eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION') </if>",
             "<if test='dotEventInfo.content!=null '>",
             "<if test='dotEventInfo.content.appId!=null and dotEventInfo.content.appId!=\"\" and dotEventInfo.content.appId>0 and (dotEventInfo.content.appId==\"1\" or  dotEventInfo.content.appId==\"2\")'>AND (app_id='1' or  app_id='2') </if>",
             "<if test='dotEventInfo.content.appId!=null and dotEventInfo.content.appId!=\"\" and dotEventInfo.content.appId>0 and (dotEventInfo.content.appId==\"3\" or  dotEventInfo.content.appId==\"4\")'>AND (app_id='3' or  app_id='4') </if>",
             "<if test='dotEventInfo.content.platform!=null and dotEventInfo.content.platform!=\"\" '>AND platform = #{dotEventInfo.content.platform}</if>",
+            "<if test='dotEventInfo.content.scene!=null and dotEventInfo.content.scene!=\"\" '>AND scene = #{dotEventInfo.content.scene}</if>",
+            "<if test='dotEventInfo.content.orderIdFilter==\"1\" '>AND order_id IS NOT NULL AND order_id!='' </if>",
+            "<if test='dotEventInfo.content.orderIdFilter==\"2\" '>AND (order_id IS NULL OR order_id='') </if>",
             "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userPhone}</if>",
             "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName}</if>",
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{dotEventInfo.content.deviceModel}, '%')</if>",
             "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand like concat('%', #{dotEventInfo.content.deviceBrand}, '%')</if>",
             "<if test='dotEventInfo.content.deviceId!=null and dotEventInfo.content.deviceId!=\"\" '>AND device_id like concat('%', #{dotEventInfo.content.deviceId}, '%')</if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey}</if>",
-            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT')</if>",
-            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_APP')</if>",
-            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' )</if>",
+            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE') </if>",
+            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT') </if>",
+            "<if test='(dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION') </if>",
             "<if test='dotEventInfo.content.startDate!=null '>AND create_time &gt; #{dotEventInfo.content.startDate}</if>",
             "<if test='dotEventInfo.content.endDate!=null  '>AND create_time &lt; #{dotEventInfo.content.endDate}</if>",
             "</if>",
@@ -96,7 +102,15 @@ public interface DotEventInfoWrapper {
             @Result(property = "ext", column = "ext"),
             @Result(property = "requestIp", column = "request_ip"),
             @Result(property = "eventKey", column = "event_key"),
+            @Result(property = "scene", column = "scene"),
+            @Result(property = "orderId", column = "order_id"),
             @Result(property = "systemVersion", column = "system_version")}
     )
     List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> dotEventInfo, String eventType);
+
+    @Select({"<script>",
+            "SELECT event_detail FROM dot_event_record",
+            "WHERE 1=1 AND platform = 'Android' AND event_key=#{key}",
+            "</script>"})
+    List<String> queryEventDetails(@Param("key") String key);
 }

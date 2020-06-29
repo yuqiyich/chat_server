@@ -44,4 +44,7 @@ CREATE TABLE `dot_event_record` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+ALTER TABLE dot_event_record ADD order_id varchar(50) DEFAULT NULL COMMENT '订单ID'
+ALTER TABLE dot_event_record ADD scene varchar(10) DEFAULT NULL COMMENT '场景'
+
 SET FOREIGN_KEY_CHECKS = 1;

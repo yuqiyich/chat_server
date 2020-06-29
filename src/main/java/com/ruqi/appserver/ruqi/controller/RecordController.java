@@ -1,6 +1,5 @@
 package com.ruqi.appserver.ruqi.controller;
 
-import com.google.gson.Gson;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.service.IRecordService;
@@ -21,7 +20,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 记录埋点的控制器
@@ -31,11 +29,15 @@ import java.util.Map;
 @RestController
 @Api(tags = "记录埋点数据的入口")
 @RequestMapping(value = "/record")
-public class RecordController {
+public class RecordController extends BaseController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     IRecordService recordService;
+//    @Autowired
+//    BaseElasticService baseElasticService;
+
+//    RecordInfoDAO recordInfoDAO = new RecordInfoDAO();
 
     /**
      * 查询记录到数据的版本号名称(for web 的layui的table控件接口)
@@ -67,9 +69,49 @@ public class RecordController {
         return result;
     }
 
+//    @Resource
+//    private ElasticsearchTemplate elasticsearchTemplate;
+
     @ApiOperation(value = "应用设备风险上报", notes = "")
-    @RequestMapping(value = "/uploadData", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadData", method = RequestMethod.GET)
     public BaseCodeMsgBean BaseBean(@RequestBody RecordInfo<RiskInfo> content) {
+//        ElasticEntity elasticEntity = new ElasticEntity();
+//        elasticEntity.setId("121");
+//        Map map = new HashMap();
+//        map.put("key1", "value11");
+//        map.put("key2", "value222");
+//        elasticEntity.setData(map);
+//        baseElasticService.insertOrUpdateOne("idName1", elasticEntity);
+
+//        TestDoc1 testDoc1 = new TestDoc1();
+//        testDoc1.content = "content1";
+//        testDoc1.desc = "desc1";
+//
+//        logger.info("--->uploadData");
+//
+//        String indexName = "zytest3";
+//        logger.info("--->uploadData elasticsearchTemplate.indexExists(indexName)=" + elasticsearchTemplate.indexExists(indexName));
+//        if (!elasticsearchTemplate.indexExists(indexName)) {
+//            System.out.println(elasticsearchTemplate.createIndex(indexName));
+//            System.out.println(elasticsearchTemplate.putMapping(TestDoc1.class));
+//            elasticsearchTemplate.refresh(indexName);
+//        }
+
+//        System.out.println(elasticsearchTemplate.getClient().p(indexName));
+//        System.out.println(elasticsearchTemplate.queryForAlias(indexName));
+//        logger.info("--->uploadData elasticsearchTemplate.indexExists(TestDoc1.class)=" + elasticsearchTemplate.indexExists(TestDoc1.class));
+//        if (elasticsearchTemplate.indexExists(TestDoc1.class)) {
+//            System.out.println(elasticsearchTemplate.createIndex(TestDoc1.class));
+//            System.out.println(elasticsearchTemplate.putMapping(TestDoc1.class));
+//        }
+
+//
+//        String id = "121";
+//        content.setId(id);
+//        recordInfoDAO.save(content);
+//        recordInfoDAO.findById(id);
+
+//        return new BaseCodeMsgBean();
         return saveData(content);
     }
 
@@ -214,6 +256,25 @@ public class RecordController {
         List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params, eventType);
         long totalSize = recordService.queryTotalSizeCommonEvent(params, eventType);
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
+        // 统计影响安卓司机订单数量
+//        if (!MyStringUtils.isEmpty(params.getContent().eventKey)) {
+//            List<String> eventDetailList = recordService.queryEventDetails(params.getContent().eventKey);
+//            int count = 0;
+//            Set<String> orderIdSet = new HashSet<>();
+//            for (String str : eventDetailList) {
+//                String pre = "orderId";
+//                String suff = ",";
+//                if (!MyStringUtils.isEmpty(str) && str.contains(pre) && str.contains(suff)) {
+//                    String orderid = str.substring(str.indexOf(pre), str.indexOf(suff));
+//                    if (!orderIdSet.contains(orderid)) {
+//                        orderIdSet.add(orderid);
+//                        count++;
+//                    }
+//                }
+//            }
+//            logger.info("--->size:" + count);
+//        }
 
         return result;
     }

@@ -32,4 +32,6 @@ public class RecordDotEventInfo {
     public String requestIp;
     public String ext;//使用额外字段标识
     public String eventDetail;
+    public String scene;
+    public String orderId;
 }
