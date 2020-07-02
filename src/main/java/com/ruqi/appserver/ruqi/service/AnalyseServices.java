@@ -24,7 +24,7 @@ public class AnalyseServices {
 
     private static final long APP_DRIVER = 1;//司机端应用id
     private static final long APP_CLIENT = 2;//乘客端应用id
-    private static final String CRON_REG = "0 0 9 * * ?";
+    private static final String CRON_REG = "0 0 10 * * ?";
 
     @Autowired
     RiskInfoWrapper riskInfoWrapper;
@@ -45,6 +45,7 @@ public class AnalyseServices {
             if (!CollectionUtils.isEmpty(appInfos)) {
                 for (AppInfo appInfo : appInfos) {
                     if (appInfo.getAppId() == APP_DRIVER || appInfo.getAppId() == APP_CLIENT) {
+                        logger.info("yesterdayStartDate:" + DateTimeUtils.getYesterdayStartDate() + ", yesterdayEndDate:" + DateTimeUtils.getYesterdayEndDate());
                         int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
                         int loginUserCount = riskInfoWrapper.countSecurityUserNum(appInfo.getAppId(), DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
                         if (count >= 0) {//不设阈值

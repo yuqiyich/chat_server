@@ -39,7 +39,7 @@
         </div>
         <div class="layui-inline">
             <label class="layui-form-label">生效类型</label>
-            <div class="layui-input-inline" style="width: 100px;">
+            <div class="layui-input-inline" style="width: 150px;">
                 <select id="eventKey">
                     <option value="">所有类型</option>
                     <option value="FALLBACK_SUCCESS_TX_HISTORY_LOCATION">SDK缓存兜底</option>
@@ -117,6 +117,8 @@
     </div>
 </form>
 
+<label id="label_user_count"></label>
+<label id="label_order_count"></label>
 <table id="developerTable" lay-filter="developerTable"></table>
 
 <script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
@@ -154,6 +156,23 @@
     }
 </script>
 <script>
+    function getFormData() {
+        return "{" +
+            "\"content\": {" +
+            ($("#appIdSelect").val() ? ("\"appId\": " + $("#appIdSelect").val()) : "\"appId\": 1") +
+            ($("#system_platform").val() ? (",\"platform\": \"" + $("#system_platform").val() + "\"") : "") +
+            ($("#userId").val() ? (",\"userId\": " + $("#userId").val()) : "") +
+            ($("#appVersion").val() ? (",\"appVersionName\": \"" + $("#appVersion").val() + "\"") : "") +
+            ($("#duringTime").val() ? (",\"duringTime\": \"" + $("#duringTime").val() + "\"") : "") +
+            ($("#deviceModel").val() ? (",\"deviceModel\": \"" + $("#deviceModel").val() + "\"") : "") +
+            ($("#deviceBrand").val() ? (",\"deviceBrand\": \"" + $("#deviceBrand").val() + "\"") : "") +
+            ($("#deviceID").val() ? (",\"deviceId\": \"" + $("#deviceID").val() + "\"") : "") +
+            ($("#eventKey").val() ? (",\"eventKey\": \"" + $("#eventKey").val() + "\"") : "") +
+            ($("#scene").val() ? (",\"scene\": \"" + $("#scene").val() + "\"") : "") +
+            "}" +
+            "}";
+    }
+
     layui.use(['form', 'layedit', 'laydate'], function () {
         var form = layui.form;
 
@@ -177,6 +196,8 @@
                             "eventKey": $("#eventKey").val(),
                             "scene": $("#scene").val(),
                         }
+                    }, done: function (res, curr, count) {
+                        getUniqueCountData();
                     }
                 }, 'data');
             });
@@ -202,6 +223,8 @@
                             "eventKey": $("#eventKey").val(),
                             "scene": $("#scene").val(),
                         }
+                    }, done: function (res, curr, count) {
+                        getUniqueCountData();
                     }
                 }, 'data');
             });
@@ -210,6 +233,49 @@
     });
 </script>
 <script>
+    function getUniqueCountData() {
+        $("#label_user_count").text("");
+        $("#label_order_count").text("");
+
+        // console.log("--->getFormData()=" + getFormData());
+        $.ajax({
+            type: "POST",
+            url: "record/queryEventDriverLocationUserCount",
+            data: getFormData(),//请求的参数
+            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+            contentType: 'application/json;charset=utf-8',
+            success: function (dataResult) {
+                if (null != dataResult) {
+                    if (dataResult.errorCode == 0) {
+                        // console.log("--->result dataResult.size:" + dataResult.data.size);
+                        $("#label_user_count").text("用户数量：" + dataResult.data.size);
+                    } else {
+                        console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
+                        $("#label_user_count").text("");
+                    }
+                }
+            }
+        });
+        $.ajax({
+            type: "POST",
+            url: "record/queryEventDriverLocationOrderCount",
+            data: getFormData(),//请求的参数
+            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+            contentType: 'application/json;charset=utf-8',
+            success: function (dataResult) {
+                if (null != dataResult) {
+                    if (dataResult.errorCode == 0) {
+                        // console.log("--->result dataResult.size:" + dataResult.data.size);
+                        // $("#label_order_count").text("订单数量：" + dataResult.data.size);
+                    } else {
+                        console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
+                        $("#label_order_count").text("");
+                    }
+                }
+            }
+        });
+    }
+
     layui.use('laydate', function () {
         layui.use('table', function () {
             var table = layui.table;
@@ -268,7 +334,8 @@
                         , {minWidth: 110, field: 'platform', title: '系统平台', sort: false, align: 'center'}
                         , {minWidth: 106, field: 'userId', title: '用户ID', sort: false, align: 'center'}
                         , {minWidth: 110, field: 'orderId', title: '订单ID', sort: false, align: 'center'}
-                        , {minWidth: 106, field: 'scene', title: '场景', templet: function (d) {
+                        , {
+                        minWidth: 106, field: 'scene', title: '场景', templet: function (d) {
                             switch (d.scene) {
                                 case "1":
                                     return "接驾";
@@ -281,7 +348,8 @@
                                         return "";
                                     }
                             }
-                        }, sort: false, align: 'center'}
+                        }, sort: false, align: 'center'
+                    }
                         // , {minWidth: 124, field: 'userPhone', title: '用户手机', sort: false, align: 'center'}
                         // , {minWidth: 124, field: 'nickName', title: '用户名称', sort: false, align: 'center'}
                         , {minWidth: 100, field: 'deviceId', title: '设备ID', sort: false, align: 'center'}
@@ -311,6 +379,8 @@
                         , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
                         , "data": null != res.data && null != res.data.list ? res.data.list : null
                     };
+                }, done: function (res, curr, count) {
+                    getUniqueCountData();
                 }
             });
 

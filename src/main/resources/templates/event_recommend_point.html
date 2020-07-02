@@ -39,7 +39,7 @@
         </div>
         <div class="layui-inline">
             <label class="layui-form-label">生效类型</label>
-            <div class="layui-input-inline" style="width: 100px;">
+            <div class="layui-input-inline" style="width: 150px;">
                 <select id="eventKey">
                     <option value="">所有类型</option>
                     <option value="FALLBACK_SUCCESS_TX_RECOMMEND">腾讯推荐点生效</option>
@@ -117,6 +117,8 @@
     </div>
 </form>
 
+<label id="label_user_count"></label>
+<label id="label_order_count"></label>
 <table id="developerTable" lay-filter="developerTable"></table>
 
 <script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
@@ -177,6 +179,8 @@
                             "eventKey": $("#eventKey").val(),
                             "orderIdFilter": $("#orderIdFilter").val()
                         }
+                    }, done: function (res, curr, count) {
+                        getUniqueCountData();
                     }
                 }, 'data');
             });
@@ -202,6 +206,8 @@
                             "eventKey": $("#eventKey").val(),
                             "orderIdFilter": $("#orderIdFilter").val()
                         }
+                    }, done: function (res, curr, count) {
+                        getUniqueCountData();
                     }
                 }, 'data');
             });
@@ -210,6 +216,66 @@
     });
 </script>
 <script>
+    function getFormData() {
+        var param = "{" +
+            "\"content\": {" +
+            ($("#appIdSelect").val() ? ("\"appId\": " + $("#appIdSelect").val()) : "\"appId\": 2") +
+            ($("#system_platform").val() ? (",\"platform\": \"" + $("#system_platform").val() + "\"") : "") +
+            ($("#userId").val() ? (",\"userId\": " + $("#userId").val() + "\"") : "") +
+            ($("#appVersion").val() ? (",\"appVersionName\": \"" + $("#appVersion").val() + "\"") : "") +
+            ($("#duringTime").val() ? (",\"duringTime\": \"" + $("#duringTime").val() + "\"") : "") +
+            ($("#deviceModel").val() ? (",\"deviceModel\": \"" + $("#deviceModel").val() + "\"") : "") +
+            ($("#deviceBrand").val() ? (",\"deviceBrand\": \"" + $("#deviceBrand").val() + "\"") : "") +
+            ($("#deviceID").val() ? (",\"deviceId\": \"" + $("#deviceID").val() + "\"") : "") +
+            ($("#eventKey").val() ? (",\"eventKey\": \"" + $("#eventKey").val() + "\"") : "") +
+            ($("#orderIdFilter").val() ? (",\"orderIdFilter\": \"" + $("#orderIdFilter").val() + "\"") : "") +
+            "}" +
+            "}";
+        return param;
+    }
+
+    function getUniqueCountData() {
+        $("#label_user_count").text("");
+        $("#label_order_count").text("");
+        // console.log("--->getFormData()=" + getFormData());
+        $.ajax({
+            type: "POST",
+            url: "record/queryEventRecmdPointUserCount",
+            data: getFormData(),//请求的参数
+            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+            contentType: 'application/json;charset=utf-8',
+            success: function (dataResult) {
+                if (null != dataResult) {
+                    if (dataResult.errorCode == 0) {
+                        // console.log("--->result dataResult.size:" + dataResult.data.size);
+                        $("#label_user_count").text("用户数量：" + dataResult.data.size);
+                    } else {
+                        console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
+                        $("#label_user_count").text("");
+                    }
+                }
+            }
+        });
+        $.ajax({
+            type: "POST",
+            url: "record/queryEventRecmdPointOrderCount",
+            data: getFormData(),//请求的参数
+            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
+            contentType: 'application/json;charset=utf-8',
+            success: function (dataResult) {
+                if (null != dataResult) {
+                    if (dataResult.errorCode == 0) {
+                        // console.log("--->result dataResult.size:" + dataResult.data.size);
+                        $("#label_order_count").text("订单数量：" + dataResult.data.size);
+                    } else {
+                        console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
+                        $("#label_order_count").text("");
+                    }
+                }
+            }
+        });
+    }
+
     layui.use('laydate', function () {
         layui.use('table', function () {
             var table = layui.table;
@@ -299,6 +365,8 @@
                         , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
                         , "data": null != res.data && null != res.data.list ? res.data.list : null
                     };
+                }, done: function (res, curr, count) {
+                    getUniqueCountData();
                 }
             });
 

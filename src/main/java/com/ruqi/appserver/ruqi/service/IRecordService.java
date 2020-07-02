@@ -35,4 +35,7 @@ public interface IRecordService {
 
     long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> params, String eventType);
 
+    long queryEventTotalUserSize(RecordInfo<DotEventInfo> params, String eventType);
+
+    long queryEventTotalOrderSize(RecordInfo<DotEventInfo> params, String eventType);
 }

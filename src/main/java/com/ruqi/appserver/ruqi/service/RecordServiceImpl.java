@@ -140,6 +140,16 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
+    public long queryEventTotalUserSize(RecordInfo<DotEventInfo> recordInfo, String eventType) {
+        return dotEventInfoWrapper.queryEventTotalUserSize(recordInfo, eventType);
+    }
+
+    @Override
+    public long queryEventTotalOrderSize(RecordInfo<DotEventInfo> recordInfo, String eventType) {
+        return dotEventInfoWrapper.queryEventTotalOrderSize(recordInfo, eventType);
+    }
+
+    @Override
     public long queryOverviewTotalSize(RecordInfo<RiskOverviewInfo> recordInfo) {
         if (null != recordInfo && null != recordInfo.getContent()) {
             switch (recordInfo.getContent().overviewType) {
