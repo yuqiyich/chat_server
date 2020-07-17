@@ -178,6 +178,7 @@
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
                             "eventKey": $("#eventKey").val(),
+                            "eventType": $("#eventKey").val() ? "" : "nav",
                             "scene": $("#scene").val(),
                         }
                     }, done: function (res, curr, count) {
@@ -206,6 +207,7 @@
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
                             "eventKey": $("#eventKey").val(),
+                            "eventType": $("#eventKey").val() ? "" : "nav",
                             "scene": $("#scene").val(),
                         }
                     }, done: function (res, curr, count) {
@@ -223,7 +225,7 @@
         $("#label_order_count").text("");
         $.ajax({
             type: "POST",
-            url: "record/queryEventNavUserCount",
+            url: "record/queryCommonEventUserCount",
             data: getFormData(),//请求的参数
             dataType: "json",//以json格式返回的数据，不是json就把此行去掉
             contentType: 'application/json;charset=utf-8',
@@ -241,7 +243,7 @@
         });
         $.ajax({
             type: "POST",
-            url: "record/queryEventNavOrderCount",
+            url: "record/queryCommonEventOrderCount",
             data: getFormData(),//请求的参数
             dataType: "json",//以json格式返回的数据，不是json就把此行去掉
             contentType: 'application/json;charset=utf-8',
@@ -249,7 +251,7 @@
                 if (null != dataResult) {
                     if (dataResult.errorCode == 0) {
                         // console.log("--->result dataResult.size:" + dataResult.data.size);
-                        $("#label_order_count").text("安卓订单数量：" + dataResult.data.size);
+                        $("#label_order_count").text("订单数量：" + dataResult.data.size);
                     } else {
                         console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
                         $("#label_order_count").text("");
@@ -270,7 +272,7 @@
             ($("#deviceModel").val() ? (",\"deviceModel\": \"" + $("#deviceModel").val() + "\"") : "") +
             ($("#deviceBrand").val() ? (",\"deviceBrand\": \"" + $("#deviceBrand").val() + "\"") : "") +
             ($("#deviceID").val() ? (",\"deviceId\": \"" + $("#deviceID").val() + "\"") : "") +
-            ($("#eventKey").val() ? (",\"eventKey\": \"" + $("#eventKey").val() + "\"") : "") +
+            ($("#eventKey").val() ? (",\"eventKey\": \"" + $("#eventKey").val() + "\"") : (",\"eventType\": \"nav\"")) +
             ($("#scene").val() ? (",\"scene\": \"" + $("#scene").val() + "\"") : "") +
             "}" +
             "}";
@@ -285,13 +287,14 @@
             var tableIns = table.render({
                 elem: '#developerTable'
                 , title: '算路降级生效记录'
-                , url: 'record/queryEventNavListForLayui'
+                , url: 'record/queryCommonEventListForLayui'
                 , method: 'post'
                 , contentType: 'application/json'
                 , page: {curr: 1}
                 , where: {
                     "content": {
                         "appId": "1",
+                        "eventType": "nav",
                     }
                 }
                 , limit: 10

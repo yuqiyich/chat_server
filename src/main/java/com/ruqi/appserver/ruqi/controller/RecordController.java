@@ -19,7 +19,10 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 记录埋点的控制器
@@ -118,7 +121,21 @@ public class RecordController extends BaseController {
     @ApiOperation(value = "通用简单埋点事件统计上报", notes = "")
     @RequestMapping(value = "/uploadDotEventData", method = RequestMethod.POST)
     public BaseCodeMsgBean uploadDotEventData(@RequestBody RecordInfo<DotEventInfo> content) {
-        return saveData(content);
+        try {
+            if (null != content && null != content.getContent() && null != content.getContent().eventData) {
+                Map<String, Object> eventData = content.getContent().eventData;
+                if (eventData.containsKey(DotEventInfo.NAME_USER_TYPE)) {
+                    content.getContent().userType = (int) eventData.get(DotEventInfo.NAME_USER_TYPE);
+                }
+            }
+            return saveData(content);
+        } catch (Exception e) {
+            BaseCodeMsgBean result = new BaseCodeMsgBean();
+            result.errorCode = ErrorCode.ERROR_UNKNOWN.errorCode;
+            result.errorMsg = ErrorCode.ERROR_UNKNOWN.errorMsg;
+            logger.error("uploadDotEventData error. content:" + content + ", e:" + e);
+            return result;
+        }
     }
 
     private BaseCodeMsgBean saveData(RecordInfo<? extends BaseRecordInfo> content) {
@@ -219,208 +236,53 @@ public class RecordController extends BaseController {
     }
 
     /**
-     * 推荐点降级生效记录列表(for web 的layui的table控件接口)
+     * 通用查询埋点生效记录用户数
      *
      * @return
      */
-    @ApiOperation(value = "查询推荐点降级生效记录列表", notes = "")
+    @ApiOperation(value = "通用查询埋点生效记录用户数", notes = "")
     @ApiImplicitParams({
             @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
     })
-    @RequestMapping(value = "/queryEventRecmdPointListForLayui", method = RequestMethod.POST)
+    @RequestMapping(value = "/queryCommonEventUserCount", method = RequestMethod.POST)
     @ResponseBody
-    public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventRecmdPointListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventListForLayui(params, "recmdPoint");
-    }
-
-    /**
-     * 算路降级生效记录列表(for web 的layui的table控件接口)
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询算路降级生效记录列表", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
-    })
-    @RequestMapping(value = "/queryEventNavListForLayui", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventNavListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventListForLayui(params, "nav");
-    }
-
-    /**
-     * 司机定位缓存点生效记录列表(for web 的layui的table控件接口)
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询司机定位缓存点生效记录", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
-    })
-    @RequestMapping(value = "/queryEventDriverLocationListForLayui", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseBean<BasePageBean<RecordDotEventInfo>> queryEventDriverLocationListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventListForLayui(params, "driverLocation");
-    }
-
-    private BaseBean<BasePageBean<RecordDotEventInfo>> queryEventListForLayui(RecordInfo<DotEventInfo> params, String eventType) {
-        BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
-        List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params, eventType);
-        long totalSize = recordService.queryTotalSizeCommonEvent(params, eventType);
-        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
-
-        return result;
-    }
-
-    private BaseMapBean queryEventUserCount(RecordInfo<DotEventInfo> params, String eventType) {
+    public BaseMapBean queryCommonEventUserCount(@RequestBody RecordInfo<DotEventInfo> params) {
         BaseMapBean result = new BaseMapBean();
         try {
-            long totalSize = recordService.queryEventTotalUserSize(params, eventType);
+            long totalSize = recordService.queryEventTotalUserSize(params);
             result.data = new HashMap<>();
             result.data.put("size", totalSize);
         } catch (Exception e) {
             result.errorCode = ErrorCode.ERROR_UNKNOWN.errorCode;
             result.errorMsg = ErrorCode.ERROR_UNKNOWN.errorMsg;
-            logger.error("queryEventUserCount error.eventType=" + eventType + ", e:" + e);
+            logger.error("queryEventUserCount error.params=" + params + ", e:" + e);
         }
         return result;
     }
 
-    private BaseMapBean queryEventOrderCount(RecordInfo<DotEventInfo> params, String eventType) {
+    /**
+     * 通用查询埋点记录订单数
+     *
+     * @return
+     */
+    @ApiOperation(value = "通用查询埋点记录订单数", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
+    })
+    @RequestMapping(value = "/queryCommonEventOrderCount", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseMapBean queryCommonEventOrderCount(@RequestBody RecordInfo<DotEventInfo> params) {
         BaseMapBean result = new BaseMapBean();
         try {
-            long totalSize = recordService.queryEventTotalOrderSize(params, eventType);
+            long totalSize = recordService.queryEventTotalOrderSize(params);
             result.data = new HashMap<>();
             result.data.put("size", totalSize);
         } catch (Exception e) {
             result.errorCode = ErrorCode.ERROR_UNKNOWN.errorCode;
             result.errorMsg = ErrorCode.ERROR_UNKNOWN.errorMsg;
-            logger.error("queryEventUserCount error.eventType=" + eventType + ", e:" + e);
+            logger.error("queryEventOrderCount error. params:" + params + ", e:" + e);
         }
         return result;
-    }
-
-    /**
-     * 推荐点降级生效记录用户数
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询推荐点降级生效记录用户数", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
-    })
-    @RequestMapping(value = "/queryEventRecmdPointUserCount", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseMapBean queryEventRecmdPointUserCount(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventUserCount(params, "recmdPoint");
-    }
-
-    /**
-     * 算路降级生效记录用户数
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询算路降级生效记录用户数", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
-    })
-    @RequestMapping(value = "/queryEventNavUserCount", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseMapBean queryEventNavUserCount(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventUserCount(params, "nav");
-    }
-
-    /**
-     * 司机定位点降级生效记录用户数
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询司机定位点降级生效记录用户数", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
-    })
-    @RequestMapping(value = "/queryEventDriverLocationUserCount", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseMapBean queryEventDriverLocationUserCount(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventUserCount(params, "driverLocation");
-    }
-
-    /**
-     * 推荐点降级生效记录订单数
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询推荐点降级生效记录订单数", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
-    })
-    @RequestMapping(value = "/queryEventRecmdPointOrderCount", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseMapBean queryEventRecmdPointOrderCount(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventOrderCount(params, "recmdPoint");
-    }
-
-    /**
-     * 算路降级生效记录订单数
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询算路降级生效记录订单数", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
-    })
-    @RequestMapping(value = "/queryEventNavOrderCount", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseMapBean queryEventNavOrderCount(@RequestBody RecordInfo<DotEventInfo> params) {
-        BaseMapBean result = new BaseMapBean();
-        try {
-            // 统计影响安卓司机订单数量
-            int count = 0;
-            String key = "nav";
-            if (null != params && null != params.getContent() && !MyStringUtils.isEmpty(params.getContent().eventKey)) {
-                key = params.getContent().eventKey;
-            }
-            List<String> eventDetailList = recordService.queryEventDetails(key);
-            Set<String> orderIdSet = new HashSet<>();
-            for (String str : eventDetailList) {
-                String pre = "orderId";
-                String suff = ",";
-                if (!MyStringUtils.isEmpty(str) && str.contains(pre) && str.contains(suff)) {
-                    String orderid = str.substring(str.indexOf(pre), str.indexOf(suff));
-                    if (!orderIdSet.contains(orderid)) {
-                        orderIdSet.add(orderid);
-                        count++;
-                    }
-                }
-            }
-
-            long totalSize = count;
-            result.data = new HashMap<>();
-            result.data.put("size", totalSize);
-        } catch (Exception e) {
-            result.errorCode = ErrorCode.ERROR_UNKNOWN.errorCode;
-            result.errorMsg = ErrorCode.ERROR_UNKNOWN.errorMsg;
-            logger.error("queryEventUserCount error.eventType=nav" + ", e:" + e);
-        }
-        return result;
-
-
-//        return queryEventOrderCount(params, "nav");
-    }
-
-    /**
-     * 司机定位点降级生效记录订单数
-     *
-     * @return
-     */
-    @ApiOperation(value = "查询司机定位点降级生效记录订单数", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
-    })
-    @RequestMapping(value = "/queryEventDriverLocationOrderCount", method = RequestMethod.POST)
-    @ResponseBody
-    public BaseMapBean queryEventDriverLocationOrderCount(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventOrderCount(params, "driverLocation");
     }
 
     /**
@@ -435,7 +297,12 @@ public class RecordController extends BaseController {
     @RequestMapping(value = "/queryCommonEventListForLayui", method = RequestMethod.POST)
     @ResponseBody
     public BaseBean<BasePageBean<RecordDotEventInfo>> queryCommonEventListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
-        return queryEventListForLayui(params, "");
+        BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
+        List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params);
+        long totalSize = recordService.queryTotalSizeCommonEvent(params);
+        result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+
+        return result;
     }
 
 }

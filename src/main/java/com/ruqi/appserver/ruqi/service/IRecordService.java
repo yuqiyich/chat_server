@@ -28,14 +28,13 @@ public interface IRecordService {
 
     long queryOverviewTotalSize(RecordInfo<RiskOverviewInfo> params);
 
-    List<RecordDotEventInfo> queryCommonEventListForLayui(int i, int limit, RecordInfo<DotEventInfo> params, String eventType);
+    List<RecordDotEventInfo> queryCommonEventListForLayui(int i, int limit, RecordInfo<DotEventInfo> params);
 
+//    List<String> queryEventDetails(String key);
 
-    List<String> queryEventDetails(String key);
+    long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> params);
 
-    long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> params, String eventType);
+    long queryEventTotalUserSize(RecordInfo<DotEventInfo> params);
 
-    long queryEventTotalUserSize(RecordInfo<DotEventInfo> params, String eventType);
-
-    long queryEventTotalOrderSize(RecordInfo<DotEventInfo> params, String eventType);
+    long queryEventTotalOrderSize(RecordInfo<DotEventInfo> params);
 }

@@ -110,14 +110,14 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
-    public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params, String eventType) {
-        return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params, eventType);
+    public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
+        return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params);
     }
 
-    @Override
-    public List<String> queryEventDetails(String key) {
-        return dotEventInfoWrapper.queryEventDetails(key);
-    }
+//    @Override
+//    public List<String> queryEventDetails(String key) {
+//        return dotEventInfoWrapper.queryEventDetails(key);
+//    }
 
     @Override
     public List<String> queryAppVersionNameForLayui() {
@@ -135,18 +135,18 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
-    public long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> recordInfo, String eventType) {
-        return dotEventInfoWrapper.queryTotalSizeCommonEvent(recordInfo, eventType);
+    public long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> recordInfo) {
+        return dotEventInfoWrapper.queryTotalSizeCommonEvent(recordInfo);
     }
 
     @Override
-    public long queryEventTotalUserSize(RecordInfo<DotEventInfo> recordInfo, String eventType) {
-        return dotEventInfoWrapper.queryEventTotalUserSize(recordInfo, eventType);
+    public long queryEventTotalUserSize(RecordInfo<DotEventInfo> recordInfo) {
+        return dotEventInfoWrapper.queryEventTotalUserSize(recordInfo);
     }
 
     @Override
-    public long queryEventTotalOrderSize(RecordInfo<DotEventInfo> recordInfo, String eventType) {
-        return dotEventInfoWrapper.queryEventTotalOrderSize(recordInfo, eventType);
+    public long queryEventTotalOrderSize(RecordInfo<DotEventInfo> recordInfo) {
+        return dotEventInfoWrapper.queryEventTotalOrderSize(recordInfo);
     }
 
     @Override

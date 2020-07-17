@@ -34,4 +34,5 @@ public class RecordDotEventInfo {
     public String eventDetail;
     public String scene;
     public String orderId;
+    public int userType;
 }

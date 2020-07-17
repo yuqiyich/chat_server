@@ -46,5 +46,6 @@ CREATE TABLE `dot_event_record` (
 
 ALTER TABLE dot_event_record ADD order_id varchar(50) DEFAULT NULL COMMENT '订单ID'
 ALTER TABLE dot_event_record ADD scene varchar(10) DEFAULT NULL COMMENT '场景'
+ALTER TABLE dot_event_record ADD user_type int(4) DEFAULT NULL COMMENT '用户类型'
 
 SET FOREIGN_KEY_CHECKS = 1;

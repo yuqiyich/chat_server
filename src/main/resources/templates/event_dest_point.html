@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>推荐点降级生效记录</title>
+    <title>乘客下车点降级生效记录</title>
     <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
     <style>
         body {
@@ -15,6 +15,7 @@
 
 <body>
 <script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="js/common.js" charset="utf-8"></script>
 
 <form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">
     <div class="layui-form-item">
@@ -38,15 +39,26 @@
             </div>
         </div>
         <div class="layui-inline">
+            <label class="layui-form-label">用户类型</label>
+            <div class="layui-input-inline" style="width: 120px;">
+                <select id="userType">
+                    <option value="">所有</option>
+                    <option value="3">专车用户</option>
+                    <option value="4">顺风车乘客</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
             <label class="layui-form-label">生效类型</label>
             <div class="layui-input-inline" style="width: 150px;">
                 <select id="eventKey">
                     <option value="">所有类型</option>
-                    <option value="FALLBACK_SUCCESS_TX_RECOMMEND">腾讯推荐点生效</option>
-                    <option value="FALLBACK_SUCCESS_TX_GEO">腾讯GEO点生效</option>
-                    <option value="FALLBACK_SUCCESS_RUQI_GEO">APP本地GEO兜底</option>
-                    <option value="FALLBACK_SUCCESS_RUQI_RECOMMEND">APP本地推荐点兜底</option>
-                    <option value="FALLBACK_FAIL_BOARDING_POINT">兜底失败</option>
+                    <option value="FB_SUC_DES_POP_SHOW">推荐下车点气泡展示兜底点</option>
+                    <option value="FB_SUC_DES_POP_SELECT">推荐下车点气泡兜底点被选中</option>
+                    <option value="FB_SUC_DES_POP_ORDER">推荐下车点气泡兜底点下单成功</option>
+                    <option value="FB_SUC_DES_LIST_SHOW">地址列表展示兜底点</option>
+                    <option value="FB_SUC_DES_LIST_SELECT">地址列表兜底点被选中</option>
+                    <option value="FB_SUC_DES_LIST_ORDER">地址列表都地点下单成功</option>
                 </select>
             </div>
         </div>
@@ -177,7 +189,8 @@
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
                             "eventKey": $("#eventKey").val(),
-                            "eventType": $("#eventKey").val() ? "" : "recmdPoint",
+                            "userType": $("#userType").val(),
+                            "eventType": $("#eventKey").val() ? "" : "endPoint",
                             "orderIdFilter": $("#orderIdFilter").val()
                         }
                     }, done: function (res, curr, count) {
@@ -205,7 +218,8 @@
                             "deviceBrand": $("#deviceBrand").val(),
                             "deviceId": $("#deviceID").val(),
                             "eventKey": $("#eventKey").val(),
-                            "eventType": $("#eventKey").val() ? "" : "recmdPoint",
+                            "userType": $("#userType").val(),
+                            "eventType": $("#eventKey").val() ? "" : "endPoint",
                             "orderIdFilter": $("#orderIdFilter").val()
                         }
                     }, done: function (res, curr, count) {
@@ -229,7 +243,8 @@
             ($("#deviceModel").val() ? (",\"deviceModel\": \"" + $("#deviceModel").val() + "\"") : "") +
             ($("#deviceBrand").val() ? (",\"deviceBrand\": \"" + $("#deviceBrand").val() + "\"") : "") +
             ($("#deviceID").val() ? (",\"deviceId\": \"" + $("#deviceID").val() + "\"") : "") +
-            ($("#eventKey").val() ? (",\"eventKey\": \"" + $("#eventKey").val() + "\"") : (",\"eventType\": \"recmdPoint\"")) +
+            ($("#eventKey").val() ? (",\"eventKey\": \"" + $("#eventKey").val() + "\"") : (",\"eventType\": \"endPoint\"")) +
+            ($("#userType").val() ? (",\"userType\": \"" + $("#userType").val() + "\"") : "") +
             ($("#orderIdFilter").val() ? (",\"orderIdFilter\": \"" + $("#orderIdFilter").val() + "\"") : "") +
             "}" +
             "}";
@@ -284,7 +299,7 @@
 
             var tableIns = table.render({
                 elem: '#developerTable'
-                , title: '推荐点降级生效记录'
+                , title: '乘客下车点降级生效记录'
                 , url: 'record/queryCommonEventListForLayui'
                 , method: 'post'
                 , contentType: 'application/json'
@@ -292,7 +307,7 @@
                 , where: {
                     "content": {
                         "appId": "2",
-                        "eventType": "recmdPoint",
+                        "eventType": "endPoint",
                     }
                 }
                 , limit: 10
@@ -319,25 +334,17 @@
                         }
                         , {
                         minWidth: 140, field: 'eventKey', title: '生效类型', templet: function (d) {
-                            switch (d.eventKey) {
-                                case "FALLBACK_SUCCESS_TX_RECOMMEND":
-                                    return "腾讯推荐点生效";
-                                case "FALLBACK_SUCCESS_TX_GEO":
-                                    return "腾讯GEO点生效";
-                                case "FALLBACK_SUCCESS_RUQI_GEO":
-                                    return "APP本地GEO兜底";
-                                case "FALLBACK_SUCCESS_RUQI_RECOMMEND":
-                                    return "APP本地推荐点兜底";
-                                case "FALLBACK_FAIL_BOARDING_POINT":
-                                    return "兜底失败";
-                                default:
-                                    return "";
-                            }
+                            return getEndPointEventKeyValue(d.eventKey);
                         }, sort: false, align: 'center'
                     }
                         // , {minWidth应用名称: 140, field: 'appName', title: '', sort: false, align: 'center'}
                         , {minWidth: 110, field: 'platform', title: '系统平台', sort: false, align: 'center'}
                         , {minWidth: 106, field: 'userId', title: '用户ID', sort: false, align: 'center'}
+                        , {
+                        minWidth: 140, field: 'userType', title: '用户类型', templet: function (d) {
+                            return getUserTypeValue(d.userType);
+                        }, sort: false, align: 'center'
+                    }
                         , {minWidth: 110, field: 'orderId', title: '订单ID', sort: false, align: 'center'}
                         // , {minWidth: 124, field: 'userPhone', title: '用户手机', sort: false, align: 'center'}
                         // , {minWidth: 124, field: 'nickName', title: '用户名称', sort: false, align: 'center'}
