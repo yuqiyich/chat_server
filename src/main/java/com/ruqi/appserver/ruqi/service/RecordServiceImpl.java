@@ -64,13 +64,6 @@ public class RecordServiceImpl implements IRecordService {
                     data.setId(id);
 //                    recordInfoDAO.save(data);
 //                    recordInfoDAO.findById(id);
-                } else if (null != data.getContent() && data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId() && data.getContent() instanceof DotEventInfo) {
-                    if (null != data.getContent() && null != data.getUserInfo()) {
-                        if (data.getContent().getUserId() <= 0 && data.getUserInfo().getUserId() > 0) {
-                            data.getContent().setUserId(data.getUserInfo().getUserId());
-                        }
-                    }
-                    saveDotEventRecord((DotEventInfo) data.getContent());
                 }
             } else {
                 logger.info("this appKey[" + data.getAppInfo().getAppKey() + "] not exists,throw this msg");
@@ -78,9 +71,32 @@ public class RecordServiceImpl implements IRecordService {
         }
     }
 
-    private void saveDotEventRecord(DotEventInfo dotEventInfo) {
-        if (dotEventInfo != null) {
-            dotEventInfoWrapper.insertDotEventRecord(dotEventInfo);
+    @Override
+    @Async("taskExecutor")
+    public <T extends BaseUploadRecordInfo> void saveDotRecord(UploadRecordInfo<T> data, String requestIp) {
+        Date uploadTime = new Date();
+        logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime());
+        if (data.getAppInfo() != null
+                && data.getContent() != null
+                && !MyStringUtils.isEmpty(data.getAppInfo().getAppKey())) {//
+//           int appId=appInfoWrapper.getAppIdByKey("BB392D26CF521EFD");
+            logger.info("appInfoSevice:" + appInfoSevice.getClass().getClassLoader());
+            AppInfo appInfo = appInfoSevice.getAppInfoByKey(data.getAppInfo().getAppKey());
+            logger.info("appInfo id:" + "" + (appInfo != null ? appInfo.getAppId() : 0));
+            if (appInfo != null && appInfo.getAppId() > 0) {
+                if (null != data.getContent() && data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId()
+                        && data.getContent() instanceof UploadDotEventInfo) {
+                    saveDotEventRecord(data, requestIp);
+                }
+            } else {
+                logger.info("this appKey[" + data.getAppInfo().getAppKey() + "] not exists,throw this msg");
+            }
+        }
+    }
+
+    private <T extends BaseUploadRecordInfo> void saveDotEventRecord(UploadRecordInfo<T> uploadRecordInfo, String requestIp) {
+        if (uploadRecordInfo != null && uploadRecordInfo.getContent() instanceof UploadDotEventInfo) {
+            dotEventInfoWrapper.insertDotEventRecord((UploadRecordInfo<BaseUploadRecordInfo>) uploadRecordInfo, new Date(), requestIp);
         }
     }
 

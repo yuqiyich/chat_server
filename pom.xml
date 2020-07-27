@@ -270,7 +270,7 @@
     </dependencies>
 
     <build>
-        <finalName>ruqi-mobile-manager-0.0.1-SNAPSHOT</finalName>
+        <finalName>ruqi-mobile-manager-${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

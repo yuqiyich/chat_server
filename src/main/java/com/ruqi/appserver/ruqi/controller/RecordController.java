@@ -119,7 +119,7 @@ public class RecordController extends BaseController {
 
     @ApiOperation(value = "通用简单埋点事件统计上报", notes = "")
     @RequestMapping(value = "/uploadDotEventData", method = RequestMethod.POST)
-    public BaseCodeMsgBean uploadDotEventData(@RequestBody RecordInfo<DotEventInfo> content) {
+    public BaseCodeMsgBean uploadDotEventData(@RequestBody UploadRecordInfo<UploadDotEventInfo> content) {
         try {
             if (null != content && null != content.getContent() && null != content.getContent().eventData) {
                 Map<String, Object> eventData = content.getContent().eventData;
@@ -127,7 +127,7 @@ public class RecordController extends BaseController {
                     content.getContent().userType = (int) eventData.get(DotEventInfo.NAME_USER_TYPE);
                 }
             }
-            return saveData(content);
+            return saveDotData(content);
         } catch (Exception e) {
             BaseCodeMsgBean result = new BaseCodeMsgBean();
             result.errorCode = ErrorCode.ERROR_UNKNOWN.errorCode;
@@ -135,6 +135,20 @@ public class RecordController extends BaseController {
             logger.error("uploadDotEventData error. content:" + content + ", e:" + e);
             return result;
         }
+    }
+
+    private BaseCodeMsgBean saveDotData(UploadRecordInfo<UploadDotEventInfo> content) {
+        BaseCodeMsgBean result = new BaseCodeMsgBean();
+
+        //获取RequestAttributes
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        //从获取RequestAttributes中获取HttpServletRequest的信息
+        HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+        if (null != content && null != content.getContent()) {
+            recordService.saveDotRecord(content, IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
+        }
+
+        return result;
     }
 
     private BaseCodeMsgBean saveData(RecordInfo<? extends BaseRecordInfo> content) {

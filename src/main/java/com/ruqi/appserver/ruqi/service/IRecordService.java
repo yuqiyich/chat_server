@@ -3,7 +3,6 @@ package com.ruqi.appserver.ruqi.service;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +12,8 @@ public interface IRecordService {
 
     // 设备安全、打点事件（推荐点降级生效）
     <T extends BaseRecordInfo> void saveRecord(RecordInfo<T> data, String requestIp);
+
+    <T extends BaseUploadRecordInfo> void saveDotRecord(UploadRecordInfo<T> data, String requestIp);
 
     List<RecordRiskInfo> queryListForLayUi(int pageIndex, int limit, RecordInfo<RiskInfo> params);
 

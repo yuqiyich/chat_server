@@ -1,19 +1,26 @@
 package com.ruqi.appserver.ruqi.dao.mappers;
 
-import com.ruqi.appserver.ruqi.bean.DotEventInfo;
-import com.ruqi.appserver.ruqi.bean.RecordDotEventInfo;
-import com.ruqi.appserver.ruqi.bean.RecordInfo;
+import com.ruqi.appserver.ruqi.bean.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
 public interface DotEventInfoWrapper {
 
-    @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,record_time,device_brand,system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode,device_model,request_ip, order_id, scene, user_type) " +
-            "values(#{eventKey},#{userId},#{deviceId},#{eventDetail},#{createTime},#{recordTime},#{deviceBrand},#{systemVersion},#{appVersionName},#{netState},#{locationLat},#{locationLng},#{channel},#{appId},#{platform},#{appVersionCode},#{deviceModel},#{requestIp},#{orderId},#{scene},#{userType})")
-    void insertDotEventRecord(DotEventInfo dotEventInfo);
+    @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,record_time,device_brand," +
+            "system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode," +
+            "device_model,request_ip, order_id, scene, user_type) " +
+            "values(#{dotEventInfo.content.eventKey},#{dotEventInfo.userInfo.userId},#{dotEventInfo.content.deviceId}," +
+            "#{dotEventInfo.content.eventDetail},#{dotEventInfo.content.createTime},#{recordTime}," +
+            "#{dotEventInfo.content.deviceBrand},#{dotEventInfo.content.systemVersion},#{dotEventInfo.content.appVersionName}," +
+            "#{dotEventInfo.content.netState},#{dotEventInfo.content.locationLat},#{dotEventInfo.content.locationLng}," +
+            "#{dotEventInfo.content.channel},#{dotEventInfo.appInfo.appId},#{dotEventInfo.content.platform}," +
+            "#{dotEventInfo.content.appVersionCode},#{dotEventInfo.content.deviceModel},#{requestIp}," +
+            "#{dotEventInfo.content.orderId},#{dotEventInfo.content.scene},#{dotEventInfo.content.userType})")
+    void insertDotEventRecord(@Param("dotEventInfo") UploadRecordInfo<BaseUploadRecordInfo> uploadRecordInfo, @Param("recordTime") Date recordTime, @Param("uploadRecordInfo") String requestIp);
 
     @Select({"<script>",
             "SELECT count(*) FROM",
