@@ -17,10 +17,13 @@ public interface DotEventInfoWrapper {
             "#{dotEventInfo.content.eventDetail},#{dotEventInfo.content.createTime},#{recordTime}," +
             "#{dotEventInfo.content.deviceBrand},#{dotEventInfo.content.systemVersion},#{dotEventInfo.content.appVersionName}," +
             "#{dotEventInfo.content.netState},#{dotEventInfo.content.locationLat},#{dotEventInfo.content.locationLng}," +
-            "#{dotEventInfo.content.channel},#{dotEventInfo.appInfo.appId},#{dotEventInfo.content.platform}," +
+            "#{dotEventInfo.content.channel},#{appId},#{dotEventInfo.content.platform}," +
             "#{dotEventInfo.content.appVersionCode},#{dotEventInfo.content.deviceModel},#{requestIp}," +
             "#{dotEventInfo.content.orderId},#{dotEventInfo.content.scene},#{dotEventInfo.content.userType})")
-    void insertDotEventRecord(@Param("dotEventInfo") UploadRecordInfo<BaseUploadRecordInfo> uploadRecordInfo, @Param("recordTime") Date recordTime, @Param("uploadRecordInfo") String requestIp);
+    void insertDotEventRecord(@Param("dotEventInfo") UploadRecordInfo<BaseUploadRecordInfo> uploadRecordInfo,
+                              @Param("appId") int appId,
+                              @Param("recordTime") Date recordTime,
+                              @Param("requestIp") String requestIp);
 
     @Select({"<script>",
             "SELECT count(*) FROM",

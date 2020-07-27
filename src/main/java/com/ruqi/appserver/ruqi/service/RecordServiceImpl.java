@@ -86,7 +86,7 @@ public class RecordServiceImpl implements IRecordService {
             if (appInfo != null && appInfo.getAppId() > 0) {
                 if (null != data.getContent() && data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId()
                         && data.getContent() instanceof UploadDotEventInfo) {
-                    saveDotEventRecord(data, requestIp);
+                    saveDotEventRecord(data, appInfo.getAppId(), requestIp);
                 }
             } else {
                 logger.info("this appKey[" + data.getAppInfo().getAppKey() + "] not exists,throw this msg");
@@ -94,9 +94,9 @@ public class RecordServiceImpl implements IRecordService {
         }
     }
 
-    private <T extends BaseUploadRecordInfo> void saveDotEventRecord(UploadRecordInfo<T> uploadRecordInfo, String requestIp) {
+    private <T extends BaseUploadRecordInfo> void saveDotEventRecord(UploadRecordInfo<T> uploadRecordInfo, int appId, String requestIp) {
         if (uploadRecordInfo != null && uploadRecordInfo.getContent() instanceof UploadDotEventInfo) {
-            dotEventInfoWrapper.insertDotEventRecord((UploadRecordInfo<BaseUploadRecordInfo>) uploadRecordInfo, new Date(), requestIp);
+            dotEventInfoWrapper.insertDotEventRecord((UploadRecordInfo<BaseUploadRecordInfo>) uploadRecordInfo, appId, new Date(), requestIp);
         }
     }
 
