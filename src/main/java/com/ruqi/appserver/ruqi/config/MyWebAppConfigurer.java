@@ -37,7 +37,7 @@ public class MyWebAppConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg")
                 .excludePathPatterns("/css/**", "/js/**", "/img/**")//排除样式、脚本、图片等资源文件
                 .excludePathPatterns("/record/uploadData", "/record/uploadDotEventData") // 排除安全上报、埋点上报等接口
-                .excludePathPatterns("/user/login") // 排除登录接口
+                .excludePathPatterns("/user/login", "/user/newlogin") // 排除登录接口
                 .excludePathPatterns("/wechatH5/authorize", "/wechatH5/redirectUri") // 微信公众号需要
         ;
     }

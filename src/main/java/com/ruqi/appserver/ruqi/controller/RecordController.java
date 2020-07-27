@@ -19,7 +19,6 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +145,7 @@ public class RecordController extends BaseController {
         //从获取RequestAttributes中获取HttpServletRequest的信息
         HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
         if (null != content && null != content.getContent()) {
-            recordService.saveRecord(content, new Date(), IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
+            recordService.saveRecord(content, IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
         }
 
         return result;
@@ -297,6 +296,7 @@ public class RecordController extends BaseController {
     @RequestMapping(value = "/queryCommonEventListForLayui", method = RequestMethod.POST)
     @ResponseBody
     public BaseBean<BasePageBean<RecordDotEventInfo>> queryCommonEventListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
+        logger.info("queryCommonEventListForLayui params:" + params);
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
         List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params);
         long totalSize = recordService.queryTotalSizeCommonEvent(params);

@@ -11,8 +11,8 @@ import java.util.List;
 @Repository
 public interface DotEventInfoWrapper {
 
-    @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,device_brand,system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode,device_model,request_ip, order_id, scene, user_type) " +
-            "values(#{eventKey},#{userId},#{deviceId},#{eventDetail},#{createTime},#{deviceBrand},#{systemVersion},#{appVersionName},#{netState},#{locationLat},#{locationLng},#{channel},#{appId},#{platform},#{appVersionCode},#{deviceModel},#{requestIp},#{orderId},#{scene},#{userType})")
+    @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,record_time,device_brand,system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode,device_model,request_ip, order_id, scene, user_type) " +
+            "values(#{eventKey},#{userId},#{deviceId},#{eventDetail},#{createTime},#{recordTime},#{deviceBrand},#{systemVersion},#{appVersionName},#{netState},#{locationLat},#{locationLng},#{channel},#{appId},#{platform},#{appVersionCode},#{deviceModel},#{requestIp},#{orderId},#{scene},#{userType})")
     void insertDotEventRecord(DotEventInfo dotEventInfo);
 
     @Select({"<script>",
@@ -38,6 +38,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT')  </if>",
             "<if test='dotEventInfo.content.eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION')  </if>",
             "<if test='dotEventInfo.content.eventType==\"endPoint\" '>AND (event_key = 'FB_SUC_DES_POP_SHOW' or event_key = 'FB_SUC_DES_POP_SELECT' or event_key = 'FB_SUC_DES_POP_ORDER' or event_key = 'FB_SUC_DES_LIST_SHOW' or event_key = 'FB_SUC_DES_LIST_SELECT' or event_key = 'FB_SUC_DES_LIST_ORDER')  </if>",
+            "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
             " </if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
             " </if>",
@@ -72,6 +73,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT')  </if>",
             "<if test='dotEventInfo.content.eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION')  </if>",
             "<if test='dotEventInfo.content.eventType==\"endPoint\" '>AND (event_key = 'FB_SUC_DES_POP_SHOW' or event_key = 'FB_SUC_DES_POP_SELECT' or event_key = 'FB_SUC_DES_POP_ORDER' or event_key = 'FB_SUC_DES_LIST_SHOW' or event_key = 'FB_SUC_DES_LIST_SELECT' or event_key = 'FB_SUC_DES_LIST_ORDER')  </if>",
+            "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
             " </if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
             "<if test='dotEventInfo.content.startDate!=null '>AND create_time &gt; #{dotEventInfo.content.startDate} </if>",
@@ -90,6 +92,7 @@ public interface DotEventInfoWrapper {
             @Result(property = "deviceId", column = "device_id"),
             @Result(property = "eventDetail", column = "event_detail"),
             @Result(property = "createTime", column = "create_time"),
+            @Result(property = "recordTime", column = "record_time"),
             @Result(property = "appVersionName", column = "app_versionname"),
             @Result(property = "deviceBrand", column = "device_brand"),
             @Result(property = "deviceModel", column = "device_model"),
@@ -142,6 +145,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT')  </if>",
             "<if test='dotEventInfo.content.eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION')  </if>",
             "<if test='dotEventInfo.content.eventType==\"endPoint\" '>AND (event_key = 'FB_SUC_DES_POP_SHOW' or event_key = 'FB_SUC_DES_POP_SELECT' or event_key = 'FB_SUC_DES_POP_ORDER' or event_key = 'FB_SUC_DES_LIST_SHOW' or event_key = 'FB_SUC_DES_LIST_SELECT' or event_key = 'FB_SUC_DES_LIST_ORDER')  </if>",
+            "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
             " </if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
             " </if>",
@@ -171,6 +175,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT')  </if>",
             "<if test='dotEventInfo.content.eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION')  </if>",
             "<if test='dotEventInfo.content.eventType==\"endPoint\" '>AND (event_key = 'FB_SUC_DES_POP_SHOW' or event_key = 'FB_SUC_DES_POP_SELECT' or event_key = 'FB_SUC_DES_POP_ORDER' or event_key = 'FB_SUC_DES_LIST_SHOW' or event_key = 'FB_SUC_DES_LIST_SELECT' or event_key = 'FB_SUC_DES_LIST_ORDER')  </if>",
+            "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
             " </if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
             " </if>",

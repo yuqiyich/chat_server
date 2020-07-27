@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.ruqi.appserver</groupId>
     <artifactId>ruqi</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <name>appserver</name>
     <description>APP记录平台</description>
 

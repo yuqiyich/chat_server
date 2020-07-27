@@ -25,6 +25,7 @@ public class RecordDotEventInfo {
     public String channel;
     //status info
     public Date createTime;
+    public Date recordTime;
     public float locationLat;
     public float locationLng;
     public String locationName;

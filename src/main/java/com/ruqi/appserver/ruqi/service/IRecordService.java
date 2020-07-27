@@ -12,7 +12,7 @@ import java.util.List;
 public interface IRecordService {
 
     // 设备安全、打点事件（推荐点降级生效）
-    <T extends BaseRecordInfo> void saveRecord(RecordInfo<T> data, Date uploadTime, String requestIp);
+    <T extends BaseRecordInfo> void saveRecord(RecordInfo<T> data, String requestIp);
 
     List<RecordRiskInfo> queryListForLayUi(int pageIndex, int limit, RecordInfo<RiskInfo> params);
 

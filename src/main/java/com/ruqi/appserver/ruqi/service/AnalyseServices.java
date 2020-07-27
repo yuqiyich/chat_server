@@ -1,6 +1,6 @@
 package com.ruqi.appserver.ruqi.service;
 
-import com.ruqi.appserver.ruqi.bean.AppInfo;
+import com.ruqi.appserver.ruqi.bean.AppResponeInfo;
 import com.ruqi.appserver.ruqi.controller.WechatController;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
@@ -41,21 +41,21 @@ public class AnalyseServices {
     @Scheduled(cron = CRON_REG)
     public void periodCheckSecurity() throws InterruptedException {
         if ("prod".equals(mEnv)) {
-            List<AppInfo> appInfos = appInfoWrapper.getAllApps();
+            List<AppResponeInfo> appInfos = appInfoWrapper.getAllApps();
             if (!CollectionUtils.isEmpty(appInfos)) {
-                for (AppInfo appInfo : appInfos) {
-                    if (appInfo.getAppId() == APP_DRIVER || appInfo.getAppId() == APP_CLIENT) {
+                for (AppResponeInfo appInfo : appInfos) {
+                    if (appInfo.appId == APP_DRIVER || appInfo.appId == APP_CLIENT) {
                         logger.info("yesterdayStartDate:" + DateTimeUtils.getYesterdayStartDate() + ", yesterdayEndDate:" + DateTimeUtils.getYesterdayEndDate());
-                        int count = riskInfoWrapper.countSecurityNum(appInfo.getAppId(), DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
-                        int loginUserCount = riskInfoWrapper.countSecurityUserNum(appInfo.getAppId(), DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
+                        int count = riskInfoWrapper.countSecurityNum(appInfo.appId, DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
+                        int loginUserCount = riskInfoWrapper.countSecurityUserNum(appInfo.appId, DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
                         if (count >= 0) {//不设阈值
                             logger.info("risk count:" + count);
-                            mWechatController.sendSecurityTemplateMsg(appInfo.getAppName(), "设备风险",
+                            mWechatController.sendSecurityTemplateMsg(appInfo.appName, "设备风险",
                                     "在过去的" + DateTimeUtils.getYesterday() + "一天内总共有" + count
                                             + "条设备风险数据[" + mEnv + "]，其中共" + loginUserCount + "个登录用户。发送ip:"
                                             + IpUtil.getLocalIP(), "请至APP记录平台查看完整详细信息", null);
                         } else {
-                            logger.info("appId[" + appInfo.getAppId() + "]periodCheckSecurity method run,find no risk");
+                            logger.info("appId[" + appInfo.appId + "]periodCheckSecurity method run,find no risk");
                         }
                     }
                 }

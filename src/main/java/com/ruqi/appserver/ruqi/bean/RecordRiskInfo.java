@@ -104,6 +104,7 @@ public class RecordRiskInfo {
     public String channel;
     //status info
     public Date createTime;
+    public Date recordTime;
     public float locationLat;
     public float locationLng;
     public String locationName;
@@ -250,5 +251,13 @@ public class RecordRiskInfo {
 
     public void setRequestIp(String requestIp) {
         this.requestIp = requestIp;
+    }
+
+    public Date getRecordTime() {
+        return recordTime;
+    }
+
+    public void setRecordTime(Date recordTime) {
+        this.recordTime = recordTime;
     }
 }

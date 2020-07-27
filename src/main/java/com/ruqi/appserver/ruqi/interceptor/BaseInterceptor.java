@@ -47,6 +47,10 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
                 }
             }
         }
+        // 新方式，旧版判断后续会去除
+        if (MyStringUtils.isEmpty(userToken)) {
+            userToken = request.getHeader("token");
+        }
         return userToken;
     }
 

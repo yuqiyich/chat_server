@@ -33,7 +33,8 @@ public class RecordServiceImpl implements IRecordService {
 
     @Override
     @Async("taskExecutor")
-    public <T extends BaseRecordInfo> void saveRecord(RecordInfo<T> data, Date uploadTime, String requestIp) {
+    public <T extends BaseRecordInfo> void saveRecord(RecordInfo<T> data, String requestIp) {
+        Date uploadTime = new Date();
         logger.info("upload data:" + data.toString() + ";uploadTime:" + uploadTime.getTime());
         if (data.getAppInfo() != null
                 && data.getContent() != null
@@ -46,7 +47,7 @@ public class RecordServiceImpl implements IRecordService {
                 data.getContent().setAppId(appInfo.getAppId());
                 data.getContent().setRequestIp(requestIp);
                 // 记录时间使用服务器的时间
-                data.getContent().setCreateTime(uploadTime);
+                data.getContent().setRecordTime(uploadTime);
                 if (data.getRecordType() == RecordTypeEnum.RUNTIME_RISK.getId()
                         && data.getContent() instanceof RiskInfo) {
                     RiskInfo riskInfo = (RiskInfo) data.getContent();
@@ -65,7 +66,9 @@ public class RecordServiceImpl implements IRecordService {
 //                    recordInfoDAO.findById(id);
                 } else if (null != data.getContent() && data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId() && data.getContent() instanceof DotEventInfo) {
                     if (null != data.getContent() && null != data.getUserInfo()) {
-                        data.getContent().setUserId(data.getUserInfo().getUserId());
+                        if (data.getContent().getUserId() <= 0 && data.getUserInfo().getUserId() > 0) {
+                            data.getContent().setUserId(data.getUserInfo().getUserId());
+                        }
                     }
                     saveDotEventRecord((DotEventInfo) data.getContent());
                 }

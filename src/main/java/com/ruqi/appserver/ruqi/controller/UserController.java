@@ -2,6 +2,7 @@ package com.ruqi.appserver.ruqi.controller;
 
 import com.ruqi.appserver.ruqi.bean.BaseBean;
 import com.ruqi.appserver.ruqi.bean.UserEntity;
+import com.ruqi.appserver.ruqi.dao.entity.LoginInfoEntity;
 import com.ruqi.appserver.ruqi.dao.entity.UserInfoEntity;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
 import com.ruqi.appserver.ruqi.service.IUserService;
@@ -11,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import net.minidev.json.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +83,36 @@ public class UserController {
                     logger.info("--->Exception:" + e);
                     e.printStackTrace();
                 }
+            } else {
+                result.errorCode = ErrorCodeMsg.ERROR_INVALID_USER.errorCode;
+                result.errorMsg = ErrorCodeMsg.ERROR_INVALID_USER.errorMsg;
+            }
+        } else {
+            result.errorCode = ErrorCodeMsg.ERROR_NO_USER.errorCode;
+            result.errorMsg = ErrorCodeMsg.ERROR_NO_USER.errorMsg;
+        }
+        return result;
+    }
+
+    @ApiOperation(value = "登录", notes = "登录，返回用户信息、token等")
+    @RequestMapping(value = "/newlogin", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<UserInfoEntity> newlogin(@RequestBody LoginInfoEntity request) {
+        logger.info("--->newlogin request:" + request);
+        BaseBean<UserInfoEntity> result = new BaseBean();
+        UserInfoEntity userInfoEntity = new UserInfoEntity();
+        userInfoEntity.account = request.account;
+        userInfoEntity.password = Md5Util.commonMd5(request.password);
+        UserInfoEntity userInfoEntityResult = userService.findUser(userInfoEntity);
+        if (null != userInfoEntityResult) {
+            if (userInfoEntityResult.userIsValid()) {
+                // 数据库存在用户。这里简单的数据库固定死token，返回给前端，前端自己保存和销毁；定时token每天更新变化一次，简单的安全防护。
+                // 如果想做单点登录可以每次都重置token值更新数据库；不做单点登录则可以只读取token，token需要有有效期则另外处理。
+                result.data = userInfoEntityResult;
+
+                // 在客户端存储用户个性化信息，方便用户下次再访问网站时使用
+                redisUtil.putKey(RedisUtil.GROUP_USER_INFO, userInfoEntityResult.token,
+                        userInfoEntityResult, RedisUtil.EXPIRE_WEEK, TimeUnit.SECONDS);
             } else {
                 result.errorCode = ErrorCodeMsg.ERROR_INVALID_USER.errorCode;
                 result.errorMsg = ErrorCodeMsg.ERROR_INVALID_USER.errorMsg;

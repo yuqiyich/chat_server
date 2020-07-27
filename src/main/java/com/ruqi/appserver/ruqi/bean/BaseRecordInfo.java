@@ -21,7 +21,10 @@ public class BaseRecordInfo {
     public String channel;
     public String platform;
     //status info
+    // 事件发生时间，接口上报
     public Date createTime;
+    // 事件记录时间，保存在数据库时的服务器当前时间
+    public Date recordTime;
     public long userId;
     public float locationLat;
     public float locationLng;
@@ -199,5 +202,13 @@ public class BaseRecordInfo {
 
     public void setLocationLng(float locationLng) {
         this.locationLng = locationLng;
+    }
+
+    public Date getRecordTime() {
+        return recordTime;
+    }
+
+    public void setRecordTime(Date recordTime) {
+        this.recordTime = recordTime;
     }
 }
