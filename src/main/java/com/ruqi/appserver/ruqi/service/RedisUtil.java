@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class RedisUtil {
     public static final String GROUP_USER_INFO = "user_info";
+    public static final String GROUP_ENCRYPT_UTIL_SIGN = "encrypt_sign";
     public static final String GROUP_APP_VERSION_NAME = "app_version_name";
 
     @Autowired
