@@ -1,7 +1,8 @@
 package com.ruqi.appserver.ruqi.network;
 
 public enum ErrorCode {
-    ERROR_UNKNOWN(808, "未知错误");
+    ERROR_UNKNOWN(808, "未知错误"),
+    ERROR_SYSTEM(500, "系统异常，请重试");
 
     public String errorMsg;
     public int errorCode;

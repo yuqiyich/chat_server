@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * 注册过滤器
  * */
-@WebFilter(filterName = "RequestResponseLogFilter", urlPatterns = "/record/*")
+@WebFilter(filterName = "RequestResponseLogFilter", urlPatterns = "/*/*")
 public class RequestFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(RequestFilter.class);
 
