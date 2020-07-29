@@ -49,6 +49,7 @@ public class RecordController extends BaseController {
     @ApiOperation(value = "查询记录到数据的风险类型", notes = "")
     @RequestMapping(value = "/queryRiskTypeForLayui", method = RequestMethod.GET)
     @ResponseBody
+    @CrossOrigin
     public BaseBean<List<String>> queryRiskTypeForLayui() {
         BaseBean<List<String>> result = new BaseBean<>();
         List<String> riskTypeListList = recordService.queryRiskTypeForLayui();
@@ -64,6 +65,7 @@ public class RecordController extends BaseController {
     @ApiOperation(value = "查询记录到数据的版本号名称", notes = "")
     @RequestMapping(value = "/queryAppVersionNameForLayui", method = RequestMethod.GET)
     @ResponseBody
+    @CrossOrigin
     public BaseBean<List<String>> queryAppVersionNameForLayui() {
         BaseBean<List<String>> result = new BaseBean<>();
         List<String> appVersionNameList = recordService.queryAppVersionNameForLayui();
@@ -196,6 +198,7 @@ public class RecordController extends BaseController {
     })
     @RequestMapping(value = "/queryRiskListForLayui", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin
     public BaseBean<BasePageBean<RecordRiskInfo>> getRiskInfoListForLayui(@RequestBody RecordInfo<RiskInfo> params) {
         BaseBean<BasePageBean<RecordRiskInfo>> result = new BaseBean<>();
         if (null != params && null != params.getUserInfo() && !MyStringUtils.isEmpty(params.getUserInfo().userPhone)) {
@@ -229,6 +232,7 @@ public class RecordController extends BaseController {
     })
     @RequestMapping(value = "/queryRiskOverview", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin
     public BaseBean<BasePageBean<DeviceRiskOverviewEntity>> queryRiskOverview(@RequestBody RecordInfo<RiskOverviewInfo> params) {
         BaseBean<BasePageBean<DeviceRiskOverviewEntity>> result = new BaseBean<>();
         List<DeviceRiskOverviewEntity> deviceRiskOverviewEntityList = recordService.queryOverviewList(params.getPage() - 1, params.getLimit(), params);
@@ -259,6 +263,7 @@ public class RecordController extends BaseController {
     })
     @RequestMapping(value = "/queryCommonEventUserCount", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin
     public BaseMapBean queryCommonEventUserCount(@RequestBody RecordInfo<DotEventInfo> params) {
         BaseMapBean result = new BaseMapBean();
         try {
@@ -284,6 +289,7 @@ public class RecordController extends BaseController {
     })
     @RequestMapping(value = "/queryCommonEventOrderCount", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin
     public BaseMapBean queryCommonEventOrderCount(@RequestBody RecordInfo<DotEventInfo> params) {
         BaseMapBean result = new BaseMapBean();
         try {
@@ -309,6 +315,7 @@ public class RecordController extends BaseController {
     })
     @RequestMapping(value = "/queryCommonEventListForLayui", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin
     public BaseBean<BasePageBean<RecordDotEventInfo>> queryCommonEventListForLayui(@RequestBody RecordInfo<DotEventInfo> params) {
         logger.info("queryCommonEventListForLayui params:" + params);
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();

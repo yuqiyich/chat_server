@@ -12,7 +12,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import net.minidev.json.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +96,7 @@ public class UserController {
     @ApiOperation(value = "登录", notes = "登录，返回用户信息、token等")
     @RequestMapping(value = "/newlogin", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin
     public BaseBean<UserInfoEntity> newlogin(@RequestBody LoginInfoEntity request) {
         logger.info("--->newlogin request:" + request);
         BaseBean<UserInfoEntity> result = new BaseBean();
