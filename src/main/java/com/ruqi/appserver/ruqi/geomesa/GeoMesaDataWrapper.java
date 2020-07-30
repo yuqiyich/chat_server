@@ -31,7 +31,7 @@ public class GeoMesaDataWrapper {
         if (records!=null&&records.getRecommendPoint()!=null&&records.getRecommendPoint().size()>0){
             SimpleFeatureBuilder builder = new SimpleFeatureBuilder(sft);
             //23.107395,113.322317
-            String selectPoint = "POINT ("+records.getSelectLng()  + " " +records.getSelectLng() + ")";
+            String selectPoint = "POINT ("+records.getSelectLng()  + " " +records.getSelectLat() + ")";
             StringBuilder mulitPoints = new StringBuilder();
             //对记录推荐点做一个多点存储
             int recommendPointsSize=records.getRecommendPoint().size();

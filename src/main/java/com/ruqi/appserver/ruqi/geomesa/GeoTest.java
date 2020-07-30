@@ -47,6 +47,7 @@ public class GeoTest {
 //                String during = "channel='tx'";
                 //bbox rule  lng,lat,lng,lat
                 String bbox = "bbox(sGeom,113.11344,23.11344,113.11344,23.11344)";
+                String equals=" EQUALS(sGeom,POINT(113.103284 23.120406))";
                 String contains=" CONTAINS(sGeom,SRID=4326;POINT(113.103284 23.120406))";
                 query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains+" AND " +during)));
                 // bounding box over most of the united states
@@ -173,8 +174,6 @@ public class GeoTest {
             attributes.append("rrId:String:index=true")
                     .append(ATTR_KEY_CHANNEL)
                     .append(ATTR_KEY_DATE)
-                    .append(ATTR_KEY_AD_CODE)
-                    .append(ATTR_KEY_CITY_CODE)
                     .append("*sGeom:Point:srid=4326")//获取推荐上车点的用户所选择的点// srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
                     .append("*rGeoms:MultiPoint:srid=4326");//推荐点集合
             sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_RECORD, attributes.toString());
