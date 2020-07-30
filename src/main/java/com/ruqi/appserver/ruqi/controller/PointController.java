@@ -31,60 +31,38 @@ public class PointController extends BaseController {
     @Autowired
     IPointRecommendService pointRecommendService;
 
-    @Autowired
-    private RedisUtil redisUtil;
-
     @ApiOperation(value = "查询推荐上车点", notes = "")
     @RequestMapping(value = "/queryRecommendPoint", method = RequestMethod.POST)
     @ResponseBody
-    public EncryptResponse queryRecommendPoint(@RequestBody EncryptBaseRequest encryptBaseRequest) {
+    public BaseBean<RecommendPointList<RecommendPoint>> queryRecommendPoint(@RequestBody QueryRecommendPointRequest queryRecommendPointRequest) {
         try {
-            logger.info("queryRecommendPoint params:" + JsonUtil.beanToJsonStr(encryptBaseRequest));
-            String sign = encryptBaseRequest.getSign();
-            String aesKey = String.valueOf(redisUtil.getKey(RedisUtil.GROUP_ENCRYPT_UTIL_SIGN, sign));
-            String decrypt = AESUtils.des(encryptBaseRequest.getReq(), aesKey, Cipher.DECRYPT_MODE);
-            QueryRecommendPointRequest queryRecommendPointRequest = JsonUtil.jsonStrToBean(QueryRecommendPointRequest.class, decrypt);
+            logger.info("queryRecommendPoint params:" + JsonUtil.beanToJsonStr(queryRecommendPointRequest));
             BaseBean<RecommendPointList<RecommendPoint>> result = new BaseBean<>();
             result.data = pointRecommendService.queryRecommendPoint(queryRecommendPointRequest);
-            String encryResponse = AESUtils.des(JsonUtil.beanToJsonStr(result), aesKey, Cipher.ENCRYPT_MODE);
-            EncryptResponse encryptResponse = new EncryptResponse(true);
-            encryptResponse.data = encryResponse;
-            return encryptResponse;
+            return result;
         } catch (Exception e) {
             BaseBean<RecommendPointList<RecommendPoint>> result = new BaseBean<>();
             result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
             result.errorMsg = e.getMessage();
-            EncryptResponse encryptResponse = new EncryptResponse(false);
-            encryptResponse.data = JsonUtil.beanToJsonStr(result);
-            logger.error("uploadRecommendPoint error. content:" + JsonUtil.beanToJsonStr(encryptBaseRequest) + ", e:" + e);
-            return encryptResponse;
+            logger.error("uploadRecommendPoint error. content:" + JsonUtil.beanToJsonStr(queryRecommendPointRequest) + ", e:" + e);
+            return result;
         }
     }
 
     @ApiOperation(value = "推荐上车点采集上报", notes = "")
     @RequestMapping(value = "/uploadRecommendPoint", method = RequestMethod.POST)
-    public EncryptResponse uploadRecommendPoint(@RequestBody EncryptBaseRequest encryptBaseRequest,
+    public BaseCodeMsgBean uploadRecommendPoint(@RequestBody UploadRecommendPointRequest<RecommendPoint> uploadRecommendPointRequest,
                                               @RequestHeader Map<String, String> header) {
         try {
-            logger.info("queryRecommendPoint params:" + JsonUtil.beanToJsonStr(encryptBaseRequest));
-            String sign = encryptBaseRequest.getSign();
-            String aesKey = String.valueOf(redisUtil.getKey(RedisUtil.GROUP_ENCRYPT_UTIL_SIGN, sign));
-            String decrypt = AESUtils.des(encryptBaseRequest.getReq(), aesKey, Cipher.DECRYPT_MODE);
-            logger.info("queryRecommendPoint decrypt:" + decrypt);
-            logger.info("queryRecommendPoint aesKey:" + aesKey);
-            UploadRecommendPointRequest uploadRecommendPointRequest = JsonUtil.jsonStrToBean(UploadRecommendPointRequest.class, decrypt);
+            logger.info("queryRecommendPoint params:" + JsonUtil.beanToJsonStr(uploadRecommendPointRequest));
             BaseCodeMsgBean baseCodeMsgBean = pointRecommendService.saveRecommendPoint(uploadRecommendPointRequest);
-            EncryptResponse encryptResponse = new EncryptResponse(true);
-            encryptResponse.data = JsonUtil.beanToJsonStr(baseCodeMsgBean);
-            return encryptResponse;
+            return baseCodeMsgBean;
         } catch (Exception e) {
             BaseCodeMsgBean result = new BaseCodeMsgBean();
             result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
             result.errorMsg = e.getMessage();
-            EncryptResponse encryptResponse = new EncryptResponse(false);
-            encryptResponse.data = JsonUtil.beanToJsonStr(result);
-            logger.error("uploadRecommendPoint error. content:" + JsonUtil.beanToJsonStr(encryptBaseRequest) + ", e:" + e);
-            return encryptResponse;
+            logger.error("uploadRecommendPoint error. content:" + JsonUtil.beanToJsonStr(uploadRecommendPointRequest) + ", e:" + e);
+            return result;
         }
     }
 
