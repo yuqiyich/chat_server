@@ -22,7 +22,7 @@ public class BaseRecordInfo {
     public String platform;
     //status info
     // 事件发生时间，接口上报
-    public Date createTime;
+    public long createTime;
     // 事件记录时间，保存在数据库时的服务器当前时间
     public Date recordTime;
     public long userId;
@@ -172,11 +172,11 @@ public class BaseRecordInfo {
         this.appId = appId;
     }
 
-    public Date getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 

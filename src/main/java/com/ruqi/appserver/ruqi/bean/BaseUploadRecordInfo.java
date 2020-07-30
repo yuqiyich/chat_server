@@ -15,7 +15,7 @@ public class BaseUploadRecordInfo {
     public String platform;
     //status info
     // 事件发生时间，接口上报
-    public Date createTime;
+    public long createTime;
     public float locationLat;
     public float locationLng;
     public String locationName;
@@ -90,11 +90,11 @@ public class BaseUploadRecordInfo {
         this.locationName = locationName;
     }
 
-    public Date getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 

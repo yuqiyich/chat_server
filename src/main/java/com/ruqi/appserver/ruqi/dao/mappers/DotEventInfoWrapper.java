@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.dao.mappers;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -14,13 +15,14 @@ public interface DotEventInfoWrapper {
             "system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode," +
             "device_model,request_ip, order_id, scene, user_type) " +
             "values(#{dotEventInfo.content.eventKey},#{dotEventInfo.userInfo.userId},#{dotEventInfo.content.deviceId}," +
-            "#{dotEventInfo.content.eventDetail},#{dotEventInfo.content.createTime},#{recordTime}," +
+            "#{dotEventInfo.content.eventDetail},#{createDate},#{recordTime}," +
             "#{dotEventInfo.content.deviceBrand},#{dotEventInfo.content.systemVersion},#{dotEventInfo.content.appVersionName}," +
             "#{dotEventInfo.content.netState},#{dotEventInfo.content.locationLat},#{dotEventInfo.content.locationLng}," +
             "#{dotEventInfo.content.channel},#{appId},#{dotEventInfo.content.platform}," +
             "#{dotEventInfo.content.appVersionCode},#{dotEventInfo.content.deviceModel},#{requestIp}," +
             "#{dotEventInfo.content.orderId},#{dotEventInfo.content.scene},#{dotEventInfo.content.userType})")
     void insertDotEventRecord(@Param("dotEventInfo") UploadRecordInfo<BaseUploadRecordInfo> uploadRecordInfo,
+                              @Param("createDate") Date createDate,
                               @Param("appId") int appId,
                               @Param("recordTime") Date recordTime,
                               @Param("requestIp") String requestIp);
@@ -40,8 +42,8 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{dotEventInfo.content.deviceModel}, '%')  </if>",
             "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand like concat('%', #{dotEventInfo.content.deviceBrand}, '%')  </if>",
             "<if test='dotEventInfo.content.deviceId!=null and dotEventInfo.content.deviceId!=\"\" '>AND device_id like concat('%', #{dotEventInfo.content.deviceId}, '%')  </if>",
-            "<if test='dotEventInfo.content.startDate!=null '>AND create_time &gt; #{dotEventInfo.content.startDate}  </if>",
-            "<if test='dotEventInfo.content.endDate!=null '>AND create_time &lt; #{dotEventInfo.content.endDate}  </if>",
+            "<if test='dotEventInfo.content.startDate!=null '>AND record_time &gt; #{dotEventInfo.content.startDate}  </if>",
+            "<if test='dotEventInfo.content.endDate!=null '>AND record_time &lt; #{dotEventInfo.content.endDate}  </if>",
             "<if test='dotEventInfo.content.userType!=0'>AND user_type = #{dotEventInfo.content.userType}  </if>",
             "<if test='dotEventInfo.content.eventType!=null'>",
             "<if test='dotEventInfo.content.eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE')  </if>",
@@ -86,13 +88,13 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
             " </if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
-            "<if test='dotEventInfo.content.startDate!=null '>AND create_time &gt; #{dotEventInfo.content.startDate} </if>",
-            "<if test='dotEventInfo.content.endDate!=null  '>AND create_time &lt; #{dotEventInfo.content.endDate} </if>",
+            "<if test='dotEventInfo.content.startDate!=null '>AND record_time &gt; #{dotEventInfo.content.startDate} </if>",
+            "<if test='dotEventInfo.content.endDate!=null  '>AND record_time &lt; #{dotEventInfo.content.endDate} </if>",
             " </if>",
-            "order by create_time desc) as a,",
+            "order by record_time desc) as a,",
             "app_info as b ",
             " where a.app_id =b.app_id ",
-            "order by create_time desc limit #{pageIndex}, #{limit}",
+            "order by record_time desc limit #{pageIndex}, #{limit}",
             "</script>"})
     @Results({@Result(property = "id", column = "id"),
             @Result(property = "userId", column = "user_id"),
@@ -146,8 +148,8 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{dotEventInfo.content.deviceModel}, '%') </if>",
             "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand like concat('%', #{dotEventInfo.content.deviceBrand}, '%') </if>",
             "<if test='dotEventInfo.content.deviceId!=null and dotEventInfo.content.deviceId!=\"\" '>AND device_id like concat('%', #{dotEventInfo.content.deviceId}, '%') </if>",
-            "<if test='dotEventInfo.content.startDate!=null '>AND create_time &gt; #{dotEventInfo.content.startDate} </if>",
-            "<if test='dotEventInfo.content.endDate!=null '>AND create_time &lt; #{dotEventInfo.content.endDate} </if>",
+            "<if test='dotEventInfo.content.startDate!=null '>AND record_time &gt; #{dotEventInfo.content.startDate} </if>",
+            "<if test='dotEventInfo.content.endDate!=null '>AND record_time &lt; #{dotEventInfo.content.endDate} </if>",
             "<if test='dotEventInfo.content.userType!=0'>AND user_type=#{dotEventInfo.content.userType} </if>",
             "<if test='dotEventInfo.content.eventType!=null'>",
             "<if test='dotEventInfo.content.eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE')  </if>",
@@ -177,8 +179,8 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{dotEventInfo.content.deviceModel}, '%') </if>",
             "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand like concat('%', #{dotEventInfo.content.deviceBrand}, '%') </if>",
             "<if test='dotEventInfo.content.deviceId!=null and dotEventInfo.content.deviceId!=\"\" '>AND device_id like concat('%', #{dotEventInfo.content.deviceId}, '%') </if>",
-            "<if test='dotEventInfo.content.startDate!=null '>AND create_time &gt; #{dotEventInfo.content.startDate} </if>",
-            "<if test='dotEventInfo.content.endDate!=null '>AND create_time &lt; #{dotEventInfo.content.endDate} </if>",
+            "<if test='dotEventInfo.content.startDate!=null '>AND record_time &gt; #{dotEventInfo.content.startDate} </if>",
+            "<if test='dotEventInfo.content.endDate!=null '>AND record_time &lt; #{dotEventInfo.content.endDate} </if>",
             "<if test='dotEventInfo.content.userType!=0'>AND user_type=#{dotEventInfo.content.userType} </if>",
             "<if test='dotEventInfo.content.eventType!=null'>",
             "<if test='dotEventInfo.content.eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE')  </if>",
@@ -192,4 +194,55 @@ public interface DotEventInfoWrapper {
             "group by user_id, app_id) as ta",
             "</script>"})
     long queryEventTotalUserSize(@Param("dotEventInfo") RecordInfo<DotEventInfo> dotEventInfo);
+
+    @Select({"<script>",
+            "select a.record_date as date,",
+            "ifnull(b.H5_HYBRID_LOAD_SUCCESS,0) as successCount,",
+            "ifnull(c.H5_HYBRID_LOAD_FAIL,0) as failCount,",
+            "ifnull(d.H5_HYBRID_RELOAD_SUCCESS,0) as reloadSuccessCount,",
+            "ifnull(e.H5_HYBRID_RELOAD_FAIL,0) as reloadFailCount",
+            "from (",
+            "SELECT date_sub(curdate(), interval 6 day) as record_date",
+            "union all",
+            "SELECT date_sub(curdate(), interval 5 day) as record_date",
+            "union all",
+            "SELECT date_sub(curdate(), interval 4 day) as record_date",
+            "union all",
+            "SELECT date_sub(curdate(), interval 3 day) as record_date",
+            "union all",
+            "SELECT date_sub(curdate(), interval 2 day) as record_date",
+            "union all",
+            "SELECT date_sub(curdate(), interval 1 day) as record_date",
+            "union all",
+            "SELECT curdate() as record_date",
+            ") a left join (",
+            "select date(record_time) as datetime, count(*) as H5_HYBRID_LOAD_SUCCESS",
+            "from dot_event_record",
+            "where record_time >= date_sub(curdate(), interval 6 day)",
+            "AND (event_key='H5_HYBRID_LOAD_SUCCESS')",
+            "group by date(record_time)",
+            ") b on a.record_date = b.datetime",
+            "left join (",
+            "select date(record_time) as datetime, count(*) as H5_HYBRID_LOAD_FAIL",
+            "from dot_event_record",
+            "where record_time >= date_sub(curdate(), interval 6 day)",
+            "AND (event_key='H5_HYBRID_LOAD_FAIL')",
+            "group by date(record_time)",
+            ") c on a.record_date = c.datetime",
+            "left join (",
+            "select date(record_time) as datetime, count(*) as H5_HYBRID_RELOAD_SUCCESS",
+            "from dot_event_record",
+            "where record_time >= date_sub(curdate(), interval 6 day)",
+            "AND (event_key='H5_HYBRID_RELOAD_SUCCESS')",
+            "group by date(record_time)",
+            ") d on a.record_date = d.datetime",
+            "left join (",
+            "select date(record_time) as datetime, count(*) as H5_HYBRID_RELOAD_FAIL",
+            "from dot_event_record",
+            "where record_time >= date_sub(curdate(), interval 6 day)",
+            "AND (event_key='H5_HYBRID_RELOAD_FAIL')",
+            "group by date(record_time)",
+            ") e on a.record_date = e.datetime",
+            "</script>"})
+    List<EventDayDataH5Hybrid> queryWeekDataH5Hybrid();
 }

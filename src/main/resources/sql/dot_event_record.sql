@@ -49,3 +49,10 @@ ALTER TABLE dot_event_record ADD scene varchar(10) DEFAULT NULL COMMENT '场景'
 ALTER TABLE dot_event_record ADD user_type int(4) DEFAULT NULL COMMENT '用户类型'
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+CREATE TABLE `dot_event_record` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_key` varchar(255) DEFAULT NULL COMMENT '事件id',
+  `record_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.controller;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.service.IRecordService;
@@ -326,4 +327,20 @@ public class RecordController extends BaseController {
         return result;
     }
 
+    /**
+     * 查询H5内嵌加载7天内每天每个事件总量
+     *
+     * @return
+     */
+    @ApiOperation(value = "查询H5内嵌加载7天内每天每个事件总量", notes = "")
+    @RequestMapping(value = "/queryWeekDataH5Hybrid", method = RequestMethod.POST)
+    @ResponseBody
+    @CrossOrigin
+    public BaseBean<List<EventDayDataH5Hybrid>> queryWeekDataH5Hybrid() {
+        logger.info("queryWeekDataH5Hybrid");
+        BaseBean<List<EventDayDataH5Hybrid>> result = new BaseBean<>();
+        List<EventDayDataH5Hybrid> receiverEntities = recordService.queryWeekDataH5Hybrid();
+        result.data = receiverEntities;
+        return result;
+    }
 }

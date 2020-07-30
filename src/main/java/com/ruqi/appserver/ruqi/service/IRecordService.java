@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 
 import java.util.List;
@@ -38,4 +39,6 @@ public interface IRecordService {
     long queryEventTotalUserSize(RecordInfo<DotEventInfo> params);
 
     long queryEventTotalOrderSize(RecordInfo<DotEventInfo> params);
+
+    List<EventDayDataH5Hybrid> queryWeekDataH5Hybrid();
 }

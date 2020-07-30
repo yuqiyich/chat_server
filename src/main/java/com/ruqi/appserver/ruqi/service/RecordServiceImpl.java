@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
@@ -47,6 +48,11 @@ public class RecordServiceImpl implements IRecordService {
                 data.getContent().setAppId(appInfo.getAppId());
                 data.getContent().setRequestIp(requestIp);
                 // 记录时间使用服务器的时间
+                if (data.getContent().getCreateTime() <= 0) {
+                    data.getContent().setCreateTime(System.currentTimeMillis());
+                }
+                Date createDate = new Date();
+                createDate.setTime(data.getContent().getCreateTime());
                 data.getContent().setRecordTime(uploadTime);
                 if (data.getRecordType() == RecordTypeEnum.RUNTIME_RISK.getId()
                         && data.getContent() instanceof RiskInfo) {
@@ -58,7 +64,7 @@ public class RecordServiceImpl implements IRecordService {
                         }
                         saveRiskUserInfo(data.getUserInfo());
                     }
-                    saveRiskInfo(riskInfo);
+                    saveRiskInfo(riskInfo, createDate);
 
                     String id = "121";
                     data.setId(id);
@@ -86,7 +92,12 @@ public class RecordServiceImpl implements IRecordService {
             if (appInfo != null && appInfo.getAppId() > 0) {
                 if (null != data.getContent() && data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId()
                         && data.getContent() instanceof UploadDotEventInfo) {
-                    saveDotEventRecord(data, appInfo.getAppId(), requestIp);
+                    if (data.getContent().getCreateTime() <= 0) {
+                        data.getContent().setCreateTime(System.currentTimeMillis());
+                    }
+                    Date createDate = new Date();
+                    createDate.setTime(data.getContent().getCreateTime());
+                    saveDotEventRecord(data, createDate, appInfo.getAppId(), requestIp);
                 }
             } else {
                 logger.info("this appKey[" + data.getAppInfo().getAppKey() + "] not exists,throw this msg");
@@ -94,9 +105,9 @@ public class RecordServiceImpl implements IRecordService {
         }
     }
 
-    private <T extends BaseUploadRecordInfo> void saveDotEventRecord(UploadRecordInfo<T> uploadRecordInfo, int appId, String requestIp) {
+    private <T extends BaseUploadRecordInfo> void saveDotEventRecord(UploadRecordInfo<T> uploadRecordInfo, Date createDate, int appId, String requestIp) {
         if (uploadRecordInfo != null && uploadRecordInfo.getContent() instanceof UploadDotEventInfo) {
-            dotEventInfoWrapper.insertDotEventRecord((UploadRecordInfo<BaseUploadRecordInfo>) uploadRecordInfo, appId, new Date(), requestIp);
+            dotEventInfoWrapper.insertDotEventRecord((UploadRecordInfo<BaseUploadRecordInfo>) uploadRecordInfo, createDate, appId, new Date(), requestIp);
         }
     }
 
@@ -169,6 +180,11 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
+    public List<EventDayDataH5Hybrid> queryWeekDataH5Hybrid() {
+        return dotEventInfoWrapper.queryWeekDataH5Hybrid();
+    }
+
+    @Override
     public long queryOverviewTotalSize(RecordInfo<RiskOverviewInfo> recordInfo) {
         if (null != recordInfo && null != recordInfo.getContent()) {
             switch (recordInfo.getContent().overviewType) {
@@ -205,9 +221,9 @@ public class RecordServiceImpl implements IRecordService {
         }
     }
 
-    private void saveRiskInfo(RiskInfo content) {
+    private void saveRiskInfo(RiskInfo content, Date createDate) {
         if (content != null) {
-            riskInfoWrapper.insert(content);
+            riskInfoWrapper.insert(content, createDate);
         }
     }
 

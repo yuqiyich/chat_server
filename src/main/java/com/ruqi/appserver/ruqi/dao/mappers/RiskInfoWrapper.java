@@ -17,8 +17,10 @@ import java.util.List;
 public interface RiskInfoWrapper {
 
     @Insert("insert into risk_record(risk_type,user_id,device_id,risk_detail,create_time,record_time,device_brand,system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,app_versioncode,device_model,scene,request_ip) " +
-            "values(#{riskType},#{userId},#{deviceId},#{riskDetail},#{createTime},#{recordTime},#{deviceBrand},#{systemVersion},#{appVersionName},#{netState},#{locationLat},#{locationLng},#{channel},#{appId},#{appVersionCode},#{deviceModel},#{scene},#{requestIp})")
-    int insert(RiskInfo riskInfo);
+            "values(#{riskInfo.riskType},#{riskInfo.userId},#{riskInfo.deviceId},#{riskInfo.riskDetail},#{createDate},#{riskInfo.recordTime},#{riskInfo.deviceBrand},#{riskInfo.systemVersion},#{riskInfo.appVersionName},#{riskInfo.netState}," +
+            "#{riskInfo.locationLat},#{riskInfo.locationLng},#{riskInfo.channel},#{riskInfo.appId},#{riskInfo.appVersionCode}," +
+            "#{riskInfo.deviceModel},#{riskInfo.scene},#{riskInfo.requestIp})")
+    int insert(@Param("riskInfo") RiskInfo riskInfo,@Param("createDate")Date createDate);
 
     @Select("select count(*) from risk_record where create_time > #{startTime} and create_time < #{endTime} and app_id=#{appId}")
     int countSecurityNum(int appId, Date startTime, Date endTime);
