@@ -51,9 +51,33 @@ public class GeoTable {
                 .append(ATTR_KEY_DATE)
                 .append(ATTR_KEY_AD_CODE)
                 .append(ATTR_KEY_CITY_CODE)
+                .append("lGeom:Point:srid=4326")//用户的定位点
                 .append("*sGeom:Point:srid=4326")//获取推荐上车点的用户所选择的点// srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
-                .append("*rGeoms:MultiPoint:srid=4326");//推荐点集合
+                .append("rGeoms:MultiPoint:srid=4326");//推荐点集合
         sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_RECORD, attributes.toString());
+        sft.getDescriptor("sGeom").getUserData().put("precision", "8");//设置地理属性的的精度，后面查询会用到
+        sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
+        return sft;
+    }
+
+    /**
+     * 以指针点的为唯一id来插入数据的
+     *
+     * @return
+     */
+    public static SimpleFeatureType getRecommendDataSimpleType() {
+        GeoStringBuilder attributes = new GeoStringBuilder();
+        SimpleFeatureType sft;
+        attributes.append("rrpId:String:index=true")
+                .append(ATTR_KEY_CHANNEL)
+                .append(ATTR_KEY_DATE)
+                .append(ATTR_KEY_AD_CODE)
+                .append(ATTR_KEY_CITY_CODE)
+                .append("lGeom:Point:srid=4326")//用户的定位点
+                .append("*sGeom:Point:srid=4326")//获取推荐上车点的用户所选择的点// srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
+                .append("rGeoms:MultiPoint:srid=4326");//推荐点集合
+        sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_RECORD, attributes.toString());
+        sft.getDescriptor("sGeom").getUserData().put("precision", "8");//设置地理属性的的精度，后面查询会用到
         sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
         return sft;
     }
@@ -70,9 +94,11 @@ public class GeoTable {
                 .append(ATTR_KEY_TITLE)
                 .append(ATTR_KEY_ADDRESS)
                 .append(ATTR_KEY_DATE)
+                .append("updateTime:int")
                 //srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
                 .append("*rGeom:Point:srid=4326");//获取推荐上车点的用户所选择的点
         sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_POINT, attributes.toString());
+        sft.getDescriptor("rGeom").getUserData().put("precision", "8"); //设置地理属性的的精度，后面查询会用到
         sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
         return sft;
     }

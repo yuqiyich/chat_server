@@ -46,10 +46,14 @@ public class GeoTest {
                 String during = "dtg DURING 2019-12-31T00:00:00.000Z/2021-01-02T00:00:00.000Z";
 //                String during = "channel='tx'";
                 //bbox rule  lng,lat,lng,lat
+                String idrule="rrId = 'a2ccc2b2-dec3-4405-8251-5df324cc34ee'";
                 String bbox = "bbox(sGeom,113.11344,23.11344,113.11344,23.11344)";
                 String equals=" EQUALS(sGeom,POINT(113.103284 23.120406))";
                 String contains=" CONTAINS(sGeom,SRID=4326;POINT(113.103284 23.120406))";
-                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains+" AND " +during)));
+                String exist="rrId EXISTS";
+//                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(idrule)));
+                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains)));
+//                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains+" AND " +during)));
                 // bounding box over most of the united states
 //                CONTAINS(geom,SRID=4326;POINT(113.98933 22.59750))
 
@@ -176,7 +180,9 @@ public class GeoTest {
                     .append(ATTR_KEY_DATE)
                     .append("*sGeom:Point:srid=4326")//获取推荐上车点的用户所选择的点// srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
                     .append("*rGeoms:MultiPoint:srid=4326");//推荐点集合
+
             sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_RECORD, attributes.toString());
+            sft.getDescriptor("sGeom").getUserData().put("precision", "8");//设置表的精度
             sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
             return sft;
         }
@@ -197,6 +203,7 @@ public class GeoTest {
                     .append("*rGeom:Point:srid=4326");//获取推荐上车点的用户所选择的点
             sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_POINT, attributes.toString());
             sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
+
             return sft;
         }
 

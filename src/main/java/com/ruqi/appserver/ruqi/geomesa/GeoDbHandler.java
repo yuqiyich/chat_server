@@ -7,6 +7,8 @@ import org.geotools.util.factory.Hints;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.sort.SortBy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class GeoDbHandler {
-
+    private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
     /**
      * 获取某表的连接
      *
@@ -51,7 +53,7 @@ public class GeoDbHandler {
                 for (SimpleFeature feature : features) {
                     // using a geotools writer, you have to get a feature, modify it, then commit it
                     // appending writers will always return 'false' for haveNext, so we don't need to bother checking
-//                    System.out.println("Writing test data start");
+//                    logger.info("Writing test data start");
                     SimpleFeature toWrite = writer.next();
 
                     // copy attributes
@@ -74,31 +76,31 @@ public class GeoDbHandler {
                     writer.write();
                 }
             }
-            System.out.println("Wrote " + features.size() + " features");
-            System.out.println();
+            logger.info("Wrote " + features.size() + " features");
+            logger.info("");
         }
     }
 
     public static void createSchema(DataStore dataStore, SimpleFeatureType sft) {
-        System.out.println("Creating schema: " + DataUtilities.encodeType(sft));
+        logger.info("Creating schema: " + DataUtilities.encodeType(sft));
         // we only need to do the once - however, calling it repeatedly is a no-op
         try {
             dataStore.createSchema(sft);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println();
+        logger.info("");
     }
 
     public static  void queryFeature(DataStore datastore, List<Query> queries) throws IOException {
         for (Query query : queries) {
-            System.out.println("Running query " + ECQL.toCQL(query.getFilter()));
+            logger.info("Running query " + ECQL.toCQL(query.getFilter()));
             if (query.getPropertyNames() != null) {
-                System.out.println("Returning attributes " + Arrays.asList(query.getPropertyNames()));
+                logger.info("Returning attributes " + Arrays.asList(query.getPropertyNames()));
             }
             if (query.getSortBy() != null) {
                 SortBy sort = query.getSortBy()[0];
-                System.out.println("Sorting by " + sort.getPropertyName() + " " + sort.getSortOrder());
+                logger.info("Sorting by " + sort.getPropertyName() + " " + sort.getSortOrder());
             }
             // submit the query, and get back an iterator over matching features
             // use try-with-resources to ensure the reader is closed
@@ -110,14 +112,13 @@ public class GeoDbHandler {
                     SimpleFeature feature = reader.next();
                     if (n++ < 10) {
                         // use geotools data utilities to get a printable string
-                        System.out.println(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
+                        logger.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
                     } else if (n == 10) {
-                        System.out.println("...");
+                        logger.info("...");
                     }
                 }
-                System.out.println();
-                System.out.println("Returned " + n + " total features");
-                System.out.println();
+                logger.info("Returned " + n + " total features");
+                logger.info("");
             }
         }
     }
