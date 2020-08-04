@@ -8,7 +8,7 @@ import java.util.List;
  * Description: 明文请求实体
  */
 public class UploadRecommendPointRequest<T> extends BaseRequest{
-    private String channel;
+    private int channel;
     private double selectLat;
     private double selectLng;
     private double userLat;
@@ -19,11 +19,11 @@ public class UploadRecommendPointRequest<T> extends BaseRequest{
     private long timeStamp;
     private List<T> recommendPoint;
 
-    public String getChannel() {
+    public int getChannel() {
         return channel;
     }
 
-    public void setChannel(String channel) {
+    public void setChannel(int channel) {
         this.channel = channel;
     }
 
