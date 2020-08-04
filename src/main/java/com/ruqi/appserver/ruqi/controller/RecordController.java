@@ -328,11 +328,11 @@ public class RecordController extends BaseController {
     }
 
     /**
-     * 查询H5内嵌加载7天内每天每个事件总量
+     * H5内嵌加载7天内每天每个事件总量
      *
      * @return
      */
-    @ApiOperation(value = "查询H5内嵌加载7天内每天每个事件总量", notes = "")
+    @ApiOperation(value = "H5内嵌加载7天内每天每个事件总量", notes = "")
     @RequestMapping(value = "/queryWeekDataH5Hybrid", method = RequestMethod.POST)
     @ResponseBody
     @CrossOrigin
@@ -343,4 +343,5 @@ public class RecordController extends BaseController {
         result.data = receiverEntities;
         return result;
     }
+
 }

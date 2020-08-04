@@ -41,4 +41,5 @@ public interface IRecordService {
     long queryEventTotalOrderSize(RecordInfo<DotEventInfo> params);
 
     List<EventDayDataH5Hybrid> queryWeekDataH5Hybrid();
+
 }

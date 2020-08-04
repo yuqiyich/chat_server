@@ -46,10 +46,10 @@
         <mysql-connector>8.0.11</mysql-connector>
         <setting name="logImpl" value="STDOUT_LOGGING"/>
 
-<!--        <guava.version>27.0-jre</guava.version>-->
-<!--        <hbase.guava.version>11.0.2</hbase.guava.version>-->
-<!--        <geoserver.version>2.17.0</geoserver.version>-->
-<!--        <hadoop.version>2.8.5</hadoop.version>-->
+        <!--        <guava.version>27.0-jre</guava.version>-->
+        <!--        <hbase.guava.version>11.0.2</hbase.guava.version>-->
+        <!--        <geoserver.version>2.17.0</geoserver.version>-->
+        <!--        <hadoop.version>2.8.5</hadoop.version>-->
 
         <gt.version>23.0</gt.version>
         <hbase.version>2.2.5</hbase.version>
@@ -64,6 +64,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <!--排除这个slf4j-log4j12-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -198,6 +205,7 @@
             <groupId>org.locationtech.geomesa</groupId>
             <artifactId>geomesa-hbase-datastore_2.11</artifactId>
             <version>${geomesa.version}</version>
+
         </dependency>
         <dependency>
             <groupId>org.apache.curator</groupId>
@@ -215,6 +223,12 @@
             <artifactId>hbase-server</artifactId>
             <version>${hbase.version}</version>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.hbase</groupId>
@@ -235,11 +249,60 @@
             <scope>runtime</scope>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter</artifactId>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.slf4j</groupId>-->
+<!--                    <artifactId>slf4j-log4j12</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.kafka</groupId>-->
+<!--            <artifactId>spring-kafka-test</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>ch.qos.logback</groupId>-->
+<!--            <artifactId>logback-classic</artifactId>-->
+
+<!--            <version>1.2.3</version>-->
+<!--        </dependency>-->
+
         <!-- logstash -->
         <!--        <dependency>-->
         <!--            <groupId>net.logstash.logback</groupId>-->
         <!--            <artifactId>logstash-logback-encoder</artifactId>-->
-        <!--            <version>6.8.3</version>-->
+        <!--            <version>5.3</version>-->
         <!--        </dependency>-->
 
         <!-- elasticsearch -->
