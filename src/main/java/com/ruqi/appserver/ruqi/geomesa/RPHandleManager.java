@@ -41,25 +41,29 @@ public class RPHandleManager {
          return ins;
     }
     private RPHandleManager(){
-
     }
 
     /**
      * 存储记录数据
      *
+     * @param evn  存储表的环境
      * @param cityCode  城市编码
      * @param record  记录数据
      */
-    public void saveRecommendDatasByCityCode(String cityCode, UploadRecommendPointRequest<RecommendPoint> record){
+    public void saveRecommendDatasByCityCode(String evn,String cityCode, UploadRecommendPointRequest<RecommendPoint> record){
         ArrayList<UploadRecommendPointRequest<RecommendPoint>> records=new ArrayList<>();
         records.add(record);
-        saveRecommendRecordsByCityCode(cityCode,records);
+        saveRecommendRecordsByCityCode(evn,cityCode,records);
     }
-    public void saveRecommendRecordsByCityCode(String cityCode,List<UploadRecommendPointRequest<RecommendPoint>> records){
+    public void saveRecommendRecordsByCityCode(String evn,String cityCode,List<UploadRecommendPointRequest<RecommendPoint>> records){
+        String tableTail=cityCode;
+        if (StringUtils.isEmpty(evn)){
+            tableTail=   evn+"_"+cityCode;
+        }
         if (!StringUtils.isEmpty(cityCode)){
-            List<String> recordIds = saveRecommendPointsRecords(records,cityCode);//存储记录总表
-            saveSelectRecommendPoints(records,cityCode);//存储用户选择点和多个推荐点的表
-            saveRecommendPoints(records,recordIds,cityCode);//推荐点记录表
+            List<String> recordIds = saveRecommendPointsRecords(records,tableTail);//存储记录总表
+            saveSelectRecommendPoints(records,tableTail);//存储用户选择点和多个推荐点的表
+            saveRecommendPoints(records,recordIds,tableTail);//推荐点记录表
         } else {
             logger.error("no cityCode,don't save anything");
         }
@@ -134,7 +138,7 @@ public class RPHandleManager {
                     List<RecommendPoint> recommendPoints = records.get(i).getRecommendPoint();
                     int recommendPointSize = recommendPoints.size();
                     for (int j = 0; j < recommendPointSize; j++) {
-                        SimpleFeature simpleFeature = GeoMesaDataWrapper.convertRecordToPointSF(records.get(i), recommendPoints.get(j), sft);
+                        SimpleFeature simpleFeature = GeoMesaDataWrapper.convertRecordToPointSF( records.get(i), recommendPoints.get(j), sft);
                         datas.add(simpleFeature);
                         //构造记录关系表数据
                         GeoRecommendRelatedId recommendRelatedId=  new GeoRecommendRelatedId();

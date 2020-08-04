@@ -15,7 +15,9 @@ public class RecommendPointUpdater implements GeoDbHandler.IUpdateDataListener {
     @Override
     public void updateData(SimpleFeature oldData, SimpleFeature newData) {
         int updateTime = (int) oldData.getAttribute("updateTime");
-
+        int oldChannel= (int) newData.getAttribute(GeoTable.KEY_CHANNEL);
+        int newChannel= (int) oldData.getAttribute(GeoTable.KEY_CHANNEL);
+        oldData.setAttribute(GeoTable.KEY_CHANNEL,newChannel|oldChannel);
         oldData.setAttribute("updateTime",updateTime+1);
         oldData.setAttribute(GeoTable.KEY_DATE,new Date(System.currentTimeMillis()));
         oldData.setAttribute(GeoTable.KEY_TITLE,newData.getAttribute(GeoTable.KEY_TITLE));

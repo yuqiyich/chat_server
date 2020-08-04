@@ -3,19 +3,22 @@ package com.ruqi.appserver.ruqi.geomesa.db;
 import com.ruqi.appserver.ruqi.utils.GeoStringBuilder;
 import org.locationtech.geomesa.utils.interop.SimpleFeatureTypes;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * 推荐点的表的定义
  */
+@Component
 public class GeoTable {
     //推荐上车点的表
-    public static final String TABLE_RECOMMOND_PONIT_PREFIX = "t_rpt_";
+    public static  String TABLE_RECOMMOND_PONIT_PREFIX = "t_rpt_";
     //推荐上车点的原始记录表
-    public static final String TABLE_RECOMMEND_RECORD_PREFIX = "t_rprt_";
+    public static  String TABLE_RECOMMEND_RECORD_PREFIX = "t_rprt_";
     //以指针点的主键的关联多个推荐的实体表
-    public static final String TABLE_RECOMMEND_DATA_PREFIX = "t_sprt_";
+    public static  String TABLE_RECOMMEND_DATA_PREFIX = "t_sprt_";
     //推荐上车点的原始记录中选择点和上车点的关系
-    public static final String TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX = "t_rprrt_";
+    public static  String TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX = "t_rprrt_";
 
     //表类型
     public static final String TYPE_RECOMMEND_RECORD = "recommendRecord";
@@ -29,16 +32,14 @@ public class GeoTable {
     public static final String PRIMARY_KEY_TYPE_RECOMMEND_POINT = "rpId";
     public static final String PRIMARY_KEY_TYPE_RECOMMEND_RECORD = "rrId";
 
-    //通用key字段
+
     /**
      * 渠道定义
      */
-    public static final int CHANNEL_TX = 0b0000_0010;//腾训渠道
-    public static final int CHANNEL_DIDI = 0b0000_0001;//滴滴渠道
-
+    public static final int CHANNEL_TX = 0b0000_0010;//腾讯sdk渠道
+    public static final int CHANNEL_DIDI = 0b0000_0001;//滴滴sdk渠道
+    //通用key字段
     public static final String ATTR_KEY_CHANNEL = "channel:int";//来源渠道
-
-
     public static final String ATTR_KEY_CITY_CODE = "cityCode:String";//城市编码
     public static final String ATTR_KEY_AD_CODE = "adCode:String";//区域编码
     public static final String ATTR_KEY_TITLE = "title:String";//选择点的短地址名称
@@ -96,6 +97,7 @@ public class GeoTable {
                 .append(ATTR_KEY_TITLE)
                 .append(ATTR_KEY_DATE)
                 .append("updateTime:Integer:index=true")//更新次数
+                .append(ATTR_KEY_CHANNEL)//渠道分析
                 //srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
                 .append("*rGeom:Point:srid=4326");//获取推荐上车点的用户所选择的点
         sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_POINT , attributes.toString());

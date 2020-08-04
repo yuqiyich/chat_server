@@ -87,7 +87,7 @@ public class RpGeoTest {
     public static UploadRecommendPointRequest<RecommendPoint>  getTestData(){
        UploadRecommendPointRequest<RecommendPoint>   testData= new UploadRecommendPointRequest<RecommendPoint>();
        testData.setCityCode(CITY_CODE);
-       testData.setChannel(String.valueOf(GeoTable.CHANNEL_TX));
+       testData.setChannel(GeoTable.CHANNEL_TX);
        testData.setSelectLat(23.987654);
        testData.setSelectLng(123.987654);
        testData.setAdCode(CITY_CODE);
