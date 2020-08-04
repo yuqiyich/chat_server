@@ -57,7 +57,7 @@ public class RPHandleManager {
     }
     public void saveRecommendRecordsByCityCode(String evn,String cityCode,List<UploadRecommendPointRequest<RecommendPoint>> records){
         String tableTail=cityCode;
-        if (StringUtils.isEmpty(evn)){
+        if (!StringUtils.isEmpty(evn)){
             tableTail=   evn+"_"+cityCode;
         }
         if (!StringUtils.isEmpty(cityCode)){

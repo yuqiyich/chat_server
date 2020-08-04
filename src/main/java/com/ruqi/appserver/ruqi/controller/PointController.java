@@ -5,6 +5,7 @@ import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.request.EncryptBaseRequest;
 import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.service.AppInfoSevice;
 import com.ruqi.appserver.ruqi.service.IPointRecommendService;
 import com.ruqi.appserver.ruqi.service.RedisUtil;
 import com.ruqi.appserver.ruqi.utils.*;
@@ -30,6 +31,8 @@ public class PointController extends BaseController {
 
     @Autowired
     IPointRecommendService pointRecommendService;
+    @Autowired
+    AppInfoSevice appInfoSevice;
 
     @ApiOperation(value = "查询推荐上车点", notes = "")
     @RequestMapping(value = "/queryRecommendPoint", method = RequestMethod.POST)
@@ -55,8 +58,15 @@ public class PointController extends BaseController {
                                               @RequestHeader Map<String, String> header) {
         try {
             logger.info("queryRecommendPoint params:" + JsonUtil.beanToJsonStr(uploadRecommendPointRequest));
-            BaseCodeMsgBean baseCodeMsgBean = pointRecommendService.saveRecommendPoint(uploadRecommendPointRequest);
-            return baseCodeMsgBean;
+           AppInfo appInfo = appInfoSevice.getAppInfoByKey(header.get("app_key"));
+
+            BaseCodeMsgBean baseCodeMsgBean=new BaseCodeMsgBean();
+           if (appInfo!=null){
+               int appId=appInfo.getAppId();
+               //硬编码指定环境
+               pointRecommendService.saveRecommendPoint(uploadRecommendPointRequest,(appId==1||appId==2)?"pro":"dev");
+           }
+           return baseCodeMsgBean;
         } catch (Exception e) {
             BaseCodeMsgBean result = new BaseCodeMsgBean();
             result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;

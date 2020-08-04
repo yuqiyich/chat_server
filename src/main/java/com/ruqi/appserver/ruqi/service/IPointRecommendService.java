@@ -13,7 +13,7 @@ public interface IPointRecommendService {
      * 采集推荐上车点
      * @param uploadRecommendPointRequest
      */
-    BaseCodeMsgBean saveRecommendPoint(UploadRecommendPointRequest uploadRecommendPointRequest);
+    BaseCodeMsgBean saveRecommendPoint(UploadRecommendPointRequest uploadRecommendPointRequest,String appId);
 
     /**
      * 查询推荐上车点
