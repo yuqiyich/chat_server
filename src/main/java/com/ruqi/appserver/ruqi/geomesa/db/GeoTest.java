@@ -1,4 +1,4 @@
-package com.ruqi.appserver.ruqi.geomesa;
+package com.ruqi.appserver.ruqi.geomesa.db;
 
 import com.ruqi.appserver.ruqi.utils.GeoStringBuilder;
 import org.geotools.data.DataStore;
@@ -12,9 +12,11 @@ import org.opengis.feature.simple.SimpleFeatureType;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static com.ruqi.appserver.ruqi.geomesa.GeoTable.KEY_CHANNEL;
-import static com.ruqi.appserver.ruqi.geomesa.GeoTable.KEY_DATE;
+import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.KEY_CHANNEL;
+import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.KEY_DATE;
 
 /**
  * 测试geo的东西
@@ -22,11 +24,11 @@ import static com.ruqi.appserver.ruqi.geomesa.GeoTable.KEY_DATE;
 public class GeoTest {
     static List<Query> queries=null;
     public static void main(String[] args) {
-//        ExecutorService service= Executors.newFixedThreadPool(40);
-//        for (int i = 0; i <10000 ; i++) {
-//            service.submit(new SaveDataTask());
-//        }
-        queryData();
+        ExecutorService service= Executors.newFixedThreadPool(1);
+        for (int i = 0; i <1 ; i++) {
+            service.submit(new SaveDataTask());
+        }
+//        queryData();
     }
 
   public static void   queryData(){
@@ -52,7 +54,7 @@ public class GeoTest {
                 String contains=" CONTAINS(sGeom,SRID=4326;POINT(113.103284 23.120406))";
                 String exist="rrId EXISTS";
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(idrule)));
-                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains)));
+                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(idrule)));
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains+" AND " +during)));
                 // bounding box over most of the united states
 //                CONTAINS(geom,SRID=4326;POINT(113.98933 22.59750))
@@ -86,7 +88,7 @@ public class GeoTest {
           List<SimpleFeature> datas=GeoTest.getRandomTestRecordDatas(sft);
           GeoDbHandler.createSchema(dataStore, sft);
           try {
-              GeoDbHandler.writeFeaturesData(dataStore,sft,datas);
+              GeoDbHandler.writeNewFeaturesData(dataStore,sft,datas);
           } catch (IOException e) {
               e.printStackTrace();
           }
@@ -96,7 +98,7 @@ public class GeoTest {
 
     public static List<SimpleFeature> getRandomTestRecordDatas(SimpleFeatureType sft) {
         List<SimpleFeature> datas = new ArrayList<>();
-        for (int i = 0; i < 20000 ; i++) {
+        for (int i = 0; i < 1 ; i++) {
             datas.add(getTestRecordFeatureData(sft));
         }
         return datas;
@@ -107,7 +109,9 @@ public class GeoTest {
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(sft);
         //23.107395,113.322317
         String selectPoint = "POINT "+getFormatTestPointData();
-        String mulitPoints = "MULTIPOINT (" + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + ")";
+//        String mulitPoints = "MULTIPOINT (" + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + "," + getFormatTestPointData() + ")";
+        String mulitPoints = "MULTIPOINT ((122.987651 23.987651),(122.987652 23.987652),(122.987653 23.987653))";
+        System.out.println("mulit:"+mulitPoints);
         Date date = new Date(System.currentTimeMillis());
         UUID id = UUID.randomUUID();
         builder.set("rrId", id.toString());
@@ -182,45 +186,10 @@ public class GeoTest {
                     .append("*rGeoms:MultiPoint:srid=4326");//推荐点集合
 
             sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_RECORD, attributes.toString());
-            sft.getDescriptor("sGeom").getUserData().put("precision", "8");//设置表的精度
+            sft.getDescriptor("sGeom").getUserData().put("precision", "6");//设置表的精度
             sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
             return sft;
         }
 
-        /**
-         * 推荐点的表
-         *
-         * @return
-         */
-        public static SimpleFeatureType getRecommendPointSimpleType() {
-            GeoStringBuilder attributes = new GeoStringBuilder();
-            SimpleFeatureType sft;
-            attributes.append("rpId:String:index=true")//采用2点的id
-                    .append(ATTR_KEY_TITLE)
-                    .append(ATTR_KEY_ADDRESS)
-                    .append(ATTR_KEY_DATE)
-                    //srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
-                    .append("*rGeom:Point:srid=4326");//获取推荐上车点的用户所选择的点
-            sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_POINT, attributes.toString());
-            sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
-
-            return sft;
-        }
-
-        /**
-         * 用户指针点和某一个推荐点的关联表
-         *
-         * @return
-         */
-        public static SimpleFeatureType getRecommendRelatedSimpleType() {
-            GeoStringBuilder attributes = new GeoStringBuilder();
-            SimpleFeatureType sft;
-            attributes.append("rPRId:String:index=true,");
-            attributes.append("rpId:String:index=true");//推荐点的数据id
-            attributes.append("rrId:String:index=true");//推荐点记录的id
-            sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_RELATED_RECORD, attributes.toString());
-            sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
-            return sft;
-        }
     }
 }

@@ -1,4 +1,4 @@
-package com.ruqi.appserver.ruqi.geomesa;
+package com.ruqi.appserver.ruqi.geomesa.db;
 
 
 /**
