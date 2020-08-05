@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * 推荐上车点的控制器
@@ -47,7 +46,7 @@ public class PointController extends BaseController {
             kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.INFO,
                     String.format("request:[%s], head:[%s], body:[%s], response:[%s]", JsonUtil.beanToJsonStr(request.getRequestURL()),
                             JsonUtil.beanToJsonStr(HeaderMapUtils.getAllHeaderParamMaps(request)),
-                            null, JsonUtil.beanToJsonStr(result)));
+                            JsonUtil.beanToJsonStr(queryRecommendPointRequest), JsonUtil.beanToJsonStr(result)));
             return result;
         } catch (Exception e) {
             BaseBean<RecommendPointList<RecommendPoint>> result = new BaseBean<>();
@@ -57,7 +56,7 @@ public class PointController extends BaseController {
             kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.ERROR,
                     String.format("request:[%s], head:[%s], body:[%s], response:[%s]", JsonUtil.beanToJsonStr(request.getRequestURL()),
                             JsonUtil.beanToJsonStr(HeaderMapUtils.getAllHeaderParamMaps(request)),
-                            null, JsonUtil.beanToJsonStr(result)));
+                            JsonUtil.beanToJsonStr(queryRecommendPointRequest), JsonUtil.beanToJsonStr(result)));
             return result;
         }
     }
@@ -65,15 +64,14 @@ public class PointController extends BaseController {
     @ApiOperation(value = "推荐上车点采集上报", notes = "")
     @RequestMapping(value = "/uploadRecommendPoint", method = RequestMethod.POST)
     public BaseCodeMsgBean uploadRecommendPoint(HttpServletRequest request,
-                                                @RequestBody UploadRecommendPointRequest<RecommendPoint> uploadRecommendPointRequest,
-                                                @RequestHeader Map<String, String> header) {
+                                                @RequestBody UploadRecommendPointRequest<RecommendPoint> uploadRecommendPointRequest) {
         try {
             logger.info("queryRecommendPoint params:" + JsonUtil.beanToJsonStr(uploadRecommendPointRequest));
             BaseCodeMsgBean baseCodeMsgBean = pointRecommendService.saveRecommendPoint(uploadRecommendPointRequest);
             kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.INFO,
                     String.format("request:[%s], head:[%s], body:[%s], response:[%s]", JsonUtil.beanToJsonStr(request.getRequestURL()),
                             JsonUtil.beanToJsonStr(HeaderMapUtils.getAllHeaderParamMaps(request)),
-                            null, JsonUtil.beanToJsonStr(baseCodeMsgBean)));
+                            JsonUtil.beanToJsonStr(uploadRecommendPointRequest), JsonUtil.beanToJsonStr(baseCodeMsgBean)));
             return baseCodeMsgBean;
         } catch (Exception e) {
             BaseCodeMsgBean result = new BaseCodeMsgBean();
@@ -83,7 +81,7 @@ public class PointController extends BaseController {
             kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.ERROR,
                     String.format("request:[%s], head:[%s], body:[%s], response:[%s]", JsonUtil.beanToJsonStr(request.getRequestURL()),
                             JsonUtil.beanToJsonStr(HeaderMapUtils.getAllHeaderParamMaps(request)),
-                            null, JsonUtil.beanToJsonStr(result)));
+                            JsonUtil.beanToJsonStr(uploadRecommendPointRequest), JsonUtil.beanToJsonStr(result)));
             return result;
         }
     }

@@ -133,7 +133,7 @@ public class RecordController extends BaseController {
             kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.INFO,
                     String.format("request:[%s], head:[%s], body:[%s], response:[%s]", JsonUtil.beanToJsonStr(request.getRequestURL()),
                             JsonUtil.beanToJsonStr(HeaderMapUtils.getAllHeaderParamMaps(request)),
-                            null, JsonUtil.beanToJsonStr(baseCodeMsgBean)));
+                            JsonUtil.beanToJsonStr(content), JsonUtil.beanToJsonStr(baseCodeMsgBean)));
             return baseCodeMsgBean;
         } catch (Exception e) {
             BaseCodeMsgBean result = new BaseCodeMsgBean();
@@ -143,7 +143,7 @@ public class RecordController extends BaseController {
             kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.ERROR,
                     String.format("request:[%s], head:[%s], body:[%s], response:[%s]", JsonUtil.beanToJsonStr(request.getRequestURL()),
                             JsonUtil.beanToJsonStr(HeaderMapUtils.getAllHeaderParamMaps(request)),
-                            null, JsonUtil.beanToJsonStr(result)));
+                            JsonUtil.beanToJsonStr(content), JsonUtil.beanToJsonStr(result)));
             return result;
         }
     }
