@@ -1,6 +1,12 @@
 package com.ruqi.appserver.ruqi.controller;
 
+import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class BaseController {
+    @Autowired
+    protected KafkaProducer kafkaProducer;
+
 //public class BaseController implements ElasticsearchRepository {
 //    @Override
 //    public Object index(Object o) {

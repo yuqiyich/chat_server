@@ -23,8 +23,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Value("${swagger.enable:false}")
-    private boolean mSwaggerEnable = false;
+    @Value("${swagger.enable:true}")
+    private boolean mSwaggerEnable = true;
 
     @Bean
     public Docket createRestApi() {

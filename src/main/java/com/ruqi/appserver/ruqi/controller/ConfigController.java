@@ -5,11 +5,10 @@ import com.ruqi.appserver.ruqi.bean.BaseBean;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ import java.util.List;
 @RequestMapping(value = "/config")
 @CrossOrigin
 public class ConfigController extends BaseController {
-    Logger logger = LoggerFactory.getLogger(getClass());
+//    Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     AppInfoWrapper appInfoWrapper;
@@ -28,7 +27,7 @@ public class ConfigController extends BaseController {
     @ApiOperation(value = "查询应用列表", notes = "")
     @RequestMapping(value = "/queryApps", method = RequestMethod.GET)
     @ResponseBody
-    public BaseBean<List<AppResponeInfo>> queryRiskTypeForLayui() {
+    public BaseBean<List<AppResponeInfo>> queryRiskTypeForLayui(HttpServletRequest request) {
         BaseBean<List<AppResponeInfo>> result = new BaseBean<>();
         List<AppResponeInfo> appInfos = appInfoWrapper.getAllApps();
         result.data = appInfos;
