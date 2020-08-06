@@ -1,6 +1,9 @@
 package com.ruqi.appserver.ruqi.controller;
 
 public class BaseController {
+//    @Autowired
+//    protected KafkaProducer kafkaProducer;
+
 //public class BaseController implements ElasticsearchRepository {
 //    @Override
 //    public Object index(Object o) {

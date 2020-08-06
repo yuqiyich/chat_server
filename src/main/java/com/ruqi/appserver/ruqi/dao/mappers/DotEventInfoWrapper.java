@@ -1,7 +1,8 @@
 package com.ruqi.appserver.ruqi.dao.mappers;
 
 import com.ruqi.appserver.ruqi.bean.*;
-import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataH5Hybrid;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -37,7 +38,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.scene!=null and dotEventInfo.content.scene!=\"\" '>AND scene = #{dotEventInfo.content.scene} </if>",
             "<if test='dotEventInfo.content.orderIdFilter==\"1\" '>AND order_id IS NOT NULL AND order_id!=''  </if>",
             "<if test='dotEventInfo.content.orderIdFilter==\"2\" '>AND (order_id IS NULL OR order_id='')  </if>",
-            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userPhone}  </if>",
+            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.content.userId}  </if>",
             "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName}  </if>",
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{dotEventInfo.content.deviceModel}, '%')  </if>",
             "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand like concat('%', #{dotEventInfo.content.deviceBrand}, '%')  </if>",
@@ -74,7 +75,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.scene!=null and dotEventInfo.content.scene!=\"\" '>AND scene = #{dotEventInfo.content.scene} </if>",
             "<if test='dotEventInfo.content.orderIdFilter==\"1\" '>AND order_id IS NOT NULL AND order_id!=''  </if>",
             "<if test='dotEventInfo.content.orderIdFilter==\"2\" '>AND (order_id IS NULL OR order_id='')  </if>",
-            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userPhone} </if>",
+            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.content.userId} </if>",
             "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName} </if>",
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model like concat('%', #{dotEventInfo.content.deviceModel}, '%') </if>",
             "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand like concat('%', #{dotEventInfo.content.deviceBrand}, '%') </if>",
@@ -196,53 +197,21 @@ public interface DotEventInfoWrapper {
     long queryEventTotalUserSize(@Param("dotEventInfo") RecordInfo<DotEventInfo> dotEventInfo);
 
     @Select({"<script>",
-            "select a.record_date as date,",
-            "ifnull(b.H5_HYBRID_LOAD_SUCCESS,0) as successCount,",
-            "ifnull(c.H5_HYBRID_LOAD_FAIL,0) as failCount,",
-            "ifnull(d.H5_HYBRID_RELOAD_SUCCESS,0) as reloadSuccessCount,",
-            "ifnull(e.H5_HYBRID_RELOAD_FAIL,0) as reloadFailCount",
-            "from (",
-            "SELECT date_sub(curdate(), interval 6 day) as record_date",
-            "union all",
-            "SELECT date_sub(curdate(), interval 5 day) as record_date",
-            "union all",
-            "SELECT date_sub(curdate(), interval 4 day) as record_date",
-            "union all",
-            "SELECT date_sub(curdate(), interval 3 day) as record_date",
-            "union all",
-            "SELECT date_sub(curdate(), interval 2 day) as record_date",
-            "union all",
-            "SELECT date_sub(curdate(), interval 1 day) as record_date",
-            "union all",
-            "SELECT curdate() as record_date",
-            ") a left join (",
-            "select date(record_time) as datetime, count(*) as H5_HYBRID_LOAD_SUCCESS",
-            "from dot_event_record",
+            "select date(record_time) as date, platform, event_key as eventKey, count(*) as totalCount",
+            "  from dot_event_record",
             "where record_time >= date_sub(curdate(), interval 6 day)",
-            "AND (event_key='H5_HYBRID_LOAD_SUCCESS')",
-            "group by date(record_time)",
-            ") b on a.record_date = b.datetime",
-            "left join (",
-            "select date(record_time) as datetime, count(*) as H5_HYBRID_LOAD_FAIL",
-            "from dot_event_record",
-            "where record_time >= date_sub(curdate(), interval 6 day)",
-            "AND (event_key='H5_HYBRID_LOAD_FAIL')",
-            "group by date(record_time)",
-            ") c on a.record_date = c.datetime",
-            "left join (",
-            "select date(record_time) as datetime, count(*) as H5_HYBRID_RELOAD_SUCCESS",
-            "from dot_event_record",
-            "where record_time >= date_sub(curdate(), interval 6 day)",
-            "AND (event_key='H5_HYBRID_RELOAD_SUCCESS')",
-            "group by date(record_time)",
-            ") d on a.record_date = d.datetime",
-            "left join (",
-            "select date(record_time) as datetime, count(*) as H5_HYBRID_RELOAD_FAIL",
-            "from dot_event_record",
-            "where record_time >= date_sub(curdate(), interval 6 day)",
-            "AND (event_key='H5_HYBRID_RELOAD_FAIL')",
-            "group by date(record_time)",
-            ") e on a.record_date = e.datetime",
+            "AND (event_key='H5_HYBRID_LOAD_SUCCESS' or event_key='H5_HYBRID_RELOAD_SUCCESS' ",
+            "or event_key='H5_HYBRID_LOAD_FAIL' or event_key='H5_HYBRID_RELOAD_FAIL') AND app_id=1",
+            "  group by date(record_time), platform, event_key",
             "</script>"})
-    List<EventDayDataH5Hybrid> queryWeekDataH5Hybrid();
+    List<DBEventDayItemDataH5Hybrid> queryWeekDataH5Hybrid();
+
+    @Select({"<script>",
+            "select date(record_time) as date, platform, user_id as userId, count(*) as failCount",
+            "from dot_event_record",
+            "where record_time >= date_sub(curdate(), interval 6 day)",
+            "AND (event_key='H5_HYBRID_LOAD_FAIL' or event_key='H5_HYBRID_RELOAD_FAIL') AND app_id=1",
+            "group by date(record_time), platform, user_id ORDER BY count(*) DESC",
+            "</script>"})
+    List<DBEventDayDataH5Hybrid> queryWeekDataUserCountH5Hybrid();
 }

@@ -5,8 +5,6 @@ import com.ruqi.appserver.ruqi.bean.BaseBean;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +18,7 @@ import java.util.List;
 @RequestMapping(value = "/config")
 @CrossOrigin
 public class ConfigController extends BaseController {
-    Logger logger = LoggerFactory.getLogger(getClass());
+//    Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     AppInfoWrapper appInfoWrapper;

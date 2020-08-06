@@ -1,5 +1,6 @@
 package com.ruqi.appserver.ruqi.controller;
 
+import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
@@ -122,7 +123,8 @@ public class RecordController extends BaseController {
 
     @ApiOperation(value = "通用简单埋点事件统计上报", notes = "")
     @RequestMapping(value = "/uploadDotEventData", method = RequestMethod.POST)
-    public BaseCodeMsgBean uploadDotEventData(@RequestBody UploadRecordInfo<UploadDotEventInfo> content) {
+    @LogAnnotation
+    public BaseCodeMsgBean uploadDotEventData(HttpServletRequest request, @RequestBody UploadRecordInfo<UploadDotEventInfo> content) {
         try {
             if (null != content && null != content.getContent() && null != content.getContent().eventData) {
                 Map<String, Object> eventData = content.getContent().eventData;
@@ -130,7 +132,8 @@ public class RecordController extends BaseController {
                     content.getContent().userType = (int) eventData.get(DotEventInfo.NAME_USER_TYPE);
                 }
             }
-            return saveDotData(content);
+            BaseCodeMsgBean baseCodeMsgBean = saveDotData(content);
+            return baseCodeMsgBean;
         } catch (Exception e) {
             BaseCodeMsgBean result = new BaseCodeMsgBean();
             result.errorCode = ErrorCode.ERROR_UNKNOWN.errorCode;
@@ -328,11 +331,11 @@ public class RecordController extends BaseController {
     }
 
     /**
-     * 查询H5内嵌加载7天内每天每个事件总量
+     * H5内嵌加载7天内每天每个事件总量
      *
      * @return
      */
-    @ApiOperation(value = "查询H5内嵌加载7天内每天每个事件总量", notes = "")
+    @ApiOperation(value = "H5内嵌加载7天内每天每个事件总量", notes = "")
     @RequestMapping(value = "/queryWeekDataH5Hybrid", method = RequestMethod.POST)
     @ResponseBody
     @CrossOrigin
@@ -343,4 +346,5 @@ public class RecordController extends BaseController {
         result.data = receiverEntities;
         return result;
     }
+
 }
