@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
@@ -20,6 +21,7 @@ public class KafkaProducer {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Async
     public void sendLog(BaseKafkaLogInfo.LogLevel logLevel, String message) {
         BaseKafkaLogInfo baseKafkaLogInfo = new BaseKafkaLogInfo(logLevel, message);
 

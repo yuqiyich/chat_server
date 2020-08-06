@@ -1,12 +1,14 @@
 package com.ruqi.appserver.ruqi.controller;
 
+import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
-import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.service.IRecordService;
-import com.ruqi.appserver.ruqi.utils.*;
+import com.ruqi.appserver.ruqi.utils.EncryptUtils;
+import com.ruqi.appserver.ruqi.utils.IpUtil;
+import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -121,6 +123,7 @@ public class RecordController extends BaseController {
 
     @ApiOperation(value = "通用简单埋点事件统计上报", notes = "")
     @RequestMapping(value = "/uploadDotEventData", method = RequestMethod.POST)
+    @LogAnnotation
     public BaseCodeMsgBean uploadDotEventData(HttpServletRequest request, @RequestBody UploadRecordInfo<UploadDotEventInfo> content) {
         try {
             if (null != content && null != content.getContent() && null != content.getContent().eventData) {
@@ -130,20 +133,12 @@ public class RecordController extends BaseController {
                 }
             }
             BaseCodeMsgBean baseCodeMsgBean = saveDotData(content);
-            kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.INFO,
-                    String.format("request:[%s], head:[%s], body:[%s], response:[%s]", JsonUtil.beanToJsonStr(request.getRequestURL()),
-                            JsonUtil.beanToJsonStr(HeaderMapUtils.getAllHeaderParamMaps(request)),
-                            JsonUtil.beanToJsonStr(content), JsonUtil.beanToJsonStr(baseCodeMsgBean)));
             return baseCodeMsgBean;
         } catch (Exception e) {
             BaseCodeMsgBean result = new BaseCodeMsgBean();
             result.errorCode = ErrorCode.ERROR_UNKNOWN.errorCode;
             result.errorMsg = ErrorCode.ERROR_UNKNOWN.errorMsg;
             logger.error("uploadDotEventData error. content:" + content + ", e:" + e);
-            kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.ERROR,
-                    String.format("request:[%s], head:[%s], body:[%s], response:[%s]", JsonUtil.beanToJsonStr(request.getRequestURL()),
-                            JsonUtil.beanToJsonStr(HeaderMapUtils.getAllHeaderParamMaps(request)),
-                            JsonUtil.beanToJsonStr(content), JsonUtil.beanToJsonStr(result)));
             return result;
         }
     }

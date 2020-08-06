@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ public class ConfigController extends BaseController {
     @ApiOperation(value = "查询应用列表", notes = "")
     @RequestMapping(value = "/queryApps", method = RequestMethod.GET)
     @ResponseBody
-    public BaseBean<List<AppResponeInfo>> queryRiskTypeForLayui(HttpServletRequest request) {
+    public BaseBean<List<AppResponeInfo>> queryRiskTypeForLayui() {
         BaseBean<List<AppResponeInfo>> result = new BaseBean<>();
         List<AppResponeInfo> appInfos = appInfoWrapper.getAllApps();
         result.data = appInfos;
