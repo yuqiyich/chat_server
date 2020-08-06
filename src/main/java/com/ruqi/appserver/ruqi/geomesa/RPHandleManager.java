@@ -123,7 +123,7 @@ public class RPHandleManager {
             mRecommendPointDataStore = GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+cityCode);
         }
         SimpleFeatureType sft=GeoTable.getRecommendPointSimpleType(cityCode);
-        GeoDbHandler.createSchema(mRecommendPointDataStore, sft);
+        GeoDbHandler.createOrUpdateSchema(mRecommendPointDataStore, sft);
         List<SimpleFeature> pointsDatas=convertRecommendPointToSF(records,sft,recordIds,cityCode);
         updateDataIfFidExistOrInsert(mRecommendPointDataStore,pointsDatas,sft,GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT,new RecommendPointUpdater());
     }
@@ -201,7 +201,7 @@ public class RPHandleManager {
     }
 
     private void insertInDb(DataStore mDataStore, List<SimpleFeature> recordsDatas, SimpleFeatureType sft) {
-        GeoDbHandler.createSchema(mDataStore, sft);
+        GeoDbHandler.createOrUpdateSchema(mDataStore, sft);
         try {
             GeoDbHandler.writeNewFeaturesData(mDataStore,sft,recordsDatas);
         } catch (IOException e) {
@@ -210,7 +210,7 @@ public class RPHandleManager {
     }
 
     private void updateDataIfFidExistOrInsert(DataStore mDataStore, List<SimpleFeature> recordsDatas, SimpleFeatureType sft, String fidName, GeoDbHandler.IUpdateDataListener iUpdateDataListenerCallback) {
-        GeoDbHandler.createSchema(mDataStore, sft);
+        GeoDbHandler.createOrUpdateSchema(mDataStore, sft);
         GeoDbHandler.updateExistDataOrInsert(mDataStore,sft,recordsDatas,fidName, iUpdateDataListenerCallback);
     }
 

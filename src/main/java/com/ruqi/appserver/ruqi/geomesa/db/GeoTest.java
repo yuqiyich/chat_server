@@ -24,8 +24,8 @@ import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.KEY_DATE;
 public class GeoTest {
     static List<Query> queries=null;
     public static void main(String[] args) {
-        ExecutorService service= Executors.newFixedThreadPool(1);
-        for (int i = 0; i <1 ; i++) {
+        ExecutorService service= Executors.newFixedThreadPool(40);
+        for (int i = 0; i <10000 ; i++) {
             service.submit(new SaveDataTask());
         }
 //        queryData();
@@ -86,7 +86,7 @@ public class GeoTest {
       if (dataStore!=null){
           SimpleFeatureType sft=GeoTable.getRecommendRecordSimpleType();
           List<SimpleFeature> datas=GeoTest.getRandomTestRecordDatas(sft);
-          GeoDbHandler.createSchema(dataStore, sft);
+          GeoDbHandler.createOrUpdateSchema(dataStore, sft);
           try {
               GeoDbHandler.writeNewFeaturesData(dataStore,sft,datas);
           } catch (IOException e) {
@@ -98,7 +98,7 @@ public class GeoTest {
 
     public static List<SimpleFeature> getRandomTestRecordDatas(SimpleFeatureType sft) {
         List<SimpleFeature> datas = new ArrayList<>();
-        for (int i = 0; i < 1 ; i++) {
+        for (int i = 0; i < 20000 ; i++) {
             datas.add(getTestRecordFeatureData(sft));
         }
         return datas;
@@ -143,11 +143,11 @@ public class GeoTest {
 
     private static class GeoTable{
         //推荐上车点的表
-        public static  final String TABLE_RECOMMOND_PONIT="t_rpt";
+        public static  final String TABLE_RECOMMOND_PONIT="g_t_rpt";
         //推荐上车点的原始记录表
-        public static  final String TABLE_SELECT_PONIT_RECORD="t_rprt";
+        public static  final String TABLE_SELECT_PONIT_RECORD="g_t_rprt";
         //推荐上车点的原始记录中选择点和上车点的关系
-        public static  final String TABLE_SELECT_AND_RECOMMEND_RELATED="t_rprt";
+        public static  final String TABLE_SELECT_AND_RECOMMEND_RELATED="g_t_rprt";
 
         //表类型
 

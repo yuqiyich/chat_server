@@ -1,5 +1,6 @@
 package com.ruqi.appserver.ruqi.geomesa.db;
 
+import com.aliyuncs.utils.StringUtils;
 import com.ruqi.appserver.ruqi.bean.GeoRecommendRelatedId;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
@@ -28,7 +29,7 @@ public class GeoMesaDataWrapper {
      */
     public static SimpleFeature convertRecordToRecordSF(UploadRecommendPointRequest<RecommendPoint> records, SimpleFeatureType sft,boolean isRecord) {
         if (records!=null&&records.getRecommendPoint()!=null&&records.getRecommendPoint().size()>0){
-            SimpleFeatureBuilder builder = new SimpleFeatureBuilder(sft);
+            SimpleFeatureBuilderWrapper builder = new SimpleFeatureBuilderWrapper(sft);
             //23.107395,113.322317
             String selectPoint = "POINT ("+records.getSelectLng()  + " " +records.getSelectLat() + ")";
             StringBuilder mulitPoints = new StringBuilder();
@@ -46,7 +47,7 @@ public class GeoMesaDataWrapper {
             } else {//如果是非记录就以选择点为唯一id
                 fid=GeoMathUtil.getPrecision(records.getSelectLng(),TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" +GeoMathUtil.getPrecision(records.getSelectLat(),TABLE_RECORD_PRIMARY_KEY_PRECISION);
             }
-            Date date = new Date(System.currentTimeMillis());
+            Date date = new Date(records.getTimeStamp()>0?records.getTimeStamp():System.currentTimeMillis());;
             builder.set("rrId", fid);
             builder.set(KEY_CHANNEL, records.getChannel());
             builder.set(KEY_DATE, date);
@@ -73,17 +74,19 @@ public class GeoMesaDataWrapper {
      * @return
      */
     public static SimpleFeature convertRecordToPointSF(UploadRecommendPointRequest<RecommendPoint> records, RecommendPoint recommendPoint, SimpleFeatureType sft) {
-        SimpleFeatureBuilder builder = new SimpleFeatureBuilder(sft);
+        SimpleFeatureBuilderWrapper builder = new SimpleFeatureBuilderWrapper(sft);
         String id = recommendPoint.getLng() + "_" +recommendPoint.getLat();
-        if (records != null) {
-            Date date = new Date(System.currentTimeMillis());
+        if (records != null)  {
+            Date date = new Date(records.getTimeStamp()>0?records.getTimeStamp():System.currentTimeMillis());
             builder.set(KEY_DATE, date);
             builder.set(PRIMARY_KEY_TYPE_RECOMMEND_POINT, id);
             builder.set(KEY_TITLE, recommendPoint.getTitle());
             builder.set(KEY_ADDRESS, recommendPoint.getAddress());
-            builder.set("updateTime", 0);//默认都是0次
+            builder.set(KEY_UPDATE_COUNT, 0);//默认都是0次
             builder.set(KEY_CHANNEL, records.getChannel());//渠道
             builder.set("rGeom", "POINT("+recommendPoint.getLng()  + " " +recommendPoint.getLat()+")");
+            builder.set(KEY_SHOT_COUNT, 0);//命中次数
+            builder.set(KEY_EXT, "");//预留字段
         }
         return builder.buildFeature(id);
     }
@@ -97,7 +100,7 @@ public class GeoMesaDataWrapper {
      * @return
      */
     public static SimpleFeature convertRecordToRelatedSF(GeoRecommendRelatedId records, SimpleFeatureType sft) {
-        SimpleFeatureBuilder builder = new SimpleFeatureBuilder(sft);
+        SimpleFeatureBuilderWrapper builder = new SimpleFeatureBuilderWrapper(sft);
         UUID id = UUID.randomUUID();
         if (records != null) {
             Date date = new Date(System.currentTimeMillis());

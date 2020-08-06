@@ -2,21 +2,26 @@ package com.ruqi.appserver.ruqi.geomesa.db;
 
 import com.aliyuncs.utils.StringUtils;
 import org.geotools.data.*;
+import org.geotools.feature.type.AttributeDescriptorImpl;
+import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
+import org.locationtech.geomesa.features.ScalaSimpleFeature;
+import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.feature.type.PropertyType;
 import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.html.HTMLDocument;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class GeoDbHandler {
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
@@ -131,8 +136,19 @@ public class GeoDbHandler {
 //                    logger.info("Writing test data start");
                     SimpleFeature toWrite = writer.next();
 
+
+                    Iterator<Property> properties= feature.getProperties().iterator();
+                    while(properties.hasNext()){
+                        Property property=properties.next();
+                        toWrite.setAttribute(property.getName(),feature.getAttribute(property.getName()));
+                    }
                     // copy attributes
-                    toWrite.setAttributes(feature.getAttributes());
+//
+//                    toWrite.setAttributes(feature.getAttributes());
+//                    int attrSize=sft.getAttributeCount();
+//                    for (int i = 0; i < attrSize; i++) {
+//                        toWrite.setAttribute(sft.getType(i).getName(),feature.getAttribute(i));
+//                    }
 
                     // if you want to set the feature ID, you have to cast to an implementation class
                     // and add the USE_PROVIDED_FID hint to the user data
@@ -155,11 +171,21 @@ public class GeoDbHandler {
         }
     }
 
-    public static void createSchema(DataStore dataStore, SimpleFeatureType sft) {
-        logger.info("Creating schema: " + DataUtilities.encodeType(sft));
+    public static void createOrUpdateSchema(DataStore dataStore, SimpleFeatureType sft) {
+        logger.info("Creating new  schema: " + DataUtilities.encodeType(sft));
         // we only need to do the once - however, calling it repeatedly is a no-op
         try {
-            dataStore.createSchema(sft);
+            SimpleFeatureType oldSft = dataStore.getSchema(sft.getTypeName());
+            if (oldSft!=null && sft.getAttributeCount()!=oldSft.getAttributeCount()){
+                logger.error("there is old  schema : " + DataUtilities.encodeType(oldSft)+"；update old to new schema And new add schema:");
+                //todo how use java api to update schema
+//                dataStore.updateSchema(sft.getTypeName(),GeoTable.getAddAttrSFT(sft.getTypeName()));
+                throw new UnsupportedOperationException(sft.getTypeName()+" can not update schema by java api ");
+            }else {
+                dataStore.createSchema(sft);
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -168,7 +194,7 @@ public class GeoDbHandler {
 
     public static void queryFeature(DataStore datastore, List<Query> queries) throws IOException {
         for (Query query : queries) {
-            logger.info("Running query " + ECQL.toCQL(query.getFilter()));
+            logger.info("Running query " + ECQL.toCQL(query.getFilter())+"；typeName:"+query.getTypeName());
             if (query.getPropertyNames() != null) {
                 logger.info("Returning attributes " + Arrays.asList(query.getPropertyNames()));
             }
@@ -184,10 +210,10 @@ public class GeoDbHandler {
                 int n = 0;
                 while (reader.hasNext()) {
                     SimpleFeature feature = reader.next();
-                    if (n++ < 10) {
+                    if (n++ < 100) {
                         // use geotools data utilities to get a printable string
-                        logger.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
-                    } else if (n == 10) {
+                        System.out.println(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
+                    } else if (n == 100) {
                         logger.info("...");
                     }
                 }
