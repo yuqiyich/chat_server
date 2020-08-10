@@ -1,10 +1,7 @@
 package com.ruqi.appserver.ruqi.controller;
 
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
-import com.ruqi.appserver.ruqi.bean.BaseBean;
-import com.ruqi.appserver.ruqi.bean.BaseCodeMsgBean;
-import com.ruqi.appserver.ruqi.bean.RecommendPoint;
-import com.ruqi.appserver.ruqi.bean.RecommendPointList;
+import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
@@ -63,15 +60,15 @@ public class PointController extends BaseController {
                                                 @RequestBody UploadRecommendPointRequest<RecommendPoint> uploadRecommendPointRequest) {
         try {
             logger.info("queryRecommendPoint params:" + JsonUtil.beanToJsonStr(uploadRecommendPointRequest));
-           AppInfo appInfo = appInfoSevice.getAppInfoByKey(header.get("app_key"));
+            AppInfo appInfo = appInfoSevice.getAppInfoByKey(request.getHeader("app_key"));
 
-            BaseCodeMsgBean baseCodeMsgBean=new BaseCodeMsgBean();
-           if (appInfo!=null){
-               int appId=appInfo.getAppId();
-               //硬编码指定环境
-               pointRecommendService.saveRecommendPoint(uploadRecommendPointRequest,(appId==1||appId==2)?"pro":"dev");
-           }
-           return baseCodeMsgBean;
+            BaseCodeMsgBean baseCodeMsgBean = new BaseCodeMsgBean();
+            if (appInfo != null) {
+                int appId = appInfo.getAppId();
+                //硬编码指定环境
+                pointRecommendService.saveRecommendPoint(uploadRecommendPointRequest, (appId == 1 || appId == 2) ? "pro" : "dev");
+            }
+            return baseCodeMsgBean;
         } catch (Exception e) {
             BaseCodeMsgBean result = new BaseCodeMsgBean();
             result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
