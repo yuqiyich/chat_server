@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.bean;
 
-import com.aliyuncs.utils.StringUtils;
+
+import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

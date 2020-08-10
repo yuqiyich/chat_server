@@ -1,6 +1,5 @@
 package com.ruqi.appserver.ruqi.geomesa;
 
-import com.aliyuncs.utils.StringUtils;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.GeoRecommendRelatedId;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
@@ -9,6 +8,7 @@ import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendDataUpdater;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendPointUpdater;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;

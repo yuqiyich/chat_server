@@ -22,7 +22,7 @@ public class GeoTable {
     public static String TABLE_RECOMMEND_RECORD_PREFIX = "t_rprt_";
     //以指针点的主键的关联多个推荐的实体表
     public static String TABLE_RECOMMEND_DATA_PREFIX = "t_sprt_";
-    //推荐上车点的原始记录中选择点和上车点的关系
+    //推荐上车点的原始记录中选择点和上车点的关系记录表
     public static String TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX = "t_rprrt_";
 
     //表类型
@@ -44,7 +44,7 @@ public class GeoTable {
     public static final int CHANNEL_TX = 0b0000_0010;//腾讯sdk渠道
     public static final int CHANNEL_DIDI = 0b0000_0001;//滴滴sdk渠道
     //通用的表字段的定义
-    public static final String ATTR_KEY_CHANNEL = "channel:int";//来源渠道
+    public static final String ATTR_KEY_CHANNEL = "channel:Integer";//来源渠道
     public static final String ATTR_KEY_CITY_CODE = "cityCode:String";//城市编码
     public static final String ATTR_KEY_AD_CODE = "adCode:String";//区域编码
     public static final String ATTR_KEY_TITLE = "title:String";//选择点的短地址名称

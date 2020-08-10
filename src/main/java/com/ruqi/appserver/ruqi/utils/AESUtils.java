@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.utils;
 
-import com.aliyuncs.utils.StringUtils;
+
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;

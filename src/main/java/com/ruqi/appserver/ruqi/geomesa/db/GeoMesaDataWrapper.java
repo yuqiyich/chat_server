@@ -1,6 +1,5 @@
 package com.ruqi.appserver.ruqi.geomesa.db;
 
-import com.aliyuncs.utils.StringUtils;
 import com.ruqi.appserver.ruqi.bean.GeoRecommendRelatedId;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;

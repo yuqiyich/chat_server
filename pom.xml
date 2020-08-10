@@ -103,11 +103,11 @@
         <!--			<version>1.0.6</version>-->
         <!--		</dependency>-->
         <!-- 阿里云 -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>4.1.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.aliyun</groupId>-->
+<!--            <artifactId>aliyun-java-sdk-core</artifactId>-->
+<!--            <version>4.1.0</version>-->
+<!--        </dependency>-->
 
         <!--可以去下面地址查看最近版本-->
         <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->

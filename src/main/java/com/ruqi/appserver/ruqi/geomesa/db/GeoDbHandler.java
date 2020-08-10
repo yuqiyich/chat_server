@@ -1,6 +1,6 @@
 package com.ruqi.appserver.ruqi.geomesa.db;
 
-import com.aliyuncs.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.data.*;
 import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.feature.type.AttributeTypeImpl;

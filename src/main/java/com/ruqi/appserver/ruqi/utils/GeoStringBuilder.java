@@ -1,6 +1,6 @@
 package com.ruqi.appserver.ruqi.utils;
 
-import com.aliyuncs.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class GeoStringBuilder  {
     public static final String SPLIT_FLAG=",";
