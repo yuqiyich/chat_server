@@ -1,9 +1,10 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.AppResponeInfo;
-import com.ruqi.appserver.ruqi.controller.WechatController;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
+import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
+import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
 import org.slf4j.Logger;
@@ -32,8 +33,11 @@ public class AnalyseServices {
     @Autowired
     AppInfoWrapper appInfoWrapper;
 
+//    @Autowired
+//    WechatController mWechatController;
+
     @Autowired
-    WechatController mWechatController;
+    protected KafkaProducer kafkaProducer;
 
     @Value("${spring.profiles.active}")
     private String mEnv = "";
@@ -50,10 +54,17 @@ public class AnalyseServices {
                         int loginUserCount = riskInfoWrapper.countSecurityUserNum(appInfo.appId, DateTimeUtils.getYesterdayStartDate(), DateTimeUtils.getYesterdayEndDate());
                         if (count >= 0) {//不设阈值
                             logger.info("risk count:" + count);
-                            mWechatController.sendSecurityTemplateMsg(appInfo.appName, "设备风险",
-                                    "在过去的" + DateTimeUtils.getYesterday() + "一天内总共有" + count
-                                            + "条设备风险数据[" + mEnv + "]，其中共" + loginUserCount + "个登录用户。发送ip:"
-                                            + IpUtil.getLocalIP(), "请至APP记录平台查看完整详细信息", null);
+//                            mWechatController.sendSecurityTemplateMsg(appInfo.appName, "设备风险",
+//                                    "在过去的" + DateTimeUtils.getYesterday() + "一天内总共有" + count
+//                                            + "条设备风险数据[" + mEnv + "]，其中共" + loginUserCount + "个登录用户。发送ip:"
+//                                            + IpUtil.getLocalIP(), "请至APP记录平台查看完整详细信息", null);
+                            // 调用异步方法
+                            kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.WARN,
+                                    String.format("appName:[%s], content:[%s]",
+                                            appInfo.appName,
+                                            "在过去的" + DateTimeUtils.getYesterday() + "一天内总共有" + count
+                                                    + "条设备风险数据[" + mEnv + "]，其中共" + loginUserCount + "个登录用户。发送ip:"
+                                                    + IpUtil.getLocalIP()));
                         } else {
                             logger.info("appId[" + appInfo.appId + "]periodCheckSecurity method run,find no risk");
                         }

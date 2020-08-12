@@ -309,6 +309,9 @@ public class RecordServiceImpl implements IRecordService {
 
     private void saveRiskInfo(RiskInfo content, Date createDate) {
         if (content != null) {
+            if (!MyStringUtils.isEmpty(content.getRiskDetail()) && content.getRiskDetail().length() > 250) {
+                content.setRiskDetail(content.getRiskDetail().substring(0, 250));
+            }
             riskInfoWrapper.insert(content, createDate);
         }
     }
