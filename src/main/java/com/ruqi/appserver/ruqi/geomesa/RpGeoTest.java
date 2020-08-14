@@ -100,7 +100,7 @@ public class RpGeoTest {
        testData.setChannel(GeoTable.CHANNEL_TX);
        testData.setSelectLat(23.987651);
        testData.setSelectLng(123.987651);
-       testData.setAdCode(Compose_CITY_CODE);
+       testData.setAdCode("41111111");
        testData.setUserLat(23.987652);
        testData.setUserLng(123.987652);
        testData.setRecommendPoint(getTestRecommendDatas());

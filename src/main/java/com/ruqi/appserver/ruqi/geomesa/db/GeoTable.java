@@ -117,11 +117,26 @@ public class GeoTable {
                 .append("*rGeom:Point:srid=4326");//获取推荐上车点的用户所选择的点
         //第一版本的修改
         addRPAttrV1(attributes);
+        addRPAttrV2(attributes);
 
         sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_POINT, attributes.toString());
         sft.getDescriptor("rGeom").getUserData().put("precision", "6"); //设置地理属性的的精度，后面查询会用到
         sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
         return sft;
+    }
+
+    /**
+     * 增加 adcode 字段
+     * @since 2020/8/13
+     * @param oldGeoStringBuilder
+     * @return
+     */
+    private static GeoStringBuilder addRPAttrV2(GeoStringBuilder oldGeoStringBuilder) {
+        if (oldGeoStringBuilder == null) {
+            oldGeoStringBuilder = new GeoStringBuilder();
+        }
+        oldGeoStringBuilder.append(ATTR_KEY_AD_CODE);//增加adcode字段
+        return oldGeoStringBuilder;
     }
 
     /**

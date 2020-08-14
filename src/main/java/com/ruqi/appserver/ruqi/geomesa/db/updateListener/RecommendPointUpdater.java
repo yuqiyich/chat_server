@@ -22,5 +22,6 @@ public class RecommendPointUpdater implements GeoDbHandler.IUpdateDataListener {
         oldData.setAttribute(GeoTable.KEY_DATE,new Date(System.currentTimeMillis()));
         oldData.setAttribute(GeoTable.KEY_TITLE,newData.getAttribute(GeoTable.KEY_TITLE));
         oldData.setAttribute(GeoTable.KEY_ADDRESS,newData.getAttribute(GeoTable.KEY_ADDRESS));
+        oldData.setAttribute(GeoTable.KEY_AD_CODE,newData.getAttribute(GeoTable.KEY_AD_CODE));
     }
 }

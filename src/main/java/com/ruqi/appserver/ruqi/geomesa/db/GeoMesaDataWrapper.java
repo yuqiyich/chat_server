@@ -86,6 +86,7 @@ public class GeoMesaDataWrapper {
             builder.set("rGeom", "POINT("+recommendPoint.getLng()  + " " +recommendPoint.getLat()+")");
             builder.set(KEY_SHOT_COUNT, 0);//命中次数
             builder.set(KEY_EXT, "");//预留字段
+            builder.set(KEY_AD_CODE, records.getAdCode());//adCode
         }
         return builder.buildFeature(id);
     }
