@@ -27,10 +27,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * @author liangbingkun
  * @program: springboot
  * @description:
- * @author: Sid
+ * @author: liangbingkun
  * @date: 2018-11-19 09:21
  * @since: 1.0
  **/
@@ -90,7 +89,7 @@ public class SecretRequestFilter extends OncePerRequestFilter {
             e.printStackTrace();
             logger.error("json parse error："+ e.getMessage());
         }
-        if(jsonObject != null && jsonObject.containsKey(REQ) &&  jsonObject.containsKey(SIGN)){
+        if(jsonObject != null && jsonObject.containsKey(REQ) && jsonObject.containsKey(SIGN)){
             EncryptBaseRequest encryptBaseRequest = JsonUtil.jsonStrToBean(EncryptBaseRequest.class, body);
             String sign = encryptBaseRequest.getSign();
             String aesKey = String.valueOf(redisUtil.getKey(RedisUtil.GROUP_ENCRYPT_UTIL_SIGN, sign));
