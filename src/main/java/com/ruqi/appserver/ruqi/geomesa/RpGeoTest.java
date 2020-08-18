@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class RpGeoTest {
-    public static final String CITY_CODE ="440100";//开发环境的citycode dev_440100
+    public static final String CITY_CODE ="1231245";//开发环境的citycode dev_440100
     public static final String Compose_CITY_CODE ="dev_"+CITY_CODE;
 
     public static void main(String[] args) {
@@ -46,7 +46,6 @@ public class RpGeoTest {
 
         } catch (IOException e) {
             e.printStackTrace();
-
         }
     }
 

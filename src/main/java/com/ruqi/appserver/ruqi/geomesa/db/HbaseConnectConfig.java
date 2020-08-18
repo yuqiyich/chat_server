@@ -14,12 +14,9 @@ public class HbaseConnectConfig {
     static String KEY_ZOOKEEPER = "hbase.zookeepers";
     static String KEY_CATALOG = "hbase.catalog";
     /****************相关配置的key值 end************************/
-    @Value("${zookeeper.hosts}")
-    private String mConfigzoo="";
-
     /****************相关配置的默认值 start************************/
     //zookeeper的的连接集群配置
-    static String VALUE_ZOOKEEPER="10.10.16.94:2181";//默认为自己机器ip,可以跑main函数
+    static String VALUE_ZOOKEEPER="localhost";//默认为自己机器ip,这样可以跑main函数
 
     @Value("${zookeeper.hosts}")
     public void setPort(String port) {
