@@ -1,381 +1,381 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>微信公众号消息接收者列表</title>
-    <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
-    <style>
-        body {
-            padding: 20px; /*overflow-y: scroll;*/
-        }
-    </style>
-</head>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="utf-8">-->
+<!--    <meta name="viewport"-->
+<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
+<!--    <title>微信公众号消息接收者列表</title>-->
+<!--    <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            padding: 20px; /*overflow-y: scroll;*/-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
 
-<body>
-<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>
+<!--<body>-->
+<!--<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>-->
 
-<form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">
+<!--<form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">-->
 
-    <div class="layui-form-item">
-        <div class="layui-inline">
-            <label class="layui-form-label">微信昵称</label>
-            <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="20" id="filterNickName" name="filterNickName" lay-verify="filterNickName"
-                       autocomplete="off"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">备注名</label>
-            <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="10" id="filterRemarkName" name="filterRemarkName"
-                       lay-verify="filterRemarkName"
-                       autocomplete="off"
-                       class="layui-input">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-inline">
-            <label class="layui-form-label">状态</label>
-            <div class="layui-input-inline" style="width: 200px;">
-                <select id="statusSelect">
-                    <option value="">全部</option>
-                    <option value="1">启用</option>
-                    <option value="0">禁用</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-inline">
-            <div class="layui-input-block">
-                <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
-                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="resetSearch">重置
-                </button>
-            </div>
-        </div>
-    </div>
-</form>
+<!--    <div class="layui-form-item">-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">微信昵称</label>-->
+<!--            <div class="layui-input-inline" style="width: 200px;">-->
+<!--                <input type="text" maxlength="20" id="filterNickName" name="filterNickName" lay-verify="filterNickName"-->
+<!--                       autocomplete="off"-->
+<!--                       class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">备注名</label>-->
+<!--            <div class="layui-input-inline" style="width: 200px;">-->
+<!--                <input type="text" maxlength="10" id="filterRemarkName" name="filterRemarkName"-->
+<!--                       lay-verify="filterRemarkName"-->
+<!--                       autocomplete="off"-->
+<!--                       class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="layui-form-item">-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">状态</label>-->
+<!--            <div class="layui-input-inline" style="width: 200px;">-->
+<!--                <select id="statusSelect">-->
+<!--                    <option value="">全部</option>-->
+<!--                    <option value="1">启用</option>-->
+<!--                    <option value="0">禁用</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <div class="layui-input-block">-->
+<!--                <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>-->
+<!--                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="resetSearch">重置-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</form>-->
 
-<table id="developerTable" lay-filter="developerTable"></table>
+<!--<table id="developerTable" lay-filter="developerTable"></table>-->
 
-<div hidden="true" type="text/html" id="itemEditView" onload="">
-    <form id="updateForm" name="updateForm" class="layui-form" style="margin-top: 10%;" action=""
-          lay-filter="wechat_info">
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">备注名</label>
-                <div class="layui-input-inline">
-                    <input maxlength="10" type="text" id="remarkName" name="remarkName" lay-verify="remarkName"
-                           autocomplete="off" placeholder="请输入备注名" class="layui-input">
-                </div>
-            </div>
-        </div>
-        <div class="layui-form-item" style="margin-top: 10%;">
-            <div class="layui-input-block">
-                <button type="submit" class="layui-btn" lay-submit="" lay-filter="updateRemarkName">立即提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-            </div>
-        </div>
-    </form>
-</div>
+<!--<div hidden="true" type="text/html" id="itemEditView" onload="">-->
+<!--    <form id="updateForm" name="updateForm" class="layui-form" style="margin-top: 10%;" action=""-->
+<!--          lay-filter="wechat_info">-->
+<!--        <div class="layui-form-item">-->
+<!--            <div class="layui-inline">-->
+<!--                <label class="layui-form-label">备注名</label>-->
+<!--                <div class="layui-input-inline">-->
+<!--                    <input maxlength="10" type="text" id="remarkName" name="remarkName" lay-verify="remarkName"-->
+<!--                           autocomplete="off" placeholder="请输入备注名" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item" style="margin-top: 10%;">-->
+<!--            <div class="layui-input-block">-->
+<!--                <button type="submit" class="layui-btn" lay-submit="" lay-filter="updateRemarkName">立即提交</button>-->
+<!--                <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </form>-->
+<!--</div>-->
 
-<script type="text/html" id="toolbarDemo">
-    <div class="layui-btn-container">
-        <button id="btn_showQrcodeView" class="layui-btn layui-btn-sm" lay-event="showQrcodeView">添加绑定</button>
-        <button class="layui-btn layui-btn-sm" lay-event="testSendAllMsg">测试全量通知</button>
-    </div>
-</script>
-<script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
-<script type="text/html" id="tpl_user_status">
-    {{#  if(d.userStatus == '1'){ }}
-    启用
-    {{#  } else { }}
-    禁用
-    {{#  } }}
-</script>
-<script type="text/html" id="barOperator">
-    {{#  if(d.userStatus == '1'){ }}
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="user_disable">禁用</a>
-    {{#  } else { }}
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="user_enable">启用</a>
-    {{#  } }}
+<!--<script type="text/html" id="toolbarDemo">-->
+<!--    <div class="layui-btn-container">-->
+<!--        <button id="btn_showQrcodeView" class="layui-btn layui-btn-sm" lay-event="showQrcodeView">添加绑定</button>-->
+<!--        <button class="layui-btn layui-btn-sm" lay-event="testSendAllMsg">测试全量通知</button>-->
+<!--    </div>-->
+<!--</script>-->
+<!--<script src="js/layui2.5.6/layui.js" charset="utf-8"></script>-->
+<!--<script type="text/html" id="tpl_user_status">-->
+<!--    {{#  if(d.userStatus == '1'){ }}-->
+<!--    启用-->
+<!--    {{#  } else { }}-->
+<!--    禁用-->
+<!--    {{#  } }}-->
+<!--</script>-->
+<!--<script type="text/html" id="barOperator">-->
+<!--    {{#  if(d.userStatus == '1'){ }}-->
+<!--    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="user_disable">禁用</a>-->
+<!--    {{#  } else { }}-->
+<!--    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="user_enable">启用</a>-->
+<!--    {{#  } }}-->
 
-    <a class="layui-btn layui-btn-xs" lay-event="user_edit">编辑</a>
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="user_send_msg_test">测试推送</a>
-    <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
-</script>
-<script>
-    var updateUserInfo = function (itemData, layerIndex) {
-        $.ajax({
-            type: "POST",
-            url: "wechat/receiver/update",
-            data: JSON.stringify(itemData),//请求的参数
-            contentType: 'application/json;charset=utf-8',
-            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-            success: function (dataResult) {
-                if (null != dataResult) {
-                    if (dataResult.errorCode == 0) {
-                        layer.msg('更改成功');
-                        layer.close(layerIndex);
-                        // 更改了，需要刷新数据
-                        layui.use('table', function () {
-                            var table = layui.table;
-                            table.reload('developerTable', {}, 'data');
-                        });
-                        return true;
-                    } else {
-                        layer.msg('更改失败');
-                        return false;
-                    }
-                }
-            }
-        });
-    }
-</script>
-<script>
-    layui.use(['form', 'layedit', 'laydate'], function () {
-        var form = layui.form
-            , layer = layui.layer
-            , layedit = layui.layedit
-            , laydate = layui.laydate;
+<!--    <a class="layui-btn layui-btn-xs" lay-event="user_edit">编辑</a>-->
+<!--    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="user_send_msg_test">测试推送</a>-->
+<!--    &lt;!&ndash; <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> &ndash;&gt;-->
+<!--</script>-->
+<!--<script>-->
+<!--    var updateUserInfo = function (itemData, layerIndex) {-->
+<!--        $.ajax({-->
+<!--            type: "POST",-->
+<!--            url: "wechat/receiver/update",-->
+<!--            data: JSON.stringify(itemData),//请求的参数-->
+<!--            contentType: 'application/json;charset=utf-8',-->
+<!--            dataType: "json",//以json格式返回的数据，不是json就把此行去掉-->
+<!--            success: function (dataResult) {-->
+<!--                if (null != dataResult) {-->
+<!--                    if (dataResult.errorCode == 0) {-->
+<!--                        layer.msg('更改成功');-->
+<!--                        layer.close(layerIndex);-->
+<!--                        // 更改了，需要刷新数据-->
+<!--                        layui.use('table', function () {-->
+<!--                            var table = layui.table;-->
+<!--                            table.reload('developerTable', {}, 'data');-->
+<!--                        });-->
+<!--                        return true;-->
+<!--                    } else {-->
+<!--                        layer.msg('更改失败');-->
+<!--                        return false;-->
+<!--                    }-->
+<!--                }-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+<!--</script>-->
+<!--<script>-->
+<!--    layui.use(['form', 'layedit', 'laydate'], function () {-->
+<!--        var form = layui.form-->
+<!--            , layer = layui.layer-->
+<!--            , layedit = layui.layedit-->
+<!--            , laydate = layui.laydate;-->
 
-        // var data = form.val("wechat_info");
+<!--        // var data = form.val("wechat_info");-->
 
-        //监听提交
-        // 更新备注名
-        form.on('submit(updateRemarkName)', function (data) {
-            var newName = data.field.remarkName;
+<!--        //监听提交-->
+<!--        // 更新备注名-->
+<!--        form.on('submit(updateRemarkName)', function (data) {-->
+<!--            var newName = data.field.remarkName;-->
 
-            // layer.msg(JSON.stringify(selectedData));
+<!--            // layer.msg(JSON.stringify(selectedData));-->
 
-            if (null != selectedData) {
-                if (newName == selectedData.remark) {
-                    layer.close(layerIndex);
-                    return false;
-                } else {
-                    selectedData.remark = newName;
-                    // submit类型的按钮的话，返回true就自己更新表单了。应该返回false，自己处理form的关闭和数据更新的逻辑。
-                    updateUserInfo(selectedData, layerIndex);
-                    return false;
-                }
-            }
-            layui.msg("发生异常错误，请刷新重试");
-            return false;
-        });
-        // 搜索
-        form.on('submit(search)', function (data) {
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload('developerTable', {
-                    page: {curr: 1}
-                    , where: {
-                        nickname: $("#filterNickName").val()
-                        , remarks: $("#filterRemarkName").val()
-                        , userStatus: $("#statusSelect").val()
-                    }
-                }, 'data');
-            });
-            return false;
-        });
-        // 重置搜索
-        form.on('submit(resetSearch)', function (data) {
-            document.getElementById("filterForm").reset();
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload('developerTable', {
-                    page: {curr: 1}
-                    , where: {
-                        nickname: $("#filterNickName").val()
-                        , remarks: $("#filterRemarkName").val()
-                        , userStatus: $("#statusSelect").val()
-                    }
-                }, 'data');
-            });
-            return false;
-        });
-    });
-</script>
-<script>
-    var selectedData = null;
-    var layerIndex = null;
+<!--            if (null != selectedData) {-->
+<!--                if (newName == selectedData.remark) {-->
+<!--                    layer.close(layerIndex);-->
+<!--                    return false;-->
+<!--                } else {-->
+<!--                    selectedData.remark = newName;-->
+<!--                    // submit类型的按钮的话，返回true就自己更新表单了。应该返回false，自己处理form的关闭和数据更新的逻辑。-->
+<!--                    updateUserInfo(selectedData, layerIndex);-->
+<!--                    return false;-->
+<!--                }-->
+<!--            }-->
+<!--            layui.msg("发生异常错误，请刷新重试");-->
+<!--            return false;-->
+<!--        });-->
+<!--        // 搜索-->
+<!--        form.on('submit(search)', function (data) {-->
+<!--            layui.use('table', function () {-->
+<!--                var table = layui.table;-->
+<!--                table.reload('developerTable', {-->
+<!--                    page: {curr: 1}-->
+<!--                    , where: {-->
+<!--                        nickname: $("#filterNickName").val()-->
+<!--                        , remarks: $("#filterRemarkName").val()-->
+<!--                        , userStatus: $("#statusSelect").val()-->
+<!--                    }-->
+<!--                }, 'data');-->
+<!--            });-->
+<!--            return false;-->
+<!--        });-->
+<!--        // 重置搜索-->
+<!--        form.on('submit(resetSearch)', function (data) {-->
+<!--            document.getElementById("filterForm").reset();-->
+<!--            layui.use('table', function () {-->
+<!--                var table = layui.table;-->
+<!--                table.reload('developerTable', {-->
+<!--                    page: {curr: 1}-->
+<!--                    , where: {-->
+<!--                        nickname: $("#filterNickName").val()-->
+<!--                        , remarks: $("#filterRemarkName").val()-->
+<!--                        , userStatus: $("#statusSelect").val()-->
+<!--                    }-->
+<!--                }, 'data');-->
+<!--            });-->
+<!--            return false;-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--<script>-->
+<!--    var selectedData = null;-->
+<!--    var layerIndex = null;-->
 
-    layui.use('table', function () {
-        var table = layui.table;
+<!--    layui.use('table', function () {-->
+<!--        var table = layui.table;-->
 
-        table.render({
-            elem: '#developerTable'
-            , title: '微信公众号消息通知接收者表'
-            , url: 'wechat/receiver/list'
-            , page: {curr: 1}
-            , limit: 10
-            , limits: [10, 30, 50, 100]
-            , toolbar: '#toolbarDemo'
-            // ,toolbar: true
-            // 右上角工具条
-            , defaultToolbar: ['filter', 'exports', 'print'
-                , {
-                    title: '刷新'
-                    , layEvent: 'reloadData'
-                    , icon: 'layui-icon-refresh'
-                }
-            ]
-            , cols: [
-                [
-                    {field: 'id', title: 'ID', fixed: 'left', width: 60, unresize: true, sort: true, align: 'center'}
-                    , {field: 'openid', title: 'openid', sort: false, align: 'center'}
-                    , {field: 'nickname', title: '微信昵称', sort: false, align: 'center'}
-                    , {field: 'remark', title: '备注名', sort: false, align: 'center'}
-                    , {
-                    field: 'userStatus',
-                    templet: '#tpl_user_status',
-                    fixed: 'right',
-                    title: '状态',
-                    width: 80,
-                    unresize: true,
-                    sort: false,
-                    align: 'center'
-                }
-                    , {
-                    toolbar: '#barOperator',
-                    fixed: 'right',
-                    title: '操作',
-                    width: 200,
-                    unresize: false,
-                    sort: false,
-                    align: 'center'
-                }
-                ]
-            ]
-            , parseData: function (res) {
-                return {
-                    "code": res.errorCode
-                    , "msg": res.errorMsg
-                    , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
-                    , "data": null != res.data && null != res.data.list ? res.data.list : null
-                };
-            }
-        });
+<!--        table.render({-->
+<!--            elem: '#developerTable'-->
+<!--            , title: '微信公众号消息通知接收者表'-->
+<!--            , url: 'wechat/receiver/list'-->
+<!--            , page: {curr: 1}-->
+<!--            , limit: 10-->
+<!--            , limits: [10, 30, 50, 100]-->
+<!--            , toolbar: '#toolbarDemo'-->
+<!--            // ,toolbar: true-->
+<!--            // 右上角工具条-->
+<!--            , defaultToolbar: ['filter', 'exports', 'print'-->
+<!--                , {-->
+<!--                    title: '刷新'-->
+<!--                    , layEvent: 'reloadData'-->
+<!--                    , icon: 'layui-icon-refresh'-->
+<!--                }-->
+<!--            ]-->
+<!--            , cols: [-->
+<!--                [-->
+<!--                    {field: 'id', title: 'ID', fixed: 'left', width: 60, unresize: true, sort: true, align: 'center'}-->
+<!--                    , {field: 'openid', title: 'openid', sort: false, align: 'center'}-->
+<!--                    , {field: 'nickname', title: '微信昵称', sort: false, align: 'center'}-->
+<!--                    , {field: 'remark', title: '备注名', sort: false, align: 'center'}-->
+<!--                    , {-->
+<!--                    field: 'userStatus',-->
+<!--                    templet: '#tpl_user_status',-->
+<!--                    fixed: 'right',-->
+<!--                    title: '状态',-->
+<!--                    width: 80,-->
+<!--                    unresize: true,-->
+<!--                    sort: false,-->
+<!--                    align: 'center'-->
+<!--                }-->
+<!--                    , {-->
+<!--                    toolbar: '#barOperator',-->
+<!--                    fixed: 'right',-->
+<!--                    title: '操作',-->
+<!--                    width: 200,-->
+<!--                    unresize: false,-->
+<!--                    sort: false,-->
+<!--                    align: 'center'-->
+<!--                }-->
+<!--                ]-->
+<!--            ]-->
+<!--            , parseData: function (res) {-->
+<!--                return {-->
+<!--                    "code": res.errorCode-->
+<!--                    , "msg": res.errorMsg-->
+<!--                    , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0-->
+<!--                    , "data": null != res.data && null != res.data.list ? res.data.list : null-->
+<!--                };-->
+<!--            }-->
+<!--        });-->
 
-        //监听工具条
-        table.on('tool(developerTable)', function (obj) {
-            selectedData = obj.data;
-            var itemData = obj.data;
-            // layer.alert(JSON.stringify(itemData));
-            switch (obj.event) {
-                case 'user_edit':
-                    // 先进行reset，否则上一次输入的数据还会显示出来
-                    document.getElementById("updateForm").reset();
-                    layerIndex = layer.open({
-                        type: 1,
-                        btnAlign: 'c',
-                        area: ['400px', '300px'],
-                        title: '个人微信号信息',
-                        content: $("#itemEditView"),
-                        success: function (layero, index) {
-                            $('input[name=remarkName]').attr('value', itemData.remark);
-                        },
+<!--        //监听工具条-->
+<!--        table.on('tool(developerTable)', function (obj) {-->
+<!--            selectedData = obj.data;-->
+<!--            var itemData = obj.data;-->
+<!--            // layer.alert(JSON.stringify(itemData));-->
+<!--            switch (obj.event) {-->
+<!--                case 'user_edit':-->
+<!--                    // 先进行reset，否则上一次输入的数据还会显示出来-->
+<!--                    document.getElementById("updateForm").reset();-->
+<!--                    layerIndex = layer.open({-->
+<!--                        type: 1,-->
+<!--                        btnAlign: 'c',-->
+<!--                        area: ['400px', '300px'],-->
+<!--                        title: '个人微信号信息',-->
+<!--                        content: $("#itemEditView"),-->
+<!--                        success: function (layero, index) {-->
+<!--                            $('input[name=remarkName]').attr('value', itemData.remark);-->
+<!--                        },-->
 
-                    })
-                    break;
-                case 'user_enable':
-                case 'user_disable':
-                    if (obj.event == 'user_enable') {
-                        itemData.userStatus = 1;
-                    } else {
-                        itemData.userStatus = 0;
-                    }
-                    updateUserInfo(itemData);
-                    break;
-                case 'user_send_msg_test':
-                    var jsonStr = itemData.openid;
-                    $.ajax({
-                        type: "POST",
-                        url: "wechat/template/testSend",
-                        data: jsonStr,//请求的参数
-                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-                        contentType: 'application/json;charset=utf-8',
-                        success: function (dataResult) {
-                            if (null != dataResult) {
-                                if (dataResult.errorCode == 0) {
-                                    console.log("--->result dataResult.size:" + dataResult.data.size);
-                                    layer.msg('已成功发送');
-                                } else {
-                                    console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
-                                    layer.msg('发送失败:' + dataResult.errorMsg);
-                                }
-                            }
-                        }
-                    });
-                    break;
-            }
-        });
+<!--                    })-->
+<!--                    break;-->
+<!--                case 'user_enable':-->
+<!--                case 'user_disable':-->
+<!--                    if (obj.event == 'user_enable') {-->
+<!--                        itemData.userStatus = 1;-->
+<!--                    } else {-->
+<!--                        itemData.userStatus = 0;-->
+<!--                    }-->
+<!--                    updateUserInfo(itemData);-->
+<!--                    break;-->
+<!--                case 'user_send_msg_test':-->
+<!--                    var jsonStr = itemData.openid;-->
+<!--                    $.ajax({-->
+<!--                        type: "POST",-->
+<!--                        url: "wechat/template/testSend",-->
+<!--                        data: jsonStr,//请求的参数-->
+<!--                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉-->
+<!--                        contentType: 'application/json;charset=utf-8',-->
+<!--                        success: function (dataResult) {-->
+<!--                            if (null != dataResult) {-->
+<!--                                if (dataResult.errorCode == 0) {-->
+<!--                                    console.log("-&ndash;&gt;result dataResult.size:" + dataResult.data.size);-->
+<!--                                    layer.msg('已成功发送');-->
+<!--                                } else {-->
+<!--                                    console.log("-&ndash;&gt;result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);-->
+<!--                                    layer.msg('发送失败:' + dataResult.errorMsg);-->
+<!--                                }-->
+<!--                            }-->
+<!--                        }-->
+<!--                    });-->
+<!--                    break;-->
+<!--            }-->
+<!--        });-->
 
-        //工具栏事件
-        table.on('toolbar(developerTable)', function (obj) {
-            switch (obj.event) {
-                case 'showQrcodeView':
-                    layer.open({
-                        type: 1,
-                        content: "<div style='text-align: center;'><p>扫码绑定微信账号<br>（还需关注公众号才能接收消息）</p><img style='width:120px; height: 120px;' src='img/wechat_bind.png' /></div>"
-                    });
-                    break;
-                case 'testSendAllMsg':
-                    $.ajax({
-                        type: "POST",
-                        url: "wechat/template/testSendAll",
-                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-                        contentType: 'application/json;charset=utf-8',
-                        success: function (dataResult) {
-                            if (null != dataResult) {
-                                if (dataResult.errorCode == 0) {
-                                    console.log("--->result dataResult.size:" + dataResult.data.size);
-                                    layer.msg('已发送至' + dataResult.data.size + '个微信号');
-                                } else {
-                                    console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
-                                    layer.msg('发送失败:' + dataResult.errorMsg);
-                                }
-                            }
-                        }
-                    });
-                    break;
-                case 'reloadData':
-                    table.reload('developerTable', {
-                        page: {curr: 1}
-                    }, 'data');
-                    break;
-            }
-            ;
-        });
+<!--        //工具栏事件-->
+<!--        table.on('toolbar(developerTable)', function (obj) {-->
+<!--            switch (obj.event) {-->
+<!--                case 'showQrcodeView':-->
+<!--                    layer.open({-->
+<!--                        type: 1,-->
+<!--                        content: "<div style='text-align: center;'><p>扫码绑定微信账号<br>（还需关注公众号才能接收消息）</p><img style='width:120px; height: 120px;' src='img/wechat_bind.png' /></div>"-->
+<!--                    });-->
+<!--                    break;-->
+<!--                case 'testSendAllMsg':-->
+<!--                    $.ajax({-->
+<!--                        type: "POST",-->
+<!--                        url: "wechat/template/testSendAll",-->
+<!--                        dataType: "json",//以json格式返回的数据，不是json就把此行去掉-->
+<!--                        contentType: 'application/json;charset=utf-8',-->
+<!--                        success: function (dataResult) {-->
+<!--                            if (null != dataResult) {-->
+<!--                                if (dataResult.errorCode == 0) {-->
+<!--                                    console.log("-&ndash;&gt;result dataResult.size:" + dataResult.data.size);-->
+<!--                                    layer.msg('已发送至' + dataResult.data.size + '个微信号');-->
+<!--                                } else {-->
+<!--                                    console.log("-&ndash;&gt;result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);-->
+<!--                                    layer.msg('发送失败:' + dataResult.errorMsg);-->
+<!--                                }-->
+<!--                            }-->
+<!--                        }-->
+<!--                    });-->
+<!--                    break;-->
+<!--                case 'reloadData':-->
+<!--                    table.reload('developerTable', {-->
+<!--                        page: {curr: 1}-->
+<!--                    }, 'data');-->
+<!--                    break;-->
+<!--            }-->
+<!--            ;-->
+<!--        });-->
 
-        //监听排序
-        table.on('sort(developerTable)', function (obj) {
-            // 本地该页数据排序
-            table.reload('developerTable', {
-                initSort: obj
-            });
-        });
+<!--        //监听排序-->
+<!--        table.on('sort(developerTable)', function (obj) {-->
+<!--            // 本地该页数据排序-->
+<!--            table.reload('developerTable', {-->
+<!--                initSort: obj-->
+<!--            });-->
+<!--        });-->
 
-        var $ = layui.jquery, active = {
-            parseTable: function () {
-                table.init('parse-table-demo', {
-                    limit: 3
-                });
-            }
-            , add: function () {
-                table.addRow('developerTable')
-            }
-        };
-        $('i').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
-        });
-        $('.layui-btn').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
-        });
-    });
-</script>
-</body>
-</html>
+<!--        var $ = layui.jquery, active = {-->
+<!--            parseTable: function () {-->
+<!--                table.init('parse-table-demo', {-->
+<!--                    limit: 3-->
+<!--                });-->
+<!--            }-->
+<!--            , add: function () {-->
+<!--                table.addRow('developerTable')-->
+<!--            }-->
+<!--        };-->
+<!--        $('i').on('click', function () {-->
+<!--            var type = $(this).data('type');-->
+<!--            active[type] ? active[type].call(this) : '';-->
+<!--        });-->
+<!--        $('.layui-btn').on('click', function () {-->
+<!--            var type = $(this).data('type');-->
+<!--            active[type] ? active[type].call(this) : '';-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->

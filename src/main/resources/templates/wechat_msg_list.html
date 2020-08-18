@@ -1,338 +1,338 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>微信公众号消息接收者列表</title>
-    <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
-    <style>
-        body {
-            padding: 20px;
-            height: auto;
-            /*overflow-y: scroll;*/
-        }
-    </style>
-</head>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="utf-8">-->
+<!--    <meta name="viewport"-->
+<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
+<!--    <title>微信公众号消息接收者列表</title>-->
+<!--    <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            padding: 20px;-->
+<!--            height: auto;-->
+<!--            /*overflow-y: scroll;*/-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
 
-<body>
-<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>
+<!--<body>-->
+<!--<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>-->
 
-<form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">
+<!--<form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">-->
 
-    <div class="layui-form-item">
-        <div class="layui-inline">
-            <label class="layui-form-label">微信openid</label>
-            <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="512" id="filterOpenid" name="filterOpenid" lay-verify="filterOpenid"
-                       autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">微信msgid</label>
-            <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="512" id="filterMsgid" name="filterMsgid"
-                       lay-verify="filterMsgid" autocomplete="off" class="layui-input">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-inline">
-            <label class="layui-form-label">消息内容</label>
-            <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="512" id="filterDetails" name="filterDetails" lay-verify="filterDetails"
-                       autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">备注</label>
-            <div class="layui-input-inline" style="width: 200px;">
-                <input type="text" maxlength="512" id="filterRemark" name="filterRemark"
-                       lay-verify="filterRemark" autocomplete="off" class="layui-input">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <!--        <div class="layui-inline">-->
-        <!--            <label class="layui-form-label">消息发送结果</label>-->
-        <!--            <div class="layui-input-inline" style="width: 200px;">-->
-        <!--                <input type="text" maxlength="512" id="filterResult" name="filterResult" lay-verify="filterResult"-->
-        <!--                       autocomplete="off" class="layui-input">-->
-        <!--            </div>-->
-        <!--        </div>-->
-        <div class="layui-inline">
-            <label class="layui-form-label">发送时间</label>
-            <div class="layui-input-inline" style="width: 300px;">
-                <input type="text" id="duringTime" name="duringTime" lay-verify="duringTime" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-inline">
-            <div class="layui-input-block" style="margin-left: 40px;">
-                <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
-                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="resetSearch">重置
-                </button>
-            </div>
-        </div>
-    </div>
-</form>
+<!--    <div class="layui-form-item">-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">微信openid</label>-->
+<!--            <div class="layui-input-inline" style="width: 200px;">-->
+<!--                <input type="text" maxlength="512" id="filterOpenid" name="filterOpenid" lay-verify="filterOpenid"-->
+<!--                       autocomplete="off" class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">微信msgid</label>-->
+<!--            <div class="layui-input-inline" style="width: 200px;">-->
+<!--                <input type="text" maxlength="512" id="filterMsgid" name="filterMsgid"-->
+<!--                       lay-verify="filterMsgid" autocomplete="off" class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="layui-form-item">-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">消息内容</label>-->
+<!--            <div class="layui-input-inline" style="width: 200px;">-->
+<!--                <input type="text" maxlength="512" id="filterDetails" name="filterDetails" lay-verify="filterDetails"-->
+<!--                       autocomplete="off" class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">备注</label>-->
+<!--            <div class="layui-input-inline" style="width: 200px;">-->
+<!--                <input type="text" maxlength="512" id="filterRemark" name="filterRemark"-->
+<!--                       lay-verify="filterRemark" autocomplete="off" class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="layui-form-item">-->
+<!--        &lt;!&ndash;        <div class="layui-inline">&ndash;&gt;-->
+<!--        &lt;!&ndash;            <label class="layui-form-label">消息发送结果</label>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <div class="layui-input-inline" style="width: 200px;">&ndash;&gt;-->
+<!--        &lt;!&ndash;                <input type="text" maxlength="512" id="filterResult" name="filterResult" lay-verify="filterResult"&ndash;&gt;-->
+<!--        &lt;!&ndash;                       autocomplete="off" class="layui-input">&ndash;&gt;-->
+<!--        &lt;!&ndash;            </div>&ndash;&gt;-->
+<!--        &lt;!&ndash;        </div>&ndash;&gt;-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">发送时间</label>-->
+<!--            <div class="layui-input-inline" style="width: 300px;">-->
+<!--                <input type="text" id="duringTime" name="duringTime" lay-verify="duringTime" class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <div class="layui-input-block" style="margin-left: 40px;">-->
+<!--                <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>-->
+<!--                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="resetSearch">重置-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</form>-->
 
-<table id="wechatMsgTable" lay-filter="wechatMsgTable"></table>
+<!--<table id="wechatMsgTable" lay-filter="wechatMsgTable"></table>-->
 
-<div hidden="true" type="text/html" id="itemEditView" onload="">
-    <form id="updateForm" name="updateForm" class="layui-form" style="margin-top: 10%;" action=""
-          lay-filter="wechat_info">
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">备注</label>
-                <div class="layui-input-inline">
-                    <input maxlength="10" type="text" id="remarkName" name="remarkName" lay-verify="remarkName"
-                           autocomplete="off" placeholder="请输入备注信息" class="layui-input">
-                </div>
-            </div>
-        </div>
-        <div class="layui-form-item" style="margin-top: 10%;">
-            <div class="layui-input-block">
-                <button type="submit" class="layui-btn" lay-submit="" lay-filter="updateRemarkName">立即提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-            </div>
-        </div>
-    </form>
-</div>
+<!--<div hidden="true" type="text/html" id="itemEditView" onload="">-->
+<!--    <form id="updateForm" name="updateForm" class="layui-form" style="margin-top: 10%;" action=""-->
+<!--          lay-filter="wechat_info">-->
+<!--        <div class="layui-form-item">-->
+<!--            <div class="layui-inline">-->
+<!--                <label class="layui-form-label">备注</label>-->
+<!--                <div class="layui-input-inline">-->
+<!--                    <input maxlength="10" type="text" id="remarkName" name="remarkName" lay-verify="remarkName"-->
+<!--                           autocomplete="off" placeholder="请输入备注信息" class="layui-input">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item" style="margin-top: 10%;">-->
+<!--            <div class="layui-input-block">-->
+<!--                <button type="submit" class="layui-btn" lay-submit="" lay-filter="updateRemarkName">立即提交</button>-->
+<!--                <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </form>-->
+<!--</div>-->
 
-<script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
-<script src="js/base-table-page.js" charset="utf-8"></script>
-<script type="text/html" id="tpl_user_status">
-    {{#  if(d.userStatus == '1'){ }}
-    启用
-    {{#  } else { }}
-    禁用
-    {{#  } }}
-</script>
-<script type="text/html" id="barOperator">
-    <a class="layui-btn layui-btn-xs" lay-event="remark_edit">编辑</a>
-</script>
-<script>
-    var updateMsgInfo = function (itemData, layerIndex) {
-        $.ajax({
-            type: "POST",
-            url: "wechat/msg/update",
-            data: JSON.stringify(itemData),//请求的参数
-            contentType: 'application/json;charset=utf-8',
-            // dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-            success: function (dataResult) {
-                // console.log('dataResult=' + JSON.stringify(dataResult));
-                if (null != dataResult) {
-                    if (dataResult.errorCode == 0) {
-                        layer.msg('更改成功');
-                        layer.close(layerIndex);
-                        // 更改了，需要刷新数据
-                        layui.use('table', function () {
-                            var table = layui.table;
-                            table.reload('wechatMsgTable', {}, 'data');
-                        });
-                        return true;
-                    } else {
-                        layer.msg('更改失败');
-                        return false;
-                    }
-                }
-            }
-        });
-    }
-</script>
-<script>
-    layui.use(['form', 'layedit', 'laydate'], function () {
-        var form = layui.form
-            , layer = layui.layer
-            , layedit = layui.layedit
-            , laydate = layui.laydate;
+<!--<script src="js/layui2.5.6/layui.js" charset="utf-8"></script>-->
+<!--<script src="js/base-table-page.js" charset="utf-8"></script>-->
+<!--<script type="text/html" id="tpl_user_status">-->
+<!--    {{#  if(d.userStatus == '1'){ }}-->
+<!--    启用-->
+<!--    {{#  } else { }}-->
+<!--    禁用-->
+<!--    {{#  } }}-->
+<!--</script>-->
+<!--<script type="text/html" id="barOperator">-->
+<!--    <a class="layui-btn layui-btn-xs" lay-event="remark_edit">编辑</a>-->
+<!--</script>-->
+<!--<script>-->
+<!--    var updateMsgInfo = function (itemData, layerIndex) {-->
+<!--        $.ajax({-->
+<!--            type: "POST",-->
+<!--            url: "wechat/msg/update",-->
+<!--            data: JSON.stringify(itemData),//请求的参数-->
+<!--            contentType: 'application/json;charset=utf-8',-->
+<!--            // dataType: "json",//以json格式返回的数据，不是json就把此行去掉-->
+<!--            success: function (dataResult) {-->
+<!--                // console.log('dataResult=' + JSON.stringify(dataResult));-->
+<!--                if (null != dataResult) {-->
+<!--                    if (dataResult.errorCode == 0) {-->
+<!--                        layer.msg('更改成功');-->
+<!--                        layer.close(layerIndex);-->
+<!--                        // 更改了，需要刷新数据-->
+<!--                        layui.use('table', function () {-->
+<!--                            var table = layui.table;-->
+<!--                            table.reload('wechatMsgTable', {}, 'data');-->
+<!--                        });-->
+<!--                        return true;-->
+<!--                    } else {-->
+<!--                        layer.msg('更改失败');-->
+<!--                        return false;-->
+<!--                    }-->
+<!--                }-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+<!--</script>-->
+<!--<script>-->
+<!--    layui.use(['form', 'layedit', 'laydate'], function () {-->
+<!--        var form = layui.form-->
+<!--            , layer = layui.layer-->
+<!--            , layedit = layui.layedit-->
+<!--            , laydate = layui.laydate;-->
 
-        // var data = form.val("wechat_info");
-        //监听提交
-        // 更新备注
-        form.on('submit(updateRemarkName)', function (data) {
-            var newName = data.field.remarkName;
+<!--        // var data = form.val("wechat_info");-->
+<!--        //监听提交-->
+<!--        // 更新备注-->
+<!--        form.on('submit(updateRemarkName)', function (data) {-->
+<!--            var newName = data.field.remarkName;-->
 
-            // layer.msg(JSON.stringify(selectedData));
+<!--            // layer.msg(JSON.stringify(selectedData));-->
 
-            if (null != selectedData) {
-                if (newName == selectedData.remark) {
-                    layer.close(layerIndex);
-                    return false;
-                } else {
-                    selectedData.remark = newName;
-                    updateMsgInfo(selectedData, layerIndex);
-                    return false;
-                }
-            }
-            layui.msg("发生异常错误，请刷新重试");
-            return false;
-        });
-        // 搜索
-        form.on('submit(search)', function (data) {
-            var time = $("#duringTime").val();
-            var startTime = "";
-            var endTime = "";
-            if (time.indexOf(" ~ ") > -1) {
-                startTime = time.toString().substring(0, time.toString().indexOf(" ~ "));
-                endTime = time.toString().substring(time.toString().indexOf(" ~ ") + 3, time.toString().length);
-            }
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload('wechatMsgTable', {
-                    page: {curr: 1}
-                    , where: {
-                        openid: $("#filterOpenid").val()
-                        , msgid: $("#filterMsgid").val()
-                        , details: $("#filterDetails").val()
-                        , remark: $("#filterRemark").val()
-                        , result: $("#filterResult").val()
-                        , startTime: startTime
-                        , endTime: endTime
-                    }
-                }, 'data');
-            });
-            return false;
-        });
-        // 重置搜索
-        form.on('submit(resetSearch)', function (data) {
-            document.getElementById("filterForm").reset();
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload('wechatMsgTable', {
-                    page: {curr: 1}
-                    , where: {
-                        openid: $("#filterOpenid").val()
-                        , msgid: $("#filterMsgid").val()
-                        , details: $("#filterDetails").val()
-                        , remark: $("#filterRemark").val()
-                        , result: $("#filterResult").val()
-                        , startTime: ""
-                        , endTime: ""
-                    }
-                }, 'data');
-            });
-            return false;
-        });
-    });
-</script>
-<script>
-    var selectedData = null;
-    var layerIndex = null;
+<!--            if (null != selectedData) {-->
+<!--                if (newName == selectedData.remark) {-->
+<!--                    layer.close(layerIndex);-->
+<!--                    return false;-->
+<!--                } else {-->
+<!--                    selectedData.remark = newName;-->
+<!--                    updateMsgInfo(selectedData, layerIndex);-->
+<!--                    return false;-->
+<!--                }-->
+<!--            }-->
+<!--            layui.msg("发生异常错误，请刷新重试");-->
+<!--            return false;-->
+<!--        });-->
+<!--        // 搜索-->
+<!--        form.on('submit(search)', function (data) {-->
+<!--            var time = $("#duringTime").val();-->
+<!--            var startTime = "";-->
+<!--            var endTime = "";-->
+<!--            if (time.indexOf(" ~ ") > -1) {-->
+<!--                startTime = time.toString().substring(0, time.toString().indexOf(" ~ "));-->
+<!--                endTime = time.toString().substring(time.toString().indexOf(" ~ ") + 3, time.toString().length);-->
+<!--            }-->
+<!--            layui.use('table', function () {-->
+<!--                var table = layui.table;-->
+<!--                table.reload('wechatMsgTable', {-->
+<!--                    page: {curr: 1}-->
+<!--                    , where: {-->
+<!--                        openid: $("#filterOpenid").val()-->
+<!--                        , msgid: $("#filterMsgid").val()-->
+<!--                        , details: $("#filterDetails").val()-->
+<!--                        , remark: $("#filterRemark").val()-->
+<!--                        , result: $("#filterResult").val()-->
+<!--                        , startTime: startTime-->
+<!--                        , endTime: endTime-->
+<!--                    }-->
+<!--                }, 'data');-->
+<!--            });-->
+<!--            return false;-->
+<!--        });-->
+<!--        // 重置搜索-->
+<!--        form.on('submit(resetSearch)', function (data) {-->
+<!--            document.getElementById("filterForm").reset();-->
+<!--            layui.use('table', function () {-->
+<!--                var table = layui.table;-->
+<!--                table.reload('wechatMsgTable', {-->
+<!--                    page: {curr: 1}-->
+<!--                    , where: {-->
+<!--                        openid: $("#filterOpenid").val()-->
+<!--                        , msgid: $("#filterMsgid").val()-->
+<!--                        , details: $("#filterDetails").val()-->
+<!--                        , remark: $("#filterRemark").val()-->
+<!--                        , result: $("#filterResult").val()-->
+<!--                        , startTime: ""-->
+<!--                        , endTime: ""-->
+<!--                    }-->
+<!--                }, 'data');-->
+<!--            });-->
+<!--            return false;-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--<script>-->
+<!--    var selectedData = null;-->
+<!--    var layerIndex = null;-->
 
-    layui.use('table', function () {
-        var table = layui.table;
+<!--    layui.use('table', function () {-->
+<!--        var table = layui.table;-->
 
-        table.render({
-            elem: '#wechatMsgTable'
-            , title: '微信公众号消息列表'
-            // , height: 115
-            , url: 'wechat/msg/list'
-            , page: {curr: 1}
-            , limit: 10
-            , limits: [10, 30, 50, 100]
-            , toolbar: true
-            // , toolbar: '#toolbarDemo'
-            // 右上角工具条
-            , defaultToolbar: ['filter', 'exports', 'print'
-                , {
-                    title: '刷新'
-                    , layEvent: 'reloadData'
-                    , icon: 'layui-icon-refresh'
-                }
-            ]
-            , cols: [
-                [
-                    {field: 'id', title: 'ID', fixed: 'left', width: 60, unresize: true, sort: true, align: 'center'}
-                    , {field: 'openid', title: 'openid', align: 'center'}
-                    , {field: 'msgid', title: 'msgid', width: 160, align: 'center'}
-                    , {field: 'msgDetails', title: '消息内容', minWidth: 100, align: 'center'}
-                    , {field: 'remark', title: '备注', width: 100, align: 'center'}
-                    , {
-                    field: 'createTime', templet: function (d) {
-                        return formatDateTime(d.createTime);
-                    }, title: '发送时间', width: 160, align: 'center'
-                }
-                    //     , {
-                    //     field: 'modifyTime', templet: function (d) {
-                    //         return formatDateTime(d.modifyTime);
-                    //     }, title: '接收结果时间', minWidth: 120, align: 'center'
-                    // }
-                    //     , {field: 'result', title: '发送结果', minWidth: 100, align: 'center'}
-                    , {toolbar: '#barOperator', fixed: 'right', title: '操作', width: 80, align: 'center'}
-                ]
-            ]
-            , parseData: function (res) {
-                return {
-                    "code": res.errorCode
-                    , "msg": res.errorMsg
-                    , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
-                    , "data": null != res.data && null != res.data.list ? res.data.list : null
-                };
-            }
-        });
+<!--        table.render({-->
+<!--            elem: '#wechatMsgTable'-->
+<!--            , title: '微信公众号消息列表'-->
+<!--            // , height: 115-->
+<!--            , url: 'wechat/msg/list'-->
+<!--            , page: {curr: 1}-->
+<!--            , limit: 10-->
+<!--            , limits: [10, 30, 50, 100]-->
+<!--            , toolbar: true-->
+<!--            // , toolbar: '#toolbarDemo'-->
+<!--            // 右上角工具条-->
+<!--            , defaultToolbar: ['filter', 'exports', 'print'-->
+<!--                , {-->
+<!--                    title: '刷新'-->
+<!--                    , layEvent: 'reloadData'-->
+<!--                    , icon: 'layui-icon-refresh'-->
+<!--                }-->
+<!--            ]-->
+<!--            , cols: [-->
+<!--                [-->
+<!--                    {field: 'id', title: 'ID', fixed: 'left', width: 60, unresize: true, sort: true, align: 'center'}-->
+<!--                    , {field: 'openid', title: 'openid', align: 'center'}-->
+<!--                    , {field: 'msgid', title: 'msgid', width: 160, align: 'center'}-->
+<!--                    , {field: 'msgDetails', title: '消息内容', minWidth: 100, align: 'center'}-->
+<!--                    , {field: 'remark', title: '备注', width: 100, align: 'center'}-->
+<!--                    , {-->
+<!--                    field: 'createTime', templet: function (d) {-->
+<!--                        return formatDateTime(d.createTime);-->
+<!--                    }, title: '发送时间', width: 160, align: 'center'-->
+<!--                }-->
+<!--                    //     , {-->
+<!--                    //     field: 'modifyTime', templet: function (d) {-->
+<!--                    //         return formatDateTime(d.modifyTime);-->
+<!--                    //     }, title: '接收结果时间', minWidth: 120, align: 'center'-->
+<!--                    // }-->
+<!--                    //     , {field: 'result', title: '发送结果', minWidth: 100, align: 'center'}-->
+<!--                    , {toolbar: '#barOperator', fixed: 'right', title: '操作', width: 80, align: 'center'}-->
+<!--                ]-->
+<!--            ]-->
+<!--            , parseData: function (res) {-->
+<!--                return {-->
+<!--                    "code": res.errorCode-->
+<!--                    , "msg": res.errorMsg-->
+<!--                    , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0-->
+<!--                    , "data": null != res.data && null != res.data.list ? res.data.list : null-->
+<!--                };-->
+<!--            }-->
+<!--        });-->
 
-        //监听工具条
-        table.on('tool(wechatMsgTable)', function (obj) {
-            selectedData = obj.data;
-            var itemData = obj.data;
-            switch (obj.event) {
-                case 'remark_edit':
-                    // 先进行reset，否则上一次输入的数据还会显示出来
-                    document.getElementById("updateForm").reset();
-                    layerIndex = layer.open({
-                        type: 1,
-                        btnAlign: 'c',
-                        area: ['400px', '300px'],
-                        title: '微信消息',
-                        content: $("#itemEditView"),
-                        success: function (layero, index) {
-                            $('input[name=remarkName]').attr('value', itemData.remark);
-                        },
-                    })
-                    break;
-            }
-        });
+<!--        //监听工具条-->
+<!--        table.on('tool(wechatMsgTable)', function (obj) {-->
+<!--            selectedData = obj.data;-->
+<!--            var itemData = obj.data;-->
+<!--            switch (obj.event) {-->
+<!--                case 'remark_edit':-->
+<!--                    // 先进行reset，否则上一次输入的数据还会显示出来-->
+<!--                    document.getElementById("updateForm").reset();-->
+<!--                    layerIndex = layer.open({-->
+<!--                        type: 1,-->
+<!--                        btnAlign: 'c',-->
+<!--                        area: ['400px', '300px'],-->
+<!--                        title: '微信消息',-->
+<!--                        content: $("#itemEditView"),-->
+<!--                        success: function (layero, index) {-->
+<!--                            $('input[name=remarkName]').attr('value', itemData.remark);-->
+<!--                        },-->
+<!--                    })-->
+<!--                    break;-->
+<!--            }-->
+<!--        });-->
 
-        //工具栏事件
-        table.on('toolbar(wechatMsgTable)', function (obj) {
-            switch (obj.event) {
-                case 'reloadData':
-                    table.reload('wechatMsgTable', {
-                        page: {curr: 1}
-                    }, 'data');
-                    break;
-            }
-            ;
-        });
+<!--        //工具栏事件-->
+<!--        table.on('toolbar(wechatMsgTable)', function (obj) {-->
+<!--            switch (obj.event) {-->
+<!--                case 'reloadData':-->
+<!--                    table.reload('wechatMsgTable', {-->
+<!--                        page: {curr: 1}-->
+<!--                    }, 'data');-->
+<!--                    break;-->
+<!--            }-->
+<!--            ;-->
+<!--        });-->
 
-        //监听排序
-        table.on('sort(wechatMsgTable)', function (obj) {
-            // 本地该页数据排序
-            table.reload('wechatMsgTable', {
-                initSort: obj
-            });
-        });
+<!--        //监听排序-->
+<!--        table.on('sort(wechatMsgTable)', function (obj) {-->
+<!--            // 本地该页数据排序-->
+<!--            table.reload('wechatMsgTable', {-->
+<!--                initSort: obj-->
+<!--            });-->
+<!--        });-->
 
-        var $ = layui.jquery, active = {
-            parseTable: function () {
-                table.init('parse-table-demo', {
-                    limit: 3
-                });
-            }
-            , add: function () {
-                table.addRow('wechatMsgTable')
-            }
-        };
-        $('i').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
-        });
-        $('.layui-btn').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
-        });
-    });
-</script>
-</body>
-</html>
+<!--        var $ = layui.jquery, active = {-->
+<!--            parseTable: function () {-->
+<!--                table.init('parse-table-demo', {-->
+<!--                    limit: 3-->
+<!--                });-->
+<!--            }-->
+<!--            , add: function () {-->
+<!--                table.addRow('wechatMsgTable')-->
+<!--            }-->
+<!--        };-->
+<!--        $('i').on('click', function () {-->
+<!--            var type = $(this).data('type');-->
+<!--            active[type] ? active[type].call(this) : '';-->
+<!--        });-->
+<!--        $('.layui-btn').on('click', function () {-->
+<!--            var type = $(this).data('type');-->
+<!--            active[type] ? active[type].call(this) : '';-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
