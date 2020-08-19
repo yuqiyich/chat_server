@@ -207,6 +207,11 @@
             <artifactId>gt-render</artifactId>
             <version>${gt.version}</version>
         </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.geotools</groupId>-->
+        <!--            <artifactId>gt-swing</artifactId>-->
+        <!--            <version>${gt.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.locationtech.geomesa</groupId>
             <artifactId>geomesa-hbase-datastore_2.11</artifactId>
