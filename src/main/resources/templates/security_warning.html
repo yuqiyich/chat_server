@@ -273,6 +273,10 @@
                     minWidth: 180, field: 'createTime', templet: function (d) {
                         return formatDateTime(d.createTime);
                     }, title: '上报时间', sort: false, align: 'center'
+                }, {
+                    minWidth: 180, field: 'recordTime', templet: function (d) {
+                        return formatDateTime(d.recordTime);
+                    }, title: '记录服务器时间', sort: false, align: 'center'
                 }
                     , {minWidth: 80, field: 'systemVersion', title: '系统版本', sort: false, align: 'center'}
                     , {minWidth: 80, field: 'netState', title: '网络状态', sort: false, align: 'center'}

@@ -82,10 +82,10 @@ public interface RiskInfoWrapper {
             "<if test='riskInfo.content.startDate!=null '>AND create_time &gt; #{riskInfo.content.startDate}</if>",
             "<if test='riskInfo.content.endDate!=null  '>AND create_time &lt; #{riskInfo.content.endDate}</if>",
             "</if>",
-            "order by create_time desc limit #{pageIndex}, #{limit}) as a,",
+            "order by record_time desc limit #{pageIndex}, #{limit}) as a,",
             "app_info as b,risk_user as c ",
             "where a.app_id =b.app_id and a.user_id=c.user_id and a.app_id=c.app_id ",
-            "order by create_time desc",
+            "order by record_time desc",
             "</script>"})
     @Results({@Result(property = "id", column = "id"),
             @Result(property = "userId", column = "user_id"),

@@ -100,7 +100,6 @@ public interface DotEventInfoWrapper {
     @Results({@Result(property = "id", column = "id"),
             @Result(property = "userId", column = "user_id"),
             @Result(property = "nickName", column = "nick_name"),
-            @Result(property = "userId", column = "user_id"),
             @Result(property = "appName", column = "app_name"),
             @Result(property = "deviceId", column = "device_id"),
             @Result(property = "eventDetail", column = "event_detail"),

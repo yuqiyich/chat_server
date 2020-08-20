@@ -68,4 +68,39 @@ public class DotEventInfo extends BaseRecordInfo {
      * 用户类型 可见用户类型. 1:APP通用 2:未登录用户 3:专车用户 4:顺风车乘客 5:顺风车车主
      */
     public int userType;
+
+    @Override
+    public String toString() {
+        return "DotEventInfo{" +
+                "eventKey='" + eventKey + '\'' +
+                ", eventDetail='" + eventDetail + '\'' +
+                ", ext='" + ext + '\'' +
+                ", orderId='" + orderId + '\'' +
+                ", scene='" + scene + '\'' +
+                ", orderIdFilter='" + orderIdFilter + '\'' +
+                ", eventType='" + eventType + '\'' +
+                ", eventData=" + eventData +
+                ", userType=" + userType +
+                ", deviceId='" + deviceId + '\'' +
+                ", deviceBrand='" + deviceBrand + '\'' +
+                ", deviceModel='" + deviceModel + '\'' +
+                ", systemVersion='" + systemVersion + '\'' +
+                ", appVersionName='" + appVersionName + '\'' +
+                ", appVersionCode=" + appVersionCode +
+                ", appId=" + appId +
+                ", channel='" + channel + '\'' +
+                ", platform='" + platform + '\'' +
+                ", createTime=" + createTime +
+                ", recordTime=" + recordTime +
+                ", userId=" + userId +
+                ", locationLat=" + locationLat +
+                ", locationLng=" + locationLng +
+                ", locationName='" + locationName + '\'' +
+                ", netState='" + netState + '\'' +
+                ", requestIp='" + requestIp + '\'' +
+                ", duringTime='" + duringTime + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
+    }
 }
