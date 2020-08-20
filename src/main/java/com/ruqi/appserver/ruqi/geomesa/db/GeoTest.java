@@ -24,7 +24,7 @@ import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.KEY_DATE;
 public class GeoTest {
     static List<Query> queries=null;
     public static void main(String[] args) {
-        ExecutorService service= Executors.newFixedThreadPool(40);
+        ExecutorService service= Executors.newFixedThreadPool(20);
         for (int i = 0; i <10000 ; i++) {
             service.submit(new SaveDataTask());
         }

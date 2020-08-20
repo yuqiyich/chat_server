@@ -1,30 +1,35 @@
 package com.ruqi.appserver.ruqi.geomesa.db;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.ruqi.appserver.ruqi.geomesa.db.connect.HbaseConnectConfig;
+import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
+import com.ruqi.appserver.ruqi.utils.JsonUtil;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.*;
-import org.geotools.feature.type.AttributeDescriptorImpl;
-import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
-import org.locationtech.geomesa.features.ScalaSimpleFeature;
+import org.locationtech.geomesa.index.conf.QueryHints;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.feature.type.PropertyType;
 import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.swing.text.html.HTMLDocument;
 import java.io.IOException;
 import java.util.*;
 
 public class GeoDbHandler {
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
+    private static boolean IS_DB_DEBUG=false;
+    @Autowired
+    MesaDataConnectManager mesaDataConnectManager;
 
     /**
      * 更新表数据的监听器 ，这边默认是根据fid来判断数据的
@@ -192,16 +197,19 @@ public class GeoDbHandler {
         logger.info("");
     }
 
-    public static void queryFeature(DataStore datastore, List<Query> queries) throws IOException {
+    public static List<SimpleFeature> queryFeature(DataStore datastore, List<Query> queries) throws IOException {
         for (Query query : queries) {
             logger.info("Running query " + ECQL.toCQL(query.getFilter())+"；typeName:"+query.getTypeName());
-            if (query.getPropertyNames() != null) {
-                logger.info("Returning attributes " + Arrays.asList(query.getPropertyNames()));
+            if (IS_DB_DEBUG){
+                if (query.getPropertyNames() != null) {
+                    logger.info("Returning attributes " + Arrays.asList(query.getPropertyNames()));
+                }
+                if (query.getSortBy() != null) {
+                    SortBy sort = query.getSortBy()[0];
+                    logger.info("Sorting by " + sort.getPropertyName() + " " + sort.getSortOrder());
+                }
             }
-            if (query.getSortBy() != null) {
-                SortBy sort = query.getSortBy()[0];
-                logger.info("Sorting by " + sort.getPropertyName() + " " + sort.getSortOrder());
-            }
+            List<SimpleFeature> sfs=new ArrayList<>();
             // submit the query, and get back an iterator over matching features
             // use try-with-resources to ensure the reader is closed
             try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
@@ -210,16 +218,68 @@ public class GeoDbHandler {
                 int n = 0;
                 while (reader.hasNext()) {
                     SimpleFeature feature = reader.next();
-                    if (n++ < 100) {
-                        // use geotools data utilities to get a printable string
-                        System.out.println(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
-                    } else if (n == 100) {
-                        logger.info("...");
+                    if (IS_DB_DEBUG){
+                        if (n++ < 100) {
+                            // use geotools data utilities to get a printable string
+                            System.out.println(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
+                        } else if (n == 100) {
+                            logger.info("...");
+                        }
                     }
+                    sfs.add(feature);
                 }
                 logger.info("Returned " + n + " total features");
                 logger.info("");
             }
+            return  sfs;
         }
+        return null;
+    }
+
+    /**
+     * 其中query 必须是
+     *
+     * @param tableName 表名
+     * @param cqlFilter  可为空,统计查询的限制条件
+     * @return
+     * @throws IOException
+     */
+    public static int queryTableRowCount(String tableName,String cqlFilter)  {
+        if (!StringUtils.isEmpty(tableName)) {
+            int count=0;
+            try {
+            DataStore datastore=MesaDataConnectManager.getIns().getDataStore(tableName);
+            String[] typeNames= datastore.getTypeNames();
+            Query query = new Query(typeNames[0]);
+            query.getHints().put(QueryHints.STATS_STRING(), "Count()");
+             try {
+                 if (!StringUtils.isEmpty(cqlFilter)){
+                     query.setFilter(ECQL.toFilter(cqlFilter));
+                 }
+            } catch (CQLException e) {
+                e.printStackTrace();
+            }
+             List<SimpleFeature> queryResults = queryFeature(datastore,Arrays.asList(query));
+
+              if (queryResults!=null&&queryResults.size()==1){
+                  SimpleFeature feature = queryResults.get(0);
+                  if ("stat".equals(feature.getID())) {
+                      for (Property property : feature.getValue()
+                      ) {
+                          if ("stats".equals(property.getName().getURI())) {
+                              JsonElement jsonObject=JsonParser.parseString((String)property.getValue());
+                              logger.info("...property count:" + property.getValue());
+                               count = ((JsonObject) jsonObject).get("count").getAsInt();
+                          }
+                      }
+                  }
+              }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return count;
+        }
+        //some error
+        return -1;
     }
 }

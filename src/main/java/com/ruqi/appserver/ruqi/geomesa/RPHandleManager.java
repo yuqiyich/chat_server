@@ -5,6 +5,7 @@ import com.ruqi.appserver.ruqi.bean.GeoRecommendRelatedId;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoMesaDataWrapper;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
+import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendDataUpdater;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendPointUpdater;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
@@ -25,11 +26,6 @@ import java.util.*;
  */
 public class RPHandleManager {
     private static RPHandleManager ins;
-    private DataStore  mRecordDataStore;//记录表的的store
-    private DataStore  mRecommendPointDataStore;//推荐点的store
-    private DataStore  mPointRelatedDataStore;//关联点的store
-    private DataStore  mRecommendDataStore;//推荐点上报记录的数据store(以selectPoint为主键)
-
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
 
     public static RPHandleManager getIns(){
@@ -76,12 +72,9 @@ public class RPHandleManager {
      * @param cityCode
      */
     private void saveSelectRecommendPoints(List<UploadRecommendPointRequest<RecommendPoint>> records, String cityCode) {
-        if (mRecommendDataStore == null) {
-            mRecommendDataStore = GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX +cityCode);
-        }
         SimpleFeatureType sft=GeoTable.getRecommendRecordSimpleType(cityCode,false);
         List<SimpleFeature> recordsDatas=convertRecommendDataToPointSF(records,sft);
-        updateDataIfFidExistOrInsert(mRecommendDataStore,recordsDatas,sft,GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_RECORD,new RecommendDataUpdater());
+        updateDataIfFidExistOrInsert(MesaDataConnectManager.getIns().getDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX +cityCode),recordsDatas,sft,GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_RECORD,new RecommendDataUpdater());
     }
 
     /**
@@ -107,25 +100,19 @@ public class RPHandleManager {
      * @param citycode
      */
     private void saveRecommendPointsRelated(List<GeoRecommendRelatedId> datas,String citycode) {
-        if (mPointRelatedDataStore == null) {
-            mPointRelatedDataStore = GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX+citycode);
-        }
         SimpleFeatureType sft=GeoTable.getRecommendRelatedSimpleType(citycode);
         List<SimpleFeature> sfDatas=new ArrayList<>();
         for (GeoRecommendRelatedId geoRecommendRelatedId:datas) {
             sfDatas.add(GeoMesaDataWrapper.convertRecordToRelatedSF(geoRecommendRelatedId,sft));
         }
-       insertInDb(mPointRelatedDataStore,sfDatas,sft);
+       insertInDb(MesaDataConnectManager.getIns().getDataStore(GeoTable.TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX+citycode),sfDatas,sft);
     }
 
     private void saveRecommendPoints(List<UploadRecommendPointRequest<RecommendPoint>> records,List<String> recordIds,String cityCode) {
-        if (mRecommendPointDataStore == null) {
-            mRecommendPointDataStore = GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+cityCode);
-        }
         SimpleFeatureType sft=GeoTable.getRecommendPointSimpleType(cityCode);
-        GeoDbHandler.createOrUpdateSchema(mRecommendPointDataStore, sft);
+        GeoDbHandler.createOrUpdateSchema(MesaDataConnectManager.getIns().getDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+cityCode), sft);
         List<SimpleFeature> pointsDatas=convertRecommendPointToSF(records,sft,recordIds,cityCode);
-        updateDataIfFidExistOrInsert(mRecommendPointDataStore,pointsDatas,sft,GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT,new RecommendPointUpdater());
+        updateDataIfFidExistOrInsert(MesaDataConnectManager.getIns().getDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+cityCode),pointsDatas,sft,GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT,new RecommendPointUpdater());
     }
 
     private List<SimpleFeature> convertRecommendPointToSF(List<UploadRecommendPointRequest<RecommendPoint>> records, SimpleFeatureType sft,List<String> recordIds,String cityCode) {
@@ -158,12 +145,9 @@ public class RPHandleManager {
      * @param records
      */
     private List<String> saveRecommendPointsRecords(List<UploadRecommendPointRequest<RecommendPoint>> records,String cityCode){
-        if (mRecordDataStore == null) {
-            mRecordDataStore = GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX +cityCode);
-        }
         SimpleFeatureType sft=GeoTable.getRecommendRecordSimpleType(cityCode,true);
         List<SimpleFeature> recordsDatas=convertRecordToPointSF(records,sft);
-        insertInDb(mRecordDataStore,recordsDatas,sft);
+        insertInDb(MesaDataConnectManager.getIns().getDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+cityCode),recordsDatas,sft);
         List<String>  recordIds=getRecordIDs(recordsDatas);
         return recordIds;
     }
@@ -215,5 +199,28 @@ public class RPHandleManager {
     }
 
 
+    public int getTotalUploadTimes() {
+       return GeoDbHandler.queryTableRowCount(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+"11",null);
+    }
 
+    public int getLastDayUploadTimes() {
+        return 0;
+    }
+
+    public int getLastDayRecommendDataCount() {
+        return 0;
+    }
+
+    public int getTotalRecommendDataCount() {
+        return 0;
+    }
+
+    public int getLastDayRecommendPointCount() {
+        return 0;
+    }
+
+    public int getTotalRecommendPointCount() {
+
+        return 0;
+    }
 }

@@ -3,6 +3,7 @@ package com.ruqi.appserver.ruqi.service;
 import com.ruqi.appserver.ruqi.bean.AppResponeInfo;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
+import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
 import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
@@ -72,6 +73,25 @@ public class AnalyseServices {
                 }
             }
         }
+    }
+
+    @Scheduled(cron = CRON_REG)
+    public void periodStaticRecommendData() throws InterruptedException {
+          //总的上报次数
+           int lastDayUploadTimes=RPHandleManager.getIns().getTotalUploadTimes();
+          //一天上报的原始记录次数
+           int lastUplaodTimes= RPHandleManager.getIns().getLastDayUploadTimes();
+
+        //一天新增的扎针点和推荐关系表
+        int lastdayRecommendDataCount=RPHandleManager.getIns().getLastDayRecommendDataCount();
+        //新增的扎针点和推荐关系表
+        int totalRecommendDataCounts=RPHandleManager.getIns().getTotalRecommendDataCount();
+
+        //一天新增的推荐点数目
+           int lastDayRecommendPointCount=RPHandleManager.getIns().getLastDayRecommendPointCount();
+           //推荐点总数
+           int totalRecommendPointCounts=RPHandleManager.getIns().getTotalRecommendPointCount();
+
     }
 
 }

@@ -3,7 +3,6 @@ package com.ruqi.appserver.ruqi.geomesa.db;
 import com.ruqi.appserver.ruqi.bean.GeoRecommendRelatedId;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -44,7 +43,7 @@ public class GeoMesaDataWrapper {
             if (isRecord){
                 fid = UUID.randomUUID().toString();
             } else {//如果是非记录就以选择点为唯一id
-                fid=GeoMathUtil.getPrecision(records.getSelectLng(),TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" +GeoMathUtil.getPrecision(records.getSelectLat(),TABLE_RECORD_PRIMARY_KEY_PRECISION);
+                fid= GeoMesaUtil.getPrecision(records.getSelectLng(),TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" + GeoMesaUtil.getPrecision(records.getSelectLat(),TABLE_RECORD_PRIMARY_KEY_PRECISION);
             }
             Date date = new Date(records.getTimeStamp()>0?records.getTimeStamp():System.currentTimeMillis());;
             builder.set("rrId", fid);
