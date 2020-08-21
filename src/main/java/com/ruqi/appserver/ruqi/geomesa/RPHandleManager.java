@@ -2,13 +2,12 @@ package com.ruqi.appserver.ruqi.geomesa;
 
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.GeoRecommendRelatedId;
-import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
-import com.ruqi.appserver.ruqi.geomesa.db.GeoMesaDataWrapper;
-import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
+import com.ruqi.appserver.ruqi.geomesa.db.*;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendDataUpdater;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendPointUpdater;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.opengis.feature.simple.SimpleFeature;
@@ -200,27 +199,91 @@ public class RPHandleManager {
 
 
     public int getTotalUploadTimes() {
-       return GeoDbHandler.queryTableRowCount(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+"11",null);
+       return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX);
     }
 
     public int getLastDayUploadTimes() {
-        return 0;
+         return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX,getLastDayFilter());
     }
 
     public int getLastDayRecommendDataCount() {
-        return 0;
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX,getLastDayFilter());
+
     }
 
     public int getTotalRecommendDataCount() {
-        return 0;
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX);
     }
 
     public int getLastDayRecommendPointCount() {
-        return 0;
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,getLastDayFilter());
     }
 
     public int getTotalRecommendPointCount() {
-
-        return 0;
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX);
     }
+
+    private int queryTableDataCountWithAllCity(String tableNamePrefix){
+    return     (int)queryTableDataCountWithAllCity(tableNamePrefix,"");
+    }
+
+    private int queryTableDataCountWithAllCity(String tableNamePrefix,String filter){
+        return     (int)queryTableDataCountWithAllCity(tableNamePrefix,filter,"en",false);
+    }
+
+    /**
+     *
+     * @param tableNamePrefix 表名前缀  见例如下面的值
+     *                               @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
+     * @param cqlFilter  cql查询语句的
+     * @param env  cql查询语句的
+     * @return
+     */
+    public HashMap<String,Integer> queryTableCityCount(String tableNamePrefix,String cqlFilter,String env){
+        return  (HashMap<String,Integer>)queryTableDataCountWithAllCity(tableNamePrefix,cqlFilter,env,true);
+
+    }
+
+    /**
+     *  返回特定查询条件下的数据数目
+     *
+     * @param tableNamePrefix  表名前缀  例如下面的值
+     *                          @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
+     * @param cqlFilter cql的语句 like下面的方法
+     *                           @see #getLastDayFilter()
+     * @param isDetail
+     * @return
+     */
+    private Object queryTableDataCountWithAllCity(String tableNamePrefix,String cqlFilter,String env,boolean isDetail) {
+        int counts = 0;
+        HashMap<String, Integer> countRecords = new HashMap<>();
+        if (!StringUtils.isEmpty(tableNamePrefix)) {
+            //todo 目前还根据dev环境写死代码查询，等待改成配置的环境来确定锁查询的表
+            List<String> tableNames = HbaseDbHandler.getGeoTableNames(tableNamePrefix + env);
+            if (tableNames.size() > 0) {
+                for (String name : tableNames) {
+                    String cityCode = name.substring(name.lastIndexOf("_"));
+                    int count = GeoDbHandler.queryTableRowCount(name, cqlFilter);
+                    counts += count;
+                    countRecords.put(cityCode, count);
+                }
+            }
+        }
+        if (isDetail){
+            return countRecords;
+        } else {
+            return counts;
+        }
+    }
+
+    /**
+     * 获取昨天 一天内的时间段cql
+     *
+     * @return
+     */
+    private String getLastDayFilter(){
+        return "dtg DURING "+GeoMesaUtil.getGeoMesaTimeStr(DateTimeUtils.getYesterdayStartDate())+"/"+ GeoMesaUtil.getGeoMesaTimeStr(DateTimeUtils.getYesterdayEndDate());
+    }
+
+
 }
