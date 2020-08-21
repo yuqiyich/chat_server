@@ -1,13 +1,12 @@
 package com.ruqi.appserver.ruqi.geomesa.db;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.HbaseConnectConfig;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
-import com.ruqi.appserver.ruqi.utils.JsonUtil;
 import org.apache.commons.lang.StringUtils;
+
 import org.geotools.data.*;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQLException;
@@ -237,7 +236,7 @@ public class GeoDbHandler {
     }
 
     /**
-     * 其中query 必须是
+     * 查询表的行数
      *
      * @param tableName 表名
      * @param cqlFilter  可为空,统计查询的限制条件
@@ -254,13 +253,13 @@ public class GeoDbHandler {
             query.getHints().put(QueryHints.STATS_STRING(), "Count()");
              try {
                  if (!StringUtils.isEmpty(cqlFilter)){
+                     logger.info("count table"+tableName+"with filter:"+cqlFilter);
                      query.setFilter(ECQL.toFilter(cqlFilter));
                  }
             } catch (CQLException e) {
                 e.printStackTrace();
             }
              List<SimpleFeature> queryResults = queryFeature(datastore,Arrays.asList(query));
-
               if (queryResults!=null&&queryResults.size()==1){
                   SimpleFeature feature = queryResults.get(0);
                   if ("stat".equals(feature.getID())) {
@@ -282,4 +281,7 @@ public class GeoDbHandler {
         //some error
         return -1;
     }
+
+
+
 }

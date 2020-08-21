@@ -77,21 +77,28 @@ public class AnalyseServices {
 
     @Scheduled(cron = CRON_REG)
     public void periodStaticRecommendData() throws InterruptedException {
-          //总的上报次数
-           int lastDayUploadTimes=RPHandleManager.getIns().getTotalUploadTimes();
-          //一天上报的原始记录次数
-           int lastUplaodTimes= RPHandleManager.getIns().getLastDayUploadTimes();
-
+        //总的上报次数
+        int uploadTimes=RPHandleManager.getIns().getTotalUploadTimes();
+        //昨日天上报的原始记录次数
+        int lastUplaodTimes= RPHandleManager.getIns().getLastDayUploadTimes();
         //一天新增的扎针点和推荐关系表
         int lastdayRecommendDataCount=RPHandleManager.getIns().getLastDayRecommendDataCount();
         //新增的扎针点和推荐关系表
         int totalRecommendDataCounts=RPHandleManager.getIns().getTotalRecommendDataCount();
-
         //一天新增的推荐点数目
-           int lastDayRecommendPointCount=RPHandleManager.getIns().getLastDayRecommendPointCount();
-           //推荐点总数
-           int totalRecommendPointCounts=RPHandleManager.getIns().getTotalRecommendPointCount();
-
+        int lastDayRecommendPointCount=RPHandleManager.getIns().getLastDayRecommendPointCount();
+        //推荐点总数
+        int totalRecommendPointCounts=RPHandleManager.getIns().getTotalRecommendPointCount();
+        StringBuilder res=new StringBuilder();
+        res.append("总的上报次数          :"+uploadTimes+"===")
+                .append(DateTimeUtils.getYesterday()+"一天上报的原始记录次数："+lastUplaodTimes+"\n")
+                .append("扎针点和推荐关系表总数  :"+totalRecommendDataCounts+"===")
+                .append(DateTimeUtils.getYesterday()+"一天扎针点和推荐关系表次数："+lastdayRecommendDataCount+"\n")
+                .append("推荐点总数            :"+totalRecommendPointCounts+"===")
+                .append(DateTimeUtils.getYesterday()+"一天新增的推荐点："+lastDayRecommendPointCount+"\n")
+        ;
+        logger.info("盖亚数据统计："+res.toString());
+        kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.WARN,res.toString());
     }
 
 }

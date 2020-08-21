@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class HbaseConnectConfig {
     /****************相关配置的key值 start************************/
+
     //写入zookeeper的配置，连接hbase集群
     public static String KEY_ZOOKEEPER = "hbase.zookeepers";
+    public static String KEY_HBASE_ZOOKEEPER = "hbase.zookeeper.quorum";
     public static String KEY_CATALOG = "hbase.catalog";
     /****************相关配置的key值 end************************/
     /****************相关配置的默认值 start************************/
