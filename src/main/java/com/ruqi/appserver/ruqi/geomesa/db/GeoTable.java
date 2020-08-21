@@ -64,6 +64,9 @@ public class GeoTable {
     public static final String KEY_UPDATE_COUNT = "updateTime";//更新次数
     public static final String KEY_EXT = "ext";//命中得分
 
+    public static final String KEY_POINT_RECMD = "rGeom";// 推荐点坐标
+    public static final String KEY_POINT_ORIGIN = "sGeom";// 原始扎针点坐标
+
     public static final int TABLE_RECORD_PRIMARY_KEY_PRECISION = 4;//小数点后保留4位(过滤记录表的主键精度)
 
 

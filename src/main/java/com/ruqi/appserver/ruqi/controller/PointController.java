@@ -2,12 +2,15 @@ package com.ruqi.appserver.ruqi.controller;
 
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
+import com.ruqi.appserver.ruqi.request.QueryPointsRequest;
 import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import com.ruqi.appserver.ruqi.service.AppInfoSevice;
 import com.ruqi.appserver.ruqi.service.IPointRecommendService;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
+import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -74,6 +77,31 @@ public class PointController extends BaseController {
             result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
             result.errorMsg = e.getMessage();
             logger.error("uploadRecommendPoint error. content:" + JsonUtil.beanToJsonStr(uploadRecommendPointRequest) + ", e:" + e);
+            return result;
+        }
+    }
+
+    @ApiOperation(value = "查询原始点和推荐上车点数据", notes = "for web map")
+    @RequestMapping(value = "/queryPoints", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseBean<PointList> queryPoints(@RequestBody QueryPointsRequest queryPointsRequest) {
+        try {
+            logger.info("queryPoints params:" + JsonUtil.beanToJsonStr(queryPointsRequest));
+            if (null == queryPointsRequest) {
+                queryPointsRequest = new QueryPointsRequest();
+            }
+            BaseBean<PointList> result = new BaseBean<>();
+            PointList pointList = new PointList();
+            pointList.areaType = PointList.TYPE_AREA_POINT;
+            pointList.points = pointRecommendService.queryPoints(queryPointsRequest);
+            result.data = pointList;
+            return result;
+        } catch (Exception e) {
+            BaseBean result = new BaseBean<>();
+            result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
+            result.errorMsg = MyStringUtils.isEmpty(e.getMessage()) ?
+                    ErrorCode.ERROR_SYSTEM.errorMsg : e.getMessage();
+            logger.error("queryPoints error params:" + JsonUtil.beanToJsonStr(queryPointsRequest) + ". e:" + e);
             return result;
         }
     }
