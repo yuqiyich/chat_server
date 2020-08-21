@@ -84,6 +84,7 @@ public class PointController extends BaseController {
     @ApiOperation(value = "查询原始点和推荐上车点数据", notes = "for web map")
     @RequestMapping(value = "/queryPoints", method = RequestMethod.POST)
     @ResponseBody
+    @CrossOrigin
     public BaseBean<PointList> queryPoints(@RequestBody QueryPointsRequest queryPointsRequest) {
         try {
             logger.info("queryPoints params:" + JsonUtil.beanToJsonStr(queryPointsRequest));
