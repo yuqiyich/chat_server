@@ -39,8 +39,10 @@ public class SignController extends BaseController {
                                               @RequestHeader Map<String, String> header) {
         try {
             logger.info("obtainSign params:" + JsonUtil.beanToJsonStr(signRequest));
-            String aesKey =  new String(RSAUtil.privateDecrypt(Base64Util.base642Byte(signRequest.getAesKey()), RSAUtil.string2PrivateKey(ruqiServiceConfig.getPrivateKey())));
-            String deviceId =  header.get(KEY_DEVICE_ID);
+            String privateKey = ruqiServiceConfig.getPrivateKey();
+            logger.info("obtainSign privateKey:" + privateKey);
+            String aesKey = new String(RSAUtil.privateDecrypt(Base64Util.base642Byte(signRequest.getAesKey()), RSAUtil.string2PrivateKey(privateKey)));
+            String deviceId = header.get(KEY_DEVICE_ID);
             String sign = SHA1Util.encode(deviceId + System.currentTimeMillis());
             logger.info("obtainSign aesKey:" + aesKey + ",deviceId:" + deviceId + ",sign:" + sign);
             redisUtil.putKey(RedisUtil.GROUP_ENCRYPT_UTIL_SIGN, sign,
