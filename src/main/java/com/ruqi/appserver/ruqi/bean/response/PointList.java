@@ -1,5 +1,8 @@
 package com.ruqi.appserver.ruqi.bean.response;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -7,10 +10,13 @@ import java.util.List;
  * @date 2020/8/20
  * @desc 接口返回的查询点位数据
  */
+@ApiModel
 public class PointList {
     public static final int TYPE_AREA_POINT = 1;
+    public static final int TYPE_AREA_DISTRICT = 2;
+    public static final int TYPE_AREA_CITY = 3;
 
-    // 1 默认，具体坐标点 2 区级 3 市级
+    @ApiModelProperty(value = "点位区域类型，1：具体坐标点 2：区级 3：市级")
     public int areaType;
     public List<Point> points;
 
@@ -23,7 +29,7 @@ public class PointList {
 
         public String lnglat;
         public String title;
-        // 1 原始点 2 推荐点
+        @ApiModelProperty(value = "点位类型，1：原始点 2：推荐点")
         public int pointType;
     }
 }

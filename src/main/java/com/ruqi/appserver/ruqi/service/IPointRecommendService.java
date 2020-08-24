@@ -31,7 +31,7 @@ public interface IPointRecommendService {
     RecommendPointList<RecommendPoint> queryRecommendPoint(QueryRecommendPointRequest queryRecommendPointRequest);
 
     /**
-     * 查询点的数据
+     * 查询点的数据。指定环境、点类型、地图范围。
      *
      * @return
      */

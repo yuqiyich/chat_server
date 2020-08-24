@@ -23,6 +23,10 @@ public class QueryPointsRequest extends BaseRequest {
     public int pointType = 1;
     @ApiModelProperty(value = "地图缩放比例 默认10。高德地图：1-17")
     public int mapZoom = 10;
+    public double north;
+    public double east;
+    public double south;
+    public double west;
 
     public String getEnvType() {
         if (envType == 2) {
