@@ -198,38 +198,38 @@ public class RPHandleManager {
     }
 
 
-    public int getTotalUploadTimes() {
-       return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX);
+    public int getTotalUploadTimes(String env) {
+       return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX,env);
     }
 
-    public int getLastDayUploadTimes() {
-         return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX,getLastDayFilter());
+    public int getLastDayUploadTimes(String env) {
+         return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX,getLastDayFilter(),env);
     }
 
-    public int getLastDayRecommendDataCount() {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX,getLastDayFilter());
+    public int getLastDayRecommendDataCount(String env) {
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX,getLastDayFilter(),env);
 
     }
 
-    public int getTotalRecommendDataCount() {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX);
+    public int getTotalRecommendDataCount(String env) {
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX,env);
     }
 
-    public int getLastDayRecommendPointCount() {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,getLastDayFilter());
+    public int getLastDayRecommendPointCount(String env) {
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,getLastDayFilter(),env);
     }
 
-    public int getTotalRecommendPointCount() {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX);
+    public int getTotalRecommendPointCount(String env) {
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,env);
     }
 
-    private int queryTableDataCountWithAllCity(String tableNamePrefix){
-    return     (int)queryTableDataCountWithAllCity(tableNamePrefix,"");
+    private int queryTableDataCountWithAllCity(String tableNamePrefix,String env){
+        return     (int)queryTableDataCountWithAllCity(tableNamePrefix,"",env,false);
+    }
+    private int queryTableDataCountWithAllCity(String tableNamePrefix,String filter,String env){
+       return     (int)queryTableDataCountWithAllCity(tableNamePrefix,filter,env,false);
     }
 
-    private int queryTableDataCountWithAllCity(String tableNamePrefix,String filter){
-        return     (int)queryTableDataCountWithAllCity(tableNamePrefix,filter,"en",false);
-    }
 
     /**
      *

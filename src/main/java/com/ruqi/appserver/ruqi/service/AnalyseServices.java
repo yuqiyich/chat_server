@@ -77,24 +77,29 @@ public class AnalyseServices {
 
     @Scheduled(cron = CRON_REG)
     public void periodStaticRecommendData() throws InterruptedException {
+        analyseRecommendData("dev");
+        analyseRecommendData("pro");
+    }
+
+    public void analyseRecommendData(String env){
         //总的上报次数
-        int uploadTimes=RPHandleManager.getIns().getTotalUploadTimes();
+        int uploadTimes=RPHandleManager.getIns().getTotalUploadTimes(env);
         //昨日天上报的原始记录次数
-        int lastUplaodTimes= RPHandleManager.getIns().getLastDayUploadTimes();
+        int lastUplaodTimes= RPHandleManager.getIns().getLastDayUploadTimes(env);
         //一天新增的扎针点和推荐关系表
-        int lastdayRecommendDataCount=RPHandleManager.getIns().getLastDayRecommendDataCount();
+        int lastdayRecommendDataCount=RPHandleManager.getIns().getLastDayRecommendDataCount(env);
         //新增的扎针点和推荐关系表
-        int totalRecommendDataCounts=RPHandleManager.getIns().getTotalRecommendDataCount();
+        int totalRecommendDataCounts=RPHandleManager.getIns().getTotalRecommendDataCount(env);
         //一天新增的推荐点数目
-        int lastDayRecommendPointCount=RPHandleManager.getIns().getLastDayRecommendPointCount();
+        int lastDayRecommendPointCount=RPHandleManager.getIns().getLastDayRecommendPointCount(env);
         //推荐点总数
-        int totalRecommendPointCounts=RPHandleManager.getIns().getTotalRecommendPointCount();
+        int totalRecommendPointCounts=RPHandleManager.getIns().getTotalRecommendPointCount(env);
         StringBuilder res=new StringBuilder();
-        res.append("总的上报次数          :"+uploadTimes+"===")
+        res.append(env+"总的上报次数          :"+uploadTimes+"===")
                 .append(DateTimeUtils.getYesterday()+"一天上报的原始记录次数："+lastUplaodTimes+"\n")
-                .append("扎针点和推荐关系表总数  :"+totalRecommendDataCounts+"===")
+                .append(env+"扎针点和推荐关系表总数  :"+totalRecommendDataCounts+"===")
                 .append(DateTimeUtils.getYesterday()+"一天扎针点和推荐关系表次数："+lastdayRecommendDataCount+"\n")
-                .append("推荐点总数            :"+totalRecommendPointCounts+"===")
+                .append(env+"推荐点总数            :"+totalRecommendPointCounts+"===")
                 .append(DateTimeUtils.getYesterday()+"一天新增的推荐点："+lastDayRecommendPointCount+"\n")
         ;
         logger.info("盖亚数据统计："+res.toString());
