@@ -3,8 +3,10 @@ package com.ruqi.appserver.ruqi.service;
 import com.ruqi.appserver.ruqi.bean.BaseCodeMsgBean;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.RecommendPointList;
+import com.ruqi.appserver.ruqi.bean.RecommentPointStaticsInfo;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
+import com.ruqi.appserver.ruqi.dao.mappers.RecommendPointWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
@@ -12,6 +14,7 @@ import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
 import com.ruqi.appserver.ruqi.request.QueryPointsRequest;
 import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
+import com.ruqi.appserver.ruqi.request.QueryStaticRecommendPointsRequest;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.geotools.data.DataStore;
@@ -25,11 +28,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
+import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.DEV;
+import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.PRO;
 
 @Service
 public class PointRecommendServiceImpl implements IPointRecommendService {
@@ -39,7 +42,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     @Autowired
     UserMapper userWrapper;
     @Autowired
-    RiskInfoWrapper riskInfoWrapper;
+    RecommendPointWrapper recommendPointWrapper;
     @Autowired
     DotEventInfoWrapper dotEventInfoWrapper;
 
@@ -54,6 +57,14 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     @Override
     public RecommendPointList<RecommendPoint> queryRecommendPoint(QueryRecommendPointRequest queryRecommendPointRequest) {
         return null;
+    }
+
+    @Override
+    public RecommendPointList<RecommentPointStaticsInfo> queryStaticsRecommendPoint(QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest) {
+        RecommendPointList<RecommentPointStaticsInfo> recommentPointStaticsInfoRecommendPointList = new RecommendPointList<>();
+        List<RecommentPointStaticsInfo> recommentPointStaticsInfoList = recommendPointWrapper.getRecommendPointLastWeek(queryStaticRecommendPointsRequest.getEnv(), queryStaticRecommendPointsRequest.getCityCode());
+        recommentPointStaticsInfoRecommendPointList.setPointList(recommentPointStaticsInfoList);
+        return recommentPointStaticsInfoRecommendPointList;
     }
 
     @Override
@@ -163,4 +174,61 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         return dataList;
     }
 
+    @Override
+    public void staticRecommendPoint() {
+        //昨日天上报的原始记录次数
+        Map<String, Integer> lastUploadTimesDev = RPHandleManager.getIns().getCityLastDayUploadTimes(DEV);
+        Map<String, Integer> lastUploadTimesPro = RPHandleManager.getIns().getCityLastDayUploadTimes(PRO);
+        //一天新增的扎针点和推荐关系表
+        Map<String, Integer> lastdayRecommendDataCountDev = RPHandleManager.getIns().getCityLastDayRecommendDataCount(DEV);
+        Map<String, Integer> lastdayRecommendDataCountPro = RPHandleManager.getIns().getCityLastDayRecommendDataCount(PRO);
+        //一天新增的推荐点数目
+        Map<String, Integer> lastDayRecommendPointCountDev = RPHandleManager.getIns().getCityLastDayRecommendPointCount(DEV);
+        Map<String, Integer> lastDayRecommendPointCountPro = RPHandleManager.getIns().getCityLastDayRecommendPointCount(PRO);
+
+        if(lastUploadTimesDev != null &&
+                lastdayRecommendDataCountDev != null &&
+                lastDayRecommendPointCountDev != null) {
+            for (Map.Entry<String, Integer> entry : lastUploadTimesDev.entrySet()) {
+                String cityCode = entry.getKey();
+                int uplaodTimesDev = entry.getValue();
+                int recommendDataCountDev = lastdayRecommendDataCountDev.get(cityCode);
+                int recommendPointCountDev = lastDayRecommendPointCountDev.get(cityCode);
+                RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
+                recommentPointStaticsInfo.setCityCode(cityCode);
+                recommentPointStaticsInfo.setEnv(DEV);
+                recommentPointStaticsInfo.setTotalRecmdPointNum(uplaodTimesDev);
+                recommentPointStaticsInfo.setTotalOriginPointNum(recommendPointCountDev);
+                recommentPointStaticsInfo.setTotalRecordNum(recommendDataCountDev);
+                Calendar cal= Calendar.getInstance();
+                cal.add(Calendar.DATE,-1);
+                Date time = cal.getTime();
+                recommentPointStaticsInfo.setStaticsDate(time);
+                recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
+            }
+        }
+
+        if(lastUploadTimesPro != null &&
+                lastdayRecommendDataCountPro != null &&
+                lastDayRecommendPointCountPro != null) {
+            for (Map.Entry<String, Integer> entry : lastUploadTimesPro.entrySet()) {
+                String cityCode = entry.getKey();
+                int uplaodTimesPro = entry.getValue();
+                int recommendDataCountPro = lastdayRecommendDataCountPro.get(cityCode);
+                int recommendPointCountPro = lastDayRecommendPointCountPro.get(cityCode);
+                RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
+                recommentPointStaticsInfo.setCityCode(cityCode);
+                recommentPointStaticsInfo.setEnv(DEV);
+                recommentPointStaticsInfo.setTotalRecmdPointNum(uplaodTimesPro);
+                recommentPointStaticsInfo.setTotalOriginPointNum(recommendPointCountPro);
+                recommentPointStaticsInfo.setTotalRecordNum(recommendDataCountPro);
+                Calendar cal= Calendar.getInstance();
+                cal.add(Calendar.DATE,-1);
+                Date time = cal.getTime();
+                recommentPointStaticsInfo.setStaticsDate(time);
+                recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
+            }
+        }
+
+    }
 }

@@ -6,6 +6,7 @@ import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.request.QueryPointsRequest;
 import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
+import com.ruqi.appserver.ruqi.request.QueryStaticRecommendPointsRequest;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import com.ruqi.appserver.ruqi.service.AppInfoSevice;
 import com.ruqi.appserver.ruqi.service.IPointRecommendService;
@@ -103,6 +104,29 @@ public class PointController extends BaseController {
             result.errorMsg = MyStringUtils.isEmpty(e.getMessage()) ?
                     ErrorCode.ERROR_SYSTEM.errorMsg : e.getMessage();
             logger.error("queryPoints error params:" + JsonUtil.beanToJsonStr(queryPointsRequest) + ". e:" + e);
+            return result;
+        }
+    }
+
+    @ApiOperation(value = "查询推荐上车点中台统计数据", notes = "for web")
+    @RequestMapping(value = "/queryStaticsRecommendPoints", method = RequestMethod.POST)
+    @ResponseBody
+    @CrossOrigin
+    public BaseBean<RecommendPointList<RecommentPointStaticsInfo>> queryStaticsRecommendPoints(@RequestBody QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest) {
+        try {
+            logger.info("queryStaticRecommendPointsRequest params:" + JsonUtil.beanToJsonStr(queryStaticRecommendPointsRequest));
+            if (null == queryStaticRecommendPointsRequest) {
+                queryStaticRecommendPointsRequest = new QueryStaticRecommendPointsRequest();
+            }
+            BaseBean<RecommendPointList<RecommentPointStaticsInfo>> result = new BaseBean<>();
+            result.data =  pointRecommendService.queryStaticsRecommendPoint(queryStaticRecommendPointsRequest);
+            return result;
+        } catch (Exception e) {
+            BaseBean result = new BaseBean<>();
+            result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
+            result.errorMsg = MyStringUtils.isEmpty(e.getMessage()) ?
+                    ErrorCode.ERROR_SYSTEM.errorMsg : e.getMessage();
+            logger.error("queryStaticRecommendPointsRequest error params:" + JsonUtil.beanToJsonStr(queryStaticRecommendPointsRequest) + ". e:" + e);
             return result;
         }
     }
