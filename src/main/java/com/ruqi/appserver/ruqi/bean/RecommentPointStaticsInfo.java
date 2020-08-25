@@ -9,6 +9,7 @@ import java.util.Date;
  */
 public class RecommentPointStaticsInfo {
     private String cityCode;
+    private String cityName;
     /**
      * 所有的原始记录数据量（推荐上车点为索引）
      */
@@ -30,6 +31,14 @@ public class RecommentPointStaticsInfo {
 
     public String getEnv() {
         return env;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public String getCityName() {
+        return cityName;
     }
 
     public void setTotalOriginPointNum(int totalOriginPointNum) {

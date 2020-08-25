@@ -16,6 +16,7 @@ import com.ruqi.appserver.ruqi.request.QueryPointsRequest;
 import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
 import com.ruqi.appserver.ruqi.request.QueryStaticRecommendPointsRequest;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.Query;
@@ -196,6 +197,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 int recommendPointCountDev = lastDayRecommendPointCountDev.get(cityCode);
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
                 recommentPointStaticsInfo.setCityCode(cityCode);
+                recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
                 recommentPointStaticsInfo.setEnv(DEV);
                 recommentPointStaticsInfo.setTotalRecmdPointNum(uplaodTimesDev);
                 recommentPointStaticsInfo.setTotalOriginPointNum(recommendPointCountDev);
@@ -218,6 +220,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 int recommendPointCountPro = lastDayRecommendPointCountPro.get(cityCode);
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
                 recommentPointStaticsInfo.setCityCode(cityCode);
+                recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
                 recommentPointStaticsInfo.setEnv(DEV);
                 recommentPointStaticsInfo.setTotalRecmdPointNum(uplaodTimesPro);
                 recommentPointStaticsInfo.setTotalOriginPointNum(recommendPointCountPro);
