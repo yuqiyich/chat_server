@@ -14,6 +14,7 @@ public interface RecommendPointWrapper {
 
     @Select("SELECT * FROM recommend_point_statics where city_code = #{cityCode} and env = #{env} and date_sub(curdate(), INTERVAL 7 DAY) <= date(`date`) and date(`date`) < curdate() GROUP BY `date`")
     @Results({@Result(property = "cityCode", column = "city_code"),
+            @Result(property = "cityName", column = "city_name"),
             @Result(property = "totalOriginPointNum", column = "total_record_num"),
             @Result(property = "totalRecmdPointNum", column = "total_recmd_point_num"),
             @Result(property = "totalRecordNum", column = "total_origin_point_num"),
