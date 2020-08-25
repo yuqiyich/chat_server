@@ -19,6 +19,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
+import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.DEV;
+import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.PRO;
+
 @Configuration
 @EnableScheduling   // 1.开启定时任务
 public class AnalyseServices {
@@ -27,12 +30,16 @@ public class AnalyseServices {
     private static final long APP_DRIVER = 1;//司机端应用id
     private static final long APP_CLIENT = 2;//乘客端应用id
     private static final String CRON_REG = "0 0 10 * * ?";
+    private static final String CRON_STATIC = "0 0 3 * * ?";
 
     @Autowired
     RiskInfoWrapper riskInfoWrapper;
 
     @Autowired
     AppInfoWrapper appInfoWrapper;
+
+    @Autowired
+    private IPointRecommendService iPointRecommendService;
 
 //    @Autowired
 //    WechatController mWechatController;
@@ -75,10 +82,12 @@ public class AnalyseServices {
         }
     }
 
-    @Scheduled(cron = CRON_REG)
+    @Scheduled(cron = CRON_STATIC)
     public void periodStaticRecommendData() throws InterruptedException {
-        analyseRecommendData("dev");
-        analyseRecommendData("pro");
+        analyseRecommendData(DEV);
+        analyseRecommendData(PRO);
+        logger.info("定时更新推荐上车点数据");
+        iPointRecommendService.staticRecommendPoint();
     }
 
     public void analyseRecommendData(String env){

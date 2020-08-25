@@ -26,6 +26,8 @@ import java.util.*;
 public class RPHandleManager {
     private static RPHandleManager ins;
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
+    public static final String DEV = "dev";//开发环境表名字段
+    public static final String PRO = "pro";//正式环境表名字段
 
     public static RPHandleManager getIns(){
          synchronized (RPHandleManager.class){
@@ -206,9 +208,16 @@ public class RPHandleManager {
          return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX,getLastDayFilter(),env);
     }
 
+    public Map<String, Integer> getCityLastDayUploadTimes(String env) {
+        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX,getLastDayFilter(),env);
+    }
+
     public int getLastDayRecommendDataCount(String env) {
         return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX,getLastDayFilter(),env);
+    }
 
+    public Map<String, Integer> getCityLastDayRecommendDataCount(String env) {
+        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_DATA_PREFIX,getLastDayFilter(),env);
     }
 
     public int getTotalRecommendDataCount(String env) {
@@ -217,6 +226,10 @@ public class RPHandleManager {
 
     public int getLastDayRecommendPointCount(String env) {
         return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,getLastDayFilter(),env);
+    }
+
+    public Map<String, Integer> getCityLastDayRecommendPointCount(String env) {
+        return queryTableCityCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,getLastDayFilter(),env);
     }
 
     public int getTotalRecommendPointCount(String env) {
