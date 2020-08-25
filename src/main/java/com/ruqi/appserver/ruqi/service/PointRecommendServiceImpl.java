@@ -7,7 +7,6 @@ import com.ruqi.appserver.ruqi.bean.RecommentPointStaticsInfo;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RecommendPointWrapper;
-import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
@@ -29,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -63,7 +63,12 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     @Override
     public RecommendPointList<RecommentPointStaticsInfo> queryStaticsRecommendPoint(QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest) {
         RecommendPointList<RecommentPointStaticsInfo> recommentPointStaticsInfoRecommendPointList = new RecommendPointList<>();
-        List<RecommentPointStaticsInfo> recommentPointStaticsInfoList = recommendPointWrapper.getRecommendPointLastWeek(queryStaticRecommendPointsRequest.getEnv(), queryStaticRecommendPointsRequest.getCityCode());
+        List<RecommentPointStaticsInfo> recommentPointStaticsInfoList;
+        if (MyStringUtils.isEmpty(queryStaticRecommendPointsRequest.getCityCode())) {
+            recommentPointStaticsInfoList = recommendPointWrapper.getRecmdPointLastWeek(queryStaticRecommendPointsRequest.getEnv());
+        } else {
+            recommentPointStaticsInfoList = recommendPointWrapper.getRecommendPointLastWeek(queryStaticRecommendPointsRequest.getEnv(), queryStaticRecommendPointsRequest.getCityCode());
+        }
         recommentPointStaticsInfoRecommendPointList.setPointList(recommentPointStaticsInfoList);
         return recommentPointStaticsInfoRecommendPointList;
     }
@@ -87,50 +92,47 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
             recmdCqlBbox = String.format("BBOX(%s, %s, %s, %s, %s)", GeoTable.KEY_POINT_RECMD, queryPointsRequest.north,
                     queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west);
         }
+        boolean needOriginData = false;
+        boolean needRecmdData = false;
         switch (queryPointsRequest.pointType) {
             case QueryPointsRequest.POINT_TYPE_ALL:
-                try {
-                    for (String cityCode : cityCodeList) {
-                        DataStore recmdDataStore = GeoDbHandler.getHbaseTableDataStore(
-                                GeoTable.TABLE_RECOMMOND_PONIT_PREFIX + dataEnv + "_" + cityCode);
-                        dataList.addAll(queryPointsFromDataStore(recmdDataStore, PointList.Point.TYPE_POINT_RECMD, recmdCqlBbox));
-
-
-                        DataStore originDataStore = GeoDbHandler.getHbaseTableDataStore(
-                                GeoTable.TABLE_RECOMMEND_DATA_PREFIX + dataEnv + "_" + cityCode);
-                        dataList.addAll(queryPointsFromDataStore(originDataStore, PointList.Point.TYPE_POINT_ORIGIN, originCqlBbox));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                needOriginData = true;
+                needRecmdData = true;
                 break;
             case QueryPointsRequest.POINT_TYPE_ORIGIN:
-                try {
-                    for (String cityCode : cityCodeList) {
-                        DataStore originDataStore = GeoDbHandler.getHbaseTableDataStore(
-                                GeoTable.TABLE_RECOMMEND_DATA_PREFIX + dataEnv + "_" + cityCode);
-                        dataList.addAll(queryPointsFromDataStore(originDataStore, PointList.Point.TYPE_POINT_ORIGIN, originCqlBbox));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                needOriginData = true;
                 break;
             case QueryPointsRequest.POINT_TYPE_RECMD:
-                try {
-                    for (String cityCode : cityCodeList) {
-                        DataStore recmdDataStore = GeoDbHandler.getHbaseTableDataStore(
-                                GeoTable.TABLE_RECOMMOND_PONIT_PREFIX + dataEnv + "_" + cityCode);
-                        dataList.addAll(queryPointsFromDataStore(recmdDataStore, PointList.Point.TYPE_POINT_RECMD, recmdCqlBbox));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                needRecmdData = true;
                 break;
+        }
+        if (needOriginData) {
+            try {
+                for (String cityCode : cityCodeList) {
+                    DataStore originDataStore = GeoDbHandler.getHbaseTableDataStore(
+                            GeoTable.TABLE_RECOMMEND_DATA_PREFIX + dataEnv + "_" + cityCode);
+                    dataList.addAll(queryPointsFromDataStore(originDataStore, PointList.Point.TYPE_POINT_ORIGIN, originCqlBbox));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (needRecmdData) {
+            try {
+                for (String cityCode : cityCodeList) {
+                    DataStore recmdDataStore = GeoDbHandler.getHbaseTableDataStore(
+                            GeoTable.TABLE_RECOMMOND_PONIT_PREFIX + dataEnv + "_" + cityCode);
+                    dataList.addAll(queryPointsFromDataStore(recmdDataStore, PointList.Point.TYPE_POINT_RECMD, recmdCqlBbox));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return dataList;
     }
 
-    private Collection<? extends PointList.Point> queryPointsFromDataStore(DataStore dataStore, int pointType, String cqlBbox)
+    private Collection<? extends PointList.Point> queryPointsFromDataStore(DataStore dataStore,
+                                                                           int pointType, String cqlBbox)
             throws IOException {
         List<PointList.Point> dataList = new ArrayList<>();
         List<Query> queries = new ArrayList<>();
@@ -187,7 +189,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         Map<String, Integer> lastDayRecommendPointCountDev = RPHandleManager.getIns().getCityLastDayRecommendPointCount(DEV);
         Map<String, Integer> lastDayRecommendPointCountPro = RPHandleManager.getIns().getCityLastDayRecommendPointCount(PRO);
 
-        if(lastUploadTimesDev != null &&
+        if (lastUploadTimesDev != null &&
                 lastdayRecommendDataCountDev != null &&
                 lastDayRecommendPointCountDev != null) {
             for (Map.Entry<String, Integer> entry : lastUploadTimesDev.entrySet()) {
@@ -202,15 +204,15 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 recommentPointStaticsInfo.setTotalRecmdPointNum(uplaodTimesDev);
                 recommentPointStaticsInfo.setTotalOriginPointNum(recommendPointCountDev);
                 recommentPointStaticsInfo.setTotalRecordNum(recommendDataCountDev);
-                Calendar cal= Calendar.getInstance();
-                cal.add(Calendar.DATE,-1);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -1);
                 Date time = cal.getTime();
                 recommentPointStaticsInfo.setStaticsDate(time);
                 recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
             }
         }
 
-        if(lastUploadTimesPro != null &&
+        if (lastUploadTimesPro != null &&
                 lastdayRecommendDataCountPro != null &&
                 lastDayRecommendPointCountPro != null) {
             for (Map.Entry<String, Integer> entry : lastUploadTimesPro.entrySet()) {
@@ -225,8 +227,8 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 recommentPointStaticsInfo.setTotalRecmdPointNum(uplaodTimesPro);
                 recommentPointStaticsInfo.setTotalOriginPointNum(recommendPointCountPro);
                 recommentPointStaticsInfo.setTotalRecordNum(recommendDataCountPro);
-                Calendar cal= Calendar.getInstance();
-                cal.add(Calendar.DATE,-1);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -1);
                 Date time = cal.getTime();
                 recommentPointStaticsInfo.setStaticsDate(time);
                 recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
