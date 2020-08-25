@@ -16,6 +16,7 @@ import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
 import com.ruqi.appserver.ruqi.request.QueryStaticRecommendPointsRequest;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import com.ruqi.appserver.ruqi.utils.CityUtil;
+import com.ruqi.appserver.ruqi.utils.JsonUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.Query;
@@ -208,7 +209,9 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 cal.add(Calendar.DATE, -1);
                 Date time = cal.getTime();
                 recommentPointStaticsInfo.setStaticsDate(time);
-                recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
+                logger.info("插入统计好的DEV数据" + JsonUtil.beanToJsonStr(recommentPointStaticsInfo));
+                int result = recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
+                logger.info("插入DEV结果" + result);
             }
         }
 
@@ -231,7 +234,9 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 cal.add(Calendar.DATE, -1);
                 Date time = cal.getTime();
                 recommentPointStaticsInfo.setStaticsDate(time);
-                recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
+                logger.info("插入统计好的PRO数据" + JsonUtil.beanToJsonStr(recommentPointStaticsInfo));
+                int result = recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
+                logger.info("插入PRO结果" + result);
             }
         }
 

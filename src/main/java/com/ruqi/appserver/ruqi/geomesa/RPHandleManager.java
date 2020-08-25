@@ -275,7 +275,7 @@ public class RPHandleManager {
             List<String> tableNames = HbaseDbHandler.getGeoTableNames(tableNamePrefix + env);
             if (tableNames.size() > 0) {
                 for (String name : tableNames) {
-                    String cityCode = name.substring(name.lastIndexOf("_"));
+                    String cityCode = name.substring(name.lastIndexOf("_")).replace("_", "");
                     int count = GeoDbHandler.queryTableRowCount(name, cqlFilter);
                     counts += count;
                     countRecords.put(cityCode, count);

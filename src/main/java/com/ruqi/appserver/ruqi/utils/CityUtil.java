@@ -11,7 +11,7 @@ import java.util.Map;
 public class CityUtil {
     private static Map<String, String> map = new HashMap<>();
     static {
-        map.put("400100", "广州市");
+        map.put("440100", "广州市");
         map.put("440600", "佛山市");
     }
 
