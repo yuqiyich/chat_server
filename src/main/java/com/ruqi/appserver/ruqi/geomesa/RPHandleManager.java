@@ -333,9 +333,15 @@ public class RPHandleManager {
                     east, south, west);
             List<SimpleFeature> results=new ArrayList<>();
             for (String cityCode: cityCodes) {
-                List<SimpleFeature> temp=GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix+dev+cityCode),Arrays.asList(new Query(GeoTable.TYPE_ADMIN_DIVISION_META, ECQL.toFilter(pointBoxCql))));
-                if (temp!=null){
-                    results.addAll(temp);
+                DataStore dataStore=  GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix+dev+cityCode);
+                if (dataStore!=null&&dataStore.getTypeNames()!=null&&dataStore.getTypeNames().length>0){
+                    String typeName=dataStore.getTypeNames()[0];
+                    List<SimpleFeature> temp=GeoDbHandler.queryFeature(dataStore,Arrays.asList(new Query(typeName, ECQL.toFilter(pointBoxCql))));
+                    if (temp!=null){
+                        results.addAll(temp);
+                    }
+                } else {
+                    logger.error("["+tableRecommondPonitPrefix+dev+cityCode+"] table not exists or schema is null");
                 }
             }
          points=convertToPointDatas(results,sGeom);

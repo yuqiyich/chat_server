@@ -221,7 +221,7 @@ public class GeoDbHandler {
                     if (IS_DB_DEBUG){
                         if (n++ < 100) {
                             // use geotools data utilities to get a printable string
-                            System.out.println(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
+                            logger.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
                         } else if (n == 100) {
                             logger.info("...");
                         }
@@ -230,9 +230,12 @@ public class GeoDbHandler {
                 }
                 if (IS_DB_DEBUG) {
                     logger.info("Returned " + n + " total features");
-                    logger.info("");
+
                 }
+            }catch (IOException e){
+                logger.error("query error",e);
             }
+            logger.info("Returned--result size:"+sfs.size());
             return  sfs;
         }
         return null;
