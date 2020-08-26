@@ -24,8 +24,10 @@ public class PointList {
         public Point() {
         }
 
-        public Point(String x) {
-            lnglat=x;
+        public Point(String x, int type, String title) {
+            lnglat = x;
+            pointType = type;
+            this.title = title;
         }
 
         public static final int TYPE_POINT_ORIGIN = 1;
