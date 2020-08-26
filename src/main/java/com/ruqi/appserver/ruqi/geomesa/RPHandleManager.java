@@ -320,7 +320,7 @@ public class RPHandleManager {
         List<PointList.Point> points=new ArrayList<>();
         String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)","adBoard", north,
                 east, south, west);
-        String fullcql=cqlBox+"  AND level='district'";
+        String fullcql=cqlBox+"  AND level='city'";
         List<String> cityCodes=new ArrayList<>();
         try {
          List<SimpleFeature>  features=  GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_ADMIN_DIVISION),Arrays.asList(new Query(GeoTable.TYPE_ADMIN_DIVISION_META, ECQL.toFilter(fullcql))));
