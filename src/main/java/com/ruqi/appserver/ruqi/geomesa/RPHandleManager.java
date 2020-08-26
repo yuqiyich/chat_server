@@ -332,8 +332,10 @@ public class RPHandleManager {
             String pointBoxCql = String.format("BBOX(%s, %s, %s, %s, %s)",sGeom, north,
                     east, south, west);
             List<SimpleFeature> results=new ArrayList<>();
+
             for (String cityCode: cityCodes) {
-                DataStore dataStore=  GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix+dev+cityCode);
+                String tableName=tableRecommondPonitPrefix+dev+"_"+cityCode;
+                DataStore dataStore=  GeoDbHandler.getHbaseTableDataStore(tableName);
                 if (dataStore!=null&&dataStore.getTypeNames()!=null&&dataStore.getTypeNames().length>0){
                     String typeName=dataStore.getTypeNames()[0];
                     List<SimpleFeature> temp=GeoDbHandler.queryFeature(dataStore,Arrays.asList(new Query(typeName, ECQL.toFilter(pointBoxCql))));
@@ -341,7 +343,7 @@ public class RPHandleManager {
                         results.addAll(temp);
                     }
                 } else {
-                    logger.error("["+tableRecommondPonitPrefix+dev+cityCode+"] table not exists or schema is null");
+                    logger.error("["+tableName+"] table not exists or schema is null");
                 }
             }
          points=convertToPointDatas(results,sGeom);
