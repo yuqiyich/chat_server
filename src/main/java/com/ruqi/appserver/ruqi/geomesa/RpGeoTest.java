@@ -18,12 +18,12 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 public class RpGeoTest {
-    public static final String CITY_CODE ="1231245";//开发环境的citycode dev_440100
+    public static final String CITY_CODE ="440100";//开发环境的citycode dev_440100
     public static final String Compose_CITY_CODE ="dev_"+CITY_CODE;
 
     public static void main(String[] args) {
         GeoDbHandler.setDebug(true);
-         RPHandleManager.getIns().saveRecommendDatasByCityCode("dev",CITY_CODE,getTestData());
+//         RPHandleManager.getIns().saveRecommendDatasByCityCode("dev",CITY_CODE,getTestData());
          queryAllData();
     }
 
@@ -45,16 +45,21 @@ public class RpGeoTest {
             //推荐点的表
             System.out.println("==============================推荐点的表=============================");
             GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT));
-            System.out.println("数量是："+GeoDbHandler.queryTableRowCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE,null));  ;
+            System.out.println("==============================推荐点的全局表=============================");
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT_ALL));
+//            System.out.println("数量是："+GeoDbHandler.queryTableRowCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE,null));  ;
             //记录表
             System.out.println("==============================记录表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RECORD));
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RECORD));
             //扎针点和上车点的表
             System.out.println("==============================扎针点和上车点的表=============================");
             GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA));
+            System.out.println("==============================扎针点和上车点的全局表=============================");
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA_ALL));
+
             //关系表
             System.out.println("==============================关系表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RELATED_RECORD));
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RELATED_RECORD));
 
         } catch (Exception e) {
             e.printStackTrace();

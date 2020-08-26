@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
+import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
+
 /**
  * 推荐上车点的数据处理管理类
  *
@@ -33,6 +35,7 @@ public class RPHandleManager {
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
     public static final String DEV = "dev";//开发环境表名字段
     public static final String PRO = "pro";//正式环境表名字段
+
 
     public static RPHandleManager getIns(){
          synchronized (RPHandleManager.class){
@@ -63,9 +66,12 @@ public class RPHandleManager {
             tableTail=   evn+"_"+cityCode;
         }
         if (!StringUtils.isEmpty(cityCode)){
-            List<String> recordIds = saveRecommendPointsRecords(records,tableTail);//存储记录总表
-            saveSelectRecommendPoints(records,tableTail);//存储用户选择点和多个推荐点的表
+            //目前记录表都是一个表
+            List<String> recordIds = saveRecommendPointsRecords(records, evn+"_"+WORLD_CODE);//存储记录总表
+            saveSelectRecommendPoints(records,tableTail);//存储用户选择点和多个推荐点的城市分表的
+            saveSelectRecommendPoints(records,evn+"_"+WORLD_CODE);//存储用户选择点和多个推荐点的城市未分表的
             saveRecommendPoints(records,recordIds,tableTail);//推荐点记录表
+            saveRecommendPoints(records,recordIds,evn+"_"+WORLD_CODE);//推荐点记录表
         } else {
             logger.error("no cityCode,don't save anything");
         }
@@ -133,15 +139,20 @@ public class RPHandleManager {
                     for (int j = 0; j < recommendPointSize; j++) {
                         SimpleFeature simpleFeature = GeoMesaDataWrapper.convertRecordToPointSF( records.get(i), recommendPoints.get(j), sft);
                         datas.add(simpleFeature);
-                        //构造记录关系表数据
-                        GeoRecommendRelatedId recommendRelatedId=  new GeoRecommendRelatedId();
-                        recommendRelatedId.setPointId(simpleFeature.getID());
-                        recommendRelatedId.setRecordId(recordIds.get(i));
-                        relatedIds.add(recommendRelatedId);
+                        if (cityCode.contains(WORLD_CODE)) {
+                            //构造记录关系表数据
+                            GeoRecommendRelatedId recommendRelatedId = new GeoRecommendRelatedId();
+                            recommendRelatedId.setPointId(simpleFeature.getID());
+                            recommendRelatedId.setRecordId(recordIds.get(i));
+                            relatedIds.add(recommendRelatedId);
+                        }
                     }
                 }
             }
-            saveRecommendPointsRelated(relatedIds,cityCode);
+            if (cityCode.contains(WORLD_CODE)){
+                saveRecommendPointsRelated(relatedIds,cityCode);
+            }
+
         }
         return datas;
     }
@@ -318,40 +329,12 @@ public class RPHandleManager {
      */
     public List<PointList.Point> queryPoints(double north, double east, double south, double west, String dev, String tableRecommondPonitPrefix, String sGeom) {
         List<PointList.Point> points=new ArrayList<>();
-        String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)","adBoard", north,
+        String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)",sGeom, north,
                 east, south, west);
-        String fullcql=cqlBox+"  AND level='city'";
-        List<String> cityCodes=new ArrayList<>();
+        String fullcql=cqlBox;
         try {
-         List<SimpleFeature>  features=  GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_ADMIN_DIVISION),Arrays.asList(new Query(GeoTable.TYPE_ADMIN_DIVISION_META, ECQL.toFilter(fullcql))));
-         if (features!=null&&features.size()>0){
-             for (SimpleFeature feature: features) {
-                 cityCodes.add((String)feature.getAttribute(GeoTable.KEY_AD_CODE));
-              }
-         }
-            String pointBoxCql = String.format("BBOX(%s, %s, %s, %s, %s)",sGeom, north,
-                    east, south, west);
-            List<SimpleFeature> results=new ArrayList<>();
-
-            for (String cityCode: cityCodes) {
-                String tableName=tableRecommondPonitPrefix+dev+"_"+cityCode;
-                if (HbaseDbHandler.hasTable(tableName)){
-                    DataStore dataStore=  GeoDbHandler.getHbaseTableDataStore(tableName);
-                    if (dataStore!=null&&dataStore.getTypeNames()!=null&&dataStore.getTypeNames().length>0){
-                        String typeName=dataStore.getTypeNames()[0];
-                        List<SimpleFeature> temp=GeoDbHandler.queryFeature(dataStore,Arrays.asList(new Query(typeName, ECQL.toFilter(pointBoxCql))));
-                        if (temp!=null){
-                            results.addAll(temp);
-                        }
-                    } else {
-                        logger.error("["+tableName+"] table not exists or schema is null by geomesa");
-                    }
-                } else {
-                    logger.error("["+tableName+"] table not exists in hbase");
-                }
-
-            }
-         points=convertToPointDatas(results,sGeom);
+         List<SimpleFeature>  features=  GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix+dev+"_"+ WORLD_CODE ),Arrays.asList(new Query(GeoTable.TYPE_RECOMMEND_POINT_ALL, ECQL.toFilter(fullcql))));
+         points=convertToPointDatas(features,sGeom);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CQLException e) {

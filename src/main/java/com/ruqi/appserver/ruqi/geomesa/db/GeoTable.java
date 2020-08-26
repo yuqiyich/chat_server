@@ -1,5 +1,6 @@
 package com.ruqi.appserver.ruqi.geomesa.db;
 
+import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.utils.GeoStringBuilder;
 import org.locationtech.geomesa.utils.interop.SimpleFeatureTypes;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -18,21 +19,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class GeoTable {
     //推荐上车点的表
-    public static String TABLE_RECOMMOND_PONIT_PREFIX = "t_rpt_";
+    public static String TABLE_RECOMMOND_PONIT_PREFIX = "t_gaia_rpt_";
     //推荐上车点的原始记录表
-    public static String TABLE_RECOMMEND_RECORD_PREFIX = "t_rprt_";
+    public static String TABLE_RECOMMEND_RECORD_PREFIX = "t_gaia_rprt_";
     //以指针点的主键的关联多个推荐的实体表
-    public static String TABLE_RECOMMEND_DATA_PREFIX = "t_sprt_";
+    public static String TABLE_RECOMMEND_DATA_PREFIX = "t_gaia_sprt_";
     //推荐上车点的原始记录中选择点和上车点的关系记录表
-    public static String TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX = "t_rprrt_";
+    public static String TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX = "t_gaia_rprrt_";
     //行政区域表
     public static String TABLE_ADMIN_DIVISION = "t_administrative_division";
 
 
+
+    public static final String WORLD_CODE = "earth";//世界的adcode编码，自定义的
+
     //表类型
     public static final String TYPE_RECOMMEND_RECORD = "recommendRecord";
     public static final String TYPE_RECOMMEND_DATA = "recommendData";
+    public static final String TYPE_RECOMMEND_DATA_ALL = "recommendData"+WORLD_CODE;
     public static final String TYPE_RECOMMEND_POINT = "recommendPoint";
+    public static final String TYPE_RECOMMEND_POINT_ALL = "recommendPoint"+WORLD_CODE;
     public static final String TYPE_RECOMMEND_RELATED_RECORD = "recommendPointRelated";
     public static String TYPE_ADMIN_DIVISION_META = "m_administrative_division";
     //主键key,在attr属性里面关联fid的数值
@@ -49,8 +55,8 @@ public class GeoTable {
     public static final int CHANNEL_DIDI = 0b0000_0001;//滴滴sdk渠道
     //通用的表字段的定义
     public static final String ATTR_KEY_CHANNEL = "channel:Integer";//来源渠道
-    public static final String ATTR_KEY_CITY_CODE = "cityCode:String";//城市编码
-    public static final String ATTR_KEY_AD_CODE = "adCode:String";//区域编码
+    public static final String ATTR_KEY_CITY_CODE = "cityCode:Integer:index=true";//城市编码
+    public static final String ATTR_KEY_AD_CODE = "adCode:Integer";//区域编码
     public static final String ATTR_KEY_TITLE = "title:String";//选择点的短地址名称
     public static final String ATTR_KEY_ADDRESS = "addressName:String";//获取推荐上车点的用户所选择的点的具体地址
     public static final String ATTR_KEY_DATE = "dtg:Date";//日期
@@ -89,12 +95,20 @@ public class GeoTable {
                 .append(ATTR_KEY_CHANNEL)
                 .append(ATTR_KEY_DATE)
                 .append(ATTR_KEY_AD_CODE)
-                .append(ATTR_KEY_CITY_CODE)
                 //*表示建立索引，地理字段多个索引没用
                 .append("lGeom:Point:srid=4326")//用户的定位点
                 .append("*sGeom:Point:srid=4326")//获取推荐上车点的用户所选择的点// srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
                 .append("rGeoms:MultiPoint:srid=4326");//推荐点集合
-        sft = SimpleFeatureTypes.createType((isRecord ? TYPE_RECOMMEND_RECORD : TYPE_RECOMMEND_DATA), attributes.toString());
+        if (isRecord){//记录表需要加citycode
+            attributes.append(ATTR_KEY_CITY_CODE);
+        } else {
+            if (tableTailName.contains(WORLD_CODE)){//全量表就要加cityCode
+                attributes.append(ATTR_KEY_CITY_CODE);
+            } else{
+                //其他以城市区分的就不需要citycode字段
+            }
+        }
+        sft = SimpleFeatureTypes.createType((isRecord ? TYPE_RECOMMEND_RECORD : tableTailName.contains(WORLD_CODE)? TYPE_RECOMMEND_DATA_ALL:TYPE_RECOMMEND_DATA), attributes.toString());
         sft.getDescriptor("lGeom").getUserData().put("precision", "6");//设置地理属性的的精度，后面查询会用到
         sft.getDescriptor("sGeom").getUserData().put("precision", "6");//设置地理属性的的精度，后面查询会用到
         sft.getDescriptor("rGeoms").getUserData().put("precision", "6");//设置地理属性的的精度，后面查询会用到
@@ -119,46 +133,21 @@ public class GeoTable {
                 .append(ATTR_KEY_UPDATE_COUNT)//更新次数
                 .append(ATTR_KEY_CHANNEL)//渠道分析
                 //srid是GIS当中的一个空间参考标识符。而此处的srid=4326表示这些数据对应的WGS 84空间参考系统
-                .append("*rGeom:Point:srid=4326");//获取推荐上车点的用户所选择的点
-        //第一版本的修改
-        addRPAttrV1(attributes);
-        addRPAttrV2(attributes);
+                .append("*rGeom:Point:srid=4326")//获取推荐上车点的用户所选择的点
+                .append(ATTR_KEY_AD_CODE)//获取推荐上车点的用户所选择的点
+                .append(ATTR_KEY_EXT)//获取推荐上车点的用户所选择的点
+                .append(ATTR_KEY_SHOT_COUNT);//获取推荐上车点的用户所选择的点
+        if (tableTailName.contains(WORLD_CODE)){//全量表就要加cityCode
+            attributes.append(ATTR_KEY_CITY_CODE);
+        }
 
-        sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_POINT, attributes.toString());
+        sft = SimpleFeatureTypes.createType(tableTailName.contains(WORLD_CODE)?TYPE_RECOMMEND_POINT_ALL:TYPE_RECOMMEND_POINT, attributes.toString());
         sft.getDescriptor("rGeom").getUserData().put("precision", "6"); //设置地理属性的的精度，后面查询会用到
         sft.getDescriptor(KEY_AD_CODE).getUserData().put("index", "true"); //增加adCode的索引
         sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
         return sft;
     }
 
-    /**
-     * 增加 adcode 字段
-     * @since 2020/8/13
-     * @param oldGeoStringBuilder
-     * @return
-     */
-    private static GeoStringBuilder addRPAttrV2(GeoStringBuilder oldGeoStringBuilder) {
-        if (oldGeoStringBuilder == null) {
-            oldGeoStringBuilder = new GeoStringBuilder();
-        }
-        oldGeoStringBuilder.append(ATTR_KEY_AD_CODE);//增加adcode字段
-        return oldGeoStringBuilder;
-    }
-
-    /**
-     * 推荐点第一版增加 ext 和 shotCount
-     *
-     * @param oldGeoStringBuilder 可以为空
-     * @return
-     */
-    public static GeoStringBuilder addRPAttrV1(GeoStringBuilder oldGeoStringBuilder) {
-        if (oldGeoStringBuilder == null) {
-            oldGeoStringBuilder = new GeoStringBuilder();
-        }
-        oldGeoStringBuilder.append(ATTR_KEY_EXT);//预留字段
-        oldGeoStringBuilder.append(ATTR_KEY_SHOT_COUNT);//命中次数
-        return oldGeoStringBuilder;
-    }
 
     /**
      * 用户指针点和某一个推荐点的关联表结构
