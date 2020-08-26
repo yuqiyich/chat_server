@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
+import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
+
 /**
  * 推荐上车点的数据处理管理类
  *
@@ -33,6 +35,7 @@ public class RPHandleManager {
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
     public static final String DEV = "dev";//开发环境表名字段
     public static final String PRO = "pro";//正式环境表名字段
+
 
     public static RPHandleManager getIns(){
          synchronized (RPHandleManager.class){
@@ -63,9 +66,12 @@ public class RPHandleManager {
             tableTail=   evn+"_"+cityCode;
         }
         if (!StringUtils.isEmpty(cityCode)){
-            List<String> recordIds = saveRecommendPointsRecords(records,tableTail);//存储记录总表
-            saveSelectRecommendPoints(records,tableTail);//存储用户选择点和多个推荐点的表
+            //目前记录表都是一个表
+            List<String> recordIds = saveRecommendPointsRecords(records, evn+"_"+WORLD_CODE);//存储记录总表
+            saveSelectRecommendPoints(records,tableTail);//存储用户选择点和多个推荐点的城市分表的
+            saveSelectRecommendPoints(records,evn+"_"+WORLD_CODE);//存储用户选择点和多个推荐点的城市未分表的
             saveRecommendPoints(records,recordIds,tableTail);//推荐点记录表
+            saveRecommendPoints(records,recordIds,evn+"_"+WORLD_CODE);//推荐点记录表
         } else {
             logger.error("no cityCode,don't save anything");
         }
@@ -133,15 +139,20 @@ public class RPHandleManager {
                     for (int j = 0; j < recommendPointSize; j++) {
                         SimpleFeature simpleFeature = GeoMesaDataWrapper.convertRecordToPointSF( records.get(i), recommendPoints.get(j), sft);
                         datas.add(simpleFeature);
-                        //构造记录关系表数据
-                        GeoRecommendRelatedId recommendRelatedId=  new GeoRecommendRelatedId();
-                        recommendRelatedId.setPointId(simpleFeature.getID());
-                        recommendRelatedId.setRecordId(recordIds.get(i));
-                        relatedIds.add(recommendRelatedId);
+                        if (cityCode.contains(WORLD_CODE)) {
+                            //构造记录关系表数据
+                            GeoRecommendRelatedId recommendRelatedId = new GeoRecommendRelatedId();
+                            recommendRelatedId.setPointId(simpleFeature.getID());
+                            recommendRelatedId.setRecordId(recordIds.get(i));
+                            relatedIds.add(recommendRelatedId);
+                        }
                     }
                 }
             }
-            saveRecommendPointsRelated(relatedIds,cityCode);
+            if (cityCode.contains(WORLD_CODE)){
+                saveRecommendPointsRelated(relatedIds,cityCode);
+            }
+
         }
         return datas;
     }

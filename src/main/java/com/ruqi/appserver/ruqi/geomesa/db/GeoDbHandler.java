@@ -12,6 +12,7 @@ import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
+import org.locationtech.geomesa.hbase.data.HBaseDataStore;
 import org.locationtech.geomesa.index.conf.QueryHints;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -199,7 +200,7 @@ public class GeoDbHandler {
 
     public static List<SimpleFeature> queryFeature(DataStore datastore, List<Query> queries) throws IOException {
         for (Query query : queries) {
-            logger.info("Running query " + ECQL.toCQL(query.getFilter())+"；typeName:"+query.getTypeName());
+            logger.info("["+((HBaseDataStore) datastore).config().catalog()+"] table Running query " + ECQL.toCQL(query.getFilter())+"；typeName:"+query.getTypeName());
             if (IS_DB_DEBUG){
                 if (query.getPropertyNames() != null) {
                     logger.info("Returning attributes " + Arrays.asList(query.getPropertyNames()));

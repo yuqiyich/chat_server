@@ -2,6 +2,7 @@ package com.ruqi.appserver.ruqi.geomesa.db;
 
 import com.ruqi.appserver.ruqi.bean.GeoRecommendRelatedId;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
+import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -42,15 +43,18 @@ public class GeoMesaDataWrapper {
             String fid="";
             if (isRecord){
                 fid = UUID.randomUUID().toString();
+                builder.set(KEY_CITY_CODE, records.getCityCode());
             } else {//如果是非记录就以选择点为唯一id
                 fid= GeoMesaUtil.getPrecision(records.getSelectLng(),TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" + GeoMesaUtil.getPrecision(records.getSelectLat(),TABLE_RECORD_PRIMARY_KEY_PRECISION);
+                if (sft.getTypeName().contains(GeoTable.WORLD_CODE)){
+                    builder.set(KEY_CITY_CODE, records.getCityCode());
+                }
             }
             Date date = new Date(records.getTimeStamp()>0?records.getTimeStamp():System.currentTimeMillis());;
             builder.set("rrId", fid);
             builder.set(KEY_CHANNEL, records.getChannel());
             builder.set(KEY_DATE, date);
             builder.set(KEY_AD_CODE, records.getAdCode());
-            builder.set(KEY_CITY_CODE, records.getCityCode());
             builder.set("lGeom", selectPoint);//用户的定位点
             builder.set("sGeom", selectPoint);//用户选择的点
             builder.set("rGeoms", mulitPoints.toString());//给用户推荐的点
@@ -86,6 +90,9 @@ public class GeoMesaDataWrapper {
             builder.set(KEY_SHOT_COUNT, 0);//命中次数
             builder.set(KEY_EXT, "");//预留字段
             builder.set(KEY_AD_CODE, records.getAdCode());//adCode
+            if (sft.getTypeName().contains(GeoTable.WORLD_CODE)){
+                builder.set(KEY_CITY_CODE, records.getCityCode());
+            }
         }
         return builder.buildFeature(id);
     }
