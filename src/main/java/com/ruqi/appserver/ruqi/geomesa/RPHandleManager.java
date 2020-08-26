@@ -335,16 +335,21 @@ public class RPHandleManager {
 
             for (String cityCode: cityCodes) {
                 String tableName=tableRecommondPonitPrefix+dev+"_"+cityCode;
-                DataStore dataStore=  GeoDbHandler.getHbaseTableDataStore(tableName);
-                if (dataStore!=null&&dataStore.getTypeNames()!=null&&dataStore.getTypeNames().length>0){
-                    String typeName=dataStore.getTypeNames()[0];
-                    List<SimpleFeature> temp=GeoDbHandler.queryFeature(dataStore,Arrays.asList(new Query(typeName, ECQL.toFilter(pointBoxCql))));
-                    if (temp!=null){
-                        results.addAll(temp);
+                if (HbaseDbHandler.hasTable(tableName)){
+                    DataStore dataStore=  GeoDbHandler.getHbaseTableDataStore(tableName);
+                    if (dataStore!=null&&dataStore.getTypeNames()!=null&&dataStore.getTypeNames().length>0){
+                        String typeName=dataStore.getTypeNames()[0];
+                        List<SimpleFeature> temp=GeoDbHandler.queryFeature(dataStore,Arrays.asList(new Query(typeName, ECQL.toFilter(pointBoxCql))));
+                        if (temp!=null){
+                            results.addAll(temp);
+                        }
+                    } else {
+                        logger.error("["+tableName+"] table not exists or schema is null by geomesa");
                     }
                 } else {
-                    logger.error("["+tableName+"] table not exists or schema is null");
+                    logger.error("["+tableName+"] table not exists in hbase");
                 }
+
             }
          points=convertToPointDatas(results,sGeom);
         } catch (IOException e) {

@@ -4,6 +4,7 @@ import com.ruqi.appserver.ruqi.geomesa.db.connect.HbaseConnectConfig;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
@@ -26,6 +27,13 @@ public class HbaseDbHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static boolean hasTable(String table) throws IOException {
+        if (admin==null){
+            init();
+        }
+       return admin.tableExists(TableName.valueOf(table));
     }
 
     public static List<String> getGeoTableNames(String tableNamePrifix) {
