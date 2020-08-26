@@ -24,6 +24,10 @@ public class PointList {
         public Point() {
         }
 
+        public Point(String x) {
+            lnglat=x;
+        }
+
         public static final int TYPE_POINT_ORIGIN = 1;
         public static final int TYPE_POINT_RECMD = 2;
 

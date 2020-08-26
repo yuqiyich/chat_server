@@ -19,7 +19,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.*;
@@ -27,8 +26,6 @@ import java.util.*;
 public class GeoDbHandler {
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
     private static boolean IS_DB_DEBUG=false;
-    @Autowired
-    MesaDataConnectManager mesaDataConnectManager;
 
     /**
      * 更新表数据的监听器 ，这边默认是根据fid来判断数据的
@@ -39,6 +36,10 @@ public class GeoDbHandler {
          * @param newData 准备的新数据
          */
         void updateData(SimpleFeature oldData, SimpleFeature newData);
+    }
+
+    public  static void setDebug(boolean isDebug){
+        IS_DB_DEBUG = isDebug;
     }
 
     /**
@@ -227,8 +228,10 @@ public class GeoDbHandler {
                     }
                     sfs.add(feature);
                 }
-                logger.info("Returned " + n + " total features");
-                logger.info("");
+                if (IS_DB_DEBUG) {
+                    logger.info("Returned " + n + " total features");
+                    logger.info("");
+                }
             }
             return  sfs;
         }

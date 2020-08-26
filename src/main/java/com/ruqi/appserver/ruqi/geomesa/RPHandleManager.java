@@ -2,6 +2,7 @@ package com.ruqi.appserver.ruqi.geomesa;
 
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.GeoRecommendRelatedId;
+import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.geomesa.db.*;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendDataUpdater;
@@ -10,6 +11,10 @@ import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
+import org.geotools.data.Query;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.slf4j.Logger;
@@ -299,4 +304,56 @@ public class RPHandleManager {
     }
 
 
+    /***
+     * 查询矩形区域的所有感兴趣的点
+     *
+     * @param north  北纬度
+     * @param east 东经度
+     * @param south  南纬度
+     * @param west  西经度
+     * @param dev  所对应的环境
+     * @param tableRecommondPonitPrefix  表名
+     * @param sGeom  需要的返回的地理字段
+     * @return
+     */
+    public List<PointList.Point> queryPoints(double north, double east, double south, double west, String dev, String tableRecommondPonitPrefix, String sGeom) {
+        List<PointList.Point> points=new ArrayList<>();
+        String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)","adBoard", north,
+                east, south, west);
+        String fullcql=cqlBox+"  AND level='district'";
+        List<String> cityCodes=new ArrayList<>();
+        try {
+         List<SimpleFeature>  features=  GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_ADMIN_DIVISION),Arrays.asList(new Query(GeoTable.TYPE_ADMIN_DIVISION_META, ECQL.toFilter(fullcql))));
+         if (features!=null&&features.size()>0){
+             for (SimpleFeature feature: features) {
+                 cityCodes.add((String)feature.getAttribute(GeoTable.KEY_AD_CODE));
+              }
+         }
+            String pointBoxCql = String.format("BBOX(%s, %s, %s, %s, %s)",sGeom, north,
+                    east, south, west);
+            List<SimpleFeature> results=new ArrayList<>();
+            for (String cityCode: cityCodes) {
+                List<SimpleFeature> temp=GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix+dev+cityCode),Arrays.asList(new Query(GeoTable.TYPE_ADMIN_DIVISION_META, ECQL.toFilter(pointBoxCql))));
+                if (temp!=null){
+                    results.addAll(temp);
+                }
+            }
+         points=convertToPointDatas(results,sGeom);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CQLException e) {
+            e.printStackTrace();
+        }
+        return  points;
+
+    }
+
+    private List<PointList.Point> convertToPointDatas(List<SimpleFeature> results, String sGeom) {
+        List<PointList.Point> points = new ArrayList<>();
+        for (SimpleFeature item : results) {
+            Point point = (Point) item.getAttribute(sGeom);
+            points.add(new PointList.Point(point.getX() + "," + point.getY()));
+        }
+        return points;
+    }
 }

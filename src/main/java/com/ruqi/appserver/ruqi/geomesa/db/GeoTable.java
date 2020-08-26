@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
  * 1.切记不要删除字段，会导致数据丢失，
  * 2.修改表只能增加字段，增加的同事也需考虑清楚索引问题，//todo 考虑索引问题
  * 且不能再原表中直接加
+ * 3.userData可以随时修改
  */
 @Component
 public class GeoTable {
@@ -24,13 +25,16 @@ public class GeoTable {
     public static String TABLE_RECOMMEND_DATA_PREFIX = "t_sprt_";
     //推荐上车点的原始记录中选择点和上车点的关系记录表
     public static String TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX = "t_rprrt_";
+    //行政区域表
+    public static String TABLE_ADMIN_DIVISION = "t_administrative_division";
+
 
     //表类型
     public static final String TYPE_RECOMMEND_RECORD = "recommendRecord";
     public static final String TYPE_RECOMMEND_DATA = "recommendData";
     public static final String TYPE_RECOMMEND_POINT = "recommendPoint";
     public static final String TYPE_RECOMMEND_RELATED_RECORD = "recommendPointRelated";
-
+    public static String TYPE_ADMIN_DIVISION_META = "m_administrative_division";
     //主键key,在attr属性里面关联fid的数值
     public static final String PRIMARY_KEY_TYPE_RECOMMEND_RELATED_RECORD = "rPRId";
     public static final String PRIMARY_KEY_TYPE_RECOMMEND_DATA = "rrId";
@@ -69,8 +73,6 @@ public class GeoTable {
 
     public static final int TABLE_RECORD_PRIMARY_KEY_PRECISION = 4;//小数点后保留4位(过滤记录表的主键精度)
 
-
-    private static String mTableAddId = "recommond_point_v1_add";
 
     /**
      * 推荐点的记录表结构（方便数据回归,整理）
@@ -124,6 +126,7 @@ public class GeoTable {
 
         sft = SimpleFeatureTypes.createType(TYPE_RECOMMEND_POINT, attributes.toString());
         sft.getDescriptor("rGeom").getUserData().put("precision", "6"); //设置地理属性的的精度，后面查询会用到
+        sft.getDescriptor(KEY_AD_CODE).getUserData().put("index", "true"); //增加adCode的索引
         sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, KEY_DATE);
         return sft;
     }

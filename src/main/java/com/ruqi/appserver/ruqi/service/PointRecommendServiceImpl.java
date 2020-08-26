@@ -80,6 +80,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         if (null == queryPointsRequest) {
             return dataList;
         }
+        dataList=RPHandleManager.getIns().queryPoints(queryPointsRequest.north,queryPointsRequest.east,queryPointsRequest.south,queryPointsRequest.west,"dev",GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,"sGeom");
         // TODO: 2020/8/20 查询全部的城市表的全部数据。暂时固定死查询广州、佛山的。
         String dataEnv = queryPointsRequest.getEnvType();
         List<String> cityCodeList = new ArrayList<>();
