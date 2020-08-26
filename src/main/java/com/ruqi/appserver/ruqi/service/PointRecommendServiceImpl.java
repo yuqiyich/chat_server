@@ -236,6 +236,10 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 recommentPointStaticsInfo.setTotalRecordNum(recommendDataCountDev);
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
                 Date time = cal.getTime();
                 recommentPointStaticsInfo.setStaticsDate(time);
                 logger.info("插入统计好的DEV数据" + JsonUtil.beanToJsonStr(recommentPointStaticsInfo));
@@ -261,6 +265,10 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 recommentPointStaticsInfo.setTotalRecordNum(recommendDataCountPro);
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
                 Date time = cal.getTime();
                 recommentPointStaticsInfo.setStaticsDate(time);
                 logger.info("插入统计好的PRO数据" + JsonUtil.beanToJsonStr(recommentPointStaticsInfo));
