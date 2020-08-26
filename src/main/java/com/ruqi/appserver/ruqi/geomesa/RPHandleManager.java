@@ -333,8 +333,13 @@ public class RPHandleManager {
                 east, south, west);
         String fullcql=cqlBox;
         try {
-         List<SimpleFeature>  features=  GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix+dev+"_"+ WORLD_CODE ),Arrays.asList(new Query(GeoTable.TYPE_RECOMMEND_POINT_ALL, ECQL.toFilter(fullcql))));
-         points=convertToPointDatas(features,sGeom);
+            if (HbaseDbHandler.hasTable(tableRecommondPonitPrefix+dev+"_"+ WORLD_CODE)){
+                List<SimpleFeature>  features=  GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix+dev+"_"+ WORLD_CODE ),Arrays.asList(new Query(GeoTable.TYPE_RECOMMEND_POINT_ALL, ECQL.toFilter(fullcql))));
+                points=convertToPointDatas(features,sGeom);
+            } else {
+                logger.error(tableRecommondPonitPrefix+dev+"_"+ WORLD_CODE+ "  table not exist");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CQLException e) {
