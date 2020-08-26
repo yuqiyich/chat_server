@@ -329,40 +329,12 @@ public class RPHandleManager {
      */
     public List<PointList.Point> queryPoints(double north, double east, double south, double west, String dev, String tableRecommondPonitPrefix, String sGeom) {
         List<PointList.Point> points=new ArrayList<>();
-        String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)","adBoard", north,
+        String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)",sGeom, north,
                 east, south, west);
-        String fullcql=cqlBox+"  AND level='city'";
-        List<String> cityCodes=new ArrayList<>();
+        String fullcql=cqlBox;
         try {
-         List<SimpleFeature>  features=  GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_ADMIN_DIVISION),Arrays.asList(new Query(GeoTable.TYPE_ADMIN_DIVISION_META, ECQL.toFilter(fullcql))));
-         if (features!=null&&features.size()>0){
-             for (SimpleFeature feature: features) {
-                 cityCodes.add((String)feature.getAttribute(GeoTable.KEY_AD_CODE));
-              }
-         }
-            String pointBoxCql = String.format("BBOX(%s, %s, %s, %s, %s)",sGeom, north,
-                    east, south, west);
-            List<SimpleFeature> results=new ArrayList<>();
-
-            for (String cityCode: cityCodes) {
-                String tableName=tableRecommondPonitPrefix+dev+"_"+cityCode;
-                if (HbaseDbHandler.hasTable(tableName)){
-                    DataStore dataStore=  GeoDbHandler.getHbaseTableDataStore(tableName);
-                    if (dataStore!=null&&dataStore.getTypeNames()!=null&&dataStore.getTypeNames().length>0){
-                        String typeName=dataStore.getTypeNames()[0];
-                        List<SimpleFeature> temp=GeoDbHandler.queryFeature(dataStore,Arrays.asList(new Query(typeName, ECQL.toFilter(pointBoxCql))));
-                        if (temp!=null){
-                            results.addAll(temp);
-                        }
-                    } else {
-                        logger.error("["+tableName+"] table not exists or schema is null by geomesa");
-                    }
-                } else {
-                    logger.error("["+tableName+"] table not exists in hbase");
-                }
-
-            }
-         points=convertToPointDatas(results,sGeom);
+         List<SimpleFeature>  features=  GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix+dev+"_"+ WORLD_CODE ),Arrays.asList(new Query(GeoTable.TYPE_RECOMMEND_POINT_ALL, ECQL.toFilter(fullcql))));
+         points=convertToPointDatas(features,sGeom);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CQLException e) {
