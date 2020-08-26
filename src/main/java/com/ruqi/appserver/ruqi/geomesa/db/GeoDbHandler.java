@@ -50,14 +50,9 @@ public class GeoDbHandler {
      * @return
      */
     public static DataStore getHbaseTableDataStore(String tableName) {
-        DataStore dataStore = null;
         try {
-            HashMap<String, String> configs = new HashMap<>();
-            configs.put(HbaseConnectConfig.KEY_ZOOKEEPER, HbaseConnectConfig.VALUE_ZOOKEEPER);
-            configs.put(HbaseConnectConfig.KEY_CATALOG, tableName);
-            dataStore = DataStoreFinder.getDataStore(configs);
-            return dataStore;
-        } catch (IOException e) {
+            return MesaDataConnectManager.getIns().getDataStore(tableName);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
