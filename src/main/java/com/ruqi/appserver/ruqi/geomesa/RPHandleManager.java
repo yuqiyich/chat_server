@@ -349,7 +349,7 @@ public class RPHandleManager {
                 String tableName=tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
                 DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix + dev + "_" + WORLD_CODE);
                 String typeName=MesaDataConnectManager.getIns().getTableTypeName(tableName);
-                if (dataStore != null && StringUtils.isEmpty(typeName) ) {
+                if (dataStore != null && !StringUtils.isEmpty(typeName) ) {
                     List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
                             Arrays.asList(new Query(typeName, ECQL.toFilter(fullcql))));
                     points = convertToPointDatas(features, tableRecommondPonitPrefix, sGeom);
