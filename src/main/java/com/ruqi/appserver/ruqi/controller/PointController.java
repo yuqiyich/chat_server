@@ -94,7 +94,7 @@ public class PointController extends BaseController {
             }
             BaseBean<PointList> result = new BaseBean<>();
             PointList pointList = new PointList();
-            pointList.areaType = PointList.TYPE_AREA_POINT;
+            pointList.areaType = queryPointsRequest.getAreaType();
             pointList.points = pointRecommendService.queryPoints(queryPointsRequest);
             result.data = pointList;
             return result;
@@ -119,7 +119,7 @@ public class PointController extends BaseController {
                 queryStaticRecommendPointsRequest = new QueryStaticRecommendPointsRequest();
             }
             BaseBean<RecommendPointList<RecommentPointStaticsInfo>> result = new BaseBean<>();
-            result.data =  pointRecommendService.queryStaticsRecommendPoint(queryStaticRecommendPointsRequest);
+            result.data = pointRecommendService.queryStaticsRecommendPoint(queryStaticRecommendPointsRequest);
             return result;
         } catch (Exception e) {
             BaseBean result = new BaseBean<>();
