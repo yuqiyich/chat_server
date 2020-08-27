@@ -346,22 +346,16 @@ public class RPHandleManager {
                 east, south, west);
         String fullcql = cqlBox;
         try {
-            if (HbaseDbHandler.hasTable(tableRecommondPonitPrefix + dev + "_" + WORLD_CODE)) {
+                String tableName=tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
                 DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix + dev + "_" + WORLD_CODE);
-                if (dataStore != null && dataStore.getTypeNames() != null && dataStore.getTypeNames().length > 0) {
-                    String typeName = dataStore.getTypeNames()[0];
-                    List<SimpleFeature> features = GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(
-                            tableRecommondPonitPrefix + dev + "_" + WORLD_CODE),
+                String typeName=MesaDataConnectManager.getIns().getTableTypeName(tableName);
+                if (dataStore != null && StringUtils.isEmpty(typeName) ) {
+                    List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
                             Arrays.asList(new Query(typeName, ECQL.toFilter(fullcql))));
                     points = convertToPointDatas(features, tableRecommondPonitPrefix, sGeom);
                 } else {
-                    logger.error("[" + tableRecommondPonitPrefix + dev + "_" + WORLD_CODE + "] table not exists or schema is null by geomesa");
+                    logger.error("[" + tableName+ "] table not exists or schema is null by geomesa");
                 }
-
-            } else {
-                logger.error(tableRecommondPonitPrefix + dev + "_" + WORLD_CODE + "  table not exist");
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CQLException e) {

@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.geomesa.db.connect;
 
 import com.mysql.cj.util.LRUCache;
+import com.mysql.cj.util.StringUtils;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import org.geotools.data.DataStore;
@@ -32,6 +33,7 @@ public class MesaDataConnectManager implements IDataConnectManager {
     }
 
     private LRUCache<String,DataStore> mCaches=new LRUCache<String, DataStore>(MAX_DATA_CONNECT);
+    private LRUCache<String,String> mTypeNameCaches=new LRUCache<String, String>(MAX_DATA_CONNECT);
 
 
     @Override
@@ -51,8 +53,21 @@ public class MesaDataConnectManager implements IDataConnectManager {
             logger.debug(tableName+"not in memory  ，and create it ok ");
             mCaches.put(tableName, cache);
         }
-        logger.debug(tableName+" get connect  end");
         return cache;
+    }
+
+    public  String getTableTypeName(String tableName){
+        String typeName = mTypeNameCaches.get(tableName);
+        if (StringUtils.isNullOrEmpty(typeName)){
+           DataStore store=  getDataStore(tableName);
+            try {
+                typeName=  store.getTypeNames()[0];
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mTypeNameCaches.put(tableName,typeName);
+        }
+        return typeName;
     }
 
     @Override
