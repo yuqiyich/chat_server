@@ -1,5 +1,6 @@
 package com.ruqi.appserver.ruqi.request;
 
+import com.ruqi.appserver.ruqi.bean.response.PointList;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -21,8 +22,8 @@ public class QueryPointsRequest extends BaseRequest {
     public int envType = 2;
     @ApiModelProperty(value = "点位类型，默认1。1：全部 2：原始点 3：推荐点")
     public int pointType = 1;
-    @ApiModelProperty(value = "地图缩放比例 默认10。高德地图：1-17")
-    public int mapZoom = 10;
+    @ApiModelProperty(value = "地图缩放比例 默认10。高德地图：3-18。3：国，7：省，11：市，17：街")
+    public int mapZoom = 11;
     public double north;
     public double east;
     public double south;
@@ -33,6 +34,16 @@ public class QueryPointsRequest extends BaseRequest {
             return ENV_TYPE_DEV;
         } else {
             return ENV_TYPE_PRO;
+        }
+    }
+
+    public int getAreaType() {
+        if (mapZoom >= 14) {
+            return PointList.TYPE_AREA_POINT;
+        } else if (mapZoom >= 9) {
+            return PointList.TYPE_AREA_DISTRICT;
+        } else {
+            return PointList.TYPE_AREA_CITY;
         }
     }
 }
