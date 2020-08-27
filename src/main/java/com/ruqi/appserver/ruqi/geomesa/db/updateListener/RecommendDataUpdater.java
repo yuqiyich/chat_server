@@ -33,7 +33,10 @@ public class RecommendDataUpdater implements GeoDbHandler.IUpdateDataListener {
         oldData.setAttribute("rGeoms",mergeMultiPoint);
         oldData.setAttribute(GeoTable.KEY_DATE,new Date(System.currentTimeMillis()));
         oldData.setAttribute(GeoTable.KEY_AD_CODE,newData.getAttribute(GeoTable.KEY_AD_CODE));
-        oldData.setAttribute(GeoTable.KEY_CITY_CODE,newData.getAttribute(GeoTable.KEY_CITY_CODE));
+        if (oldData.getFeatureType().indexOf(GeoTable.KEY_CITY_CODE)>0){
+            oldData.setAttribute(GeoTable.KEY_CITY_CODE,newData.getAttribute(GeoTable.KEY_CITY_CODE));
+        }
+
     }
 
     private Set<Point> getMultiPoints(MultiPoint multiPoint){
