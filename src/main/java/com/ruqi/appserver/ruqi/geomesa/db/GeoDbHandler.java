@@ -3,7 +3,6 @@ package com.ruqi.appserver.ruqi.geomesa.db;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ruqi.appserver.ruqi.geomesa.db.connect.HbaseConnectConfig;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import org.apache.commons.lang.StringUtils;
 
@@ -251,8 +250,8 @@ public class GeoDbHandler {
             try {
             DataStore datastore=MesaDataConnectManager.getIns().getDataStore(tableName);
                 if (datastore != null) {
-                    String[] typeNames = datastore.getTypeNames();
-                    Query query = new Query(typeNames[0]);
+                    String typeName = MesaDataConnectManager.getIns().getTableTypeName(tableName);
+                    Query query = new Query(typeName);
                     query.getHints().put(QueryHints.STATS_STRING(), "Count()");
                     try {
                         if (!StringUtils.isEmpty(cqlFilter)) {
