@@ -346,16 +346,21 @@ public class RPHandleManager {
                 east, south, west);
         String fullcql = cqlBox;
         try {
-                String tableName=tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
-                DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix + dev + "_" + WORLD_CODE);
-                String typeName=MesaDataConnectManager.getIns().getTableTypeName(tableName);
-                if (dataStore != null && !StringUtils.isEmpty(typeName) ) {
-                    List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
-                            Arrays.asList(new Query(typeName, ECQL.toFilter(fullcql))));
-                    points = convertToPointDatas(features, tableRecommondPonitPrefix, sGeom);
-                } else {
-                    logger.error("[" + tableName+ "] table not exists or schema is null by geomesa");
-                }
+                    String tableName=tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
+                    if (HbaseDbHandler.hasTable(tableName)){
+                        DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix + dev + "_" + WORLD_CODE);
+                        String typeName=MesaDataConnectManager.getIns().getTableTypeName(tableName);
+                        if (dataStore != null && !StringUtils.isEmpty(typeName) ) {
+                            List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
+                                    Arrays.asList(new Query(typeName, ECQL.toFilter(fullcql))));
+                            points = convertToPointDatas(features, tableRecommondPonitPrefix, sGeom);
+                        } else {
+                            logger.error("[" + tableName+ "] table not exists or schema is null by geomesa");
+                        }
+                    } else {
+                        logger.error("[" + tableName+ "] table not exists in hbase");
+                    }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CQLException e) {

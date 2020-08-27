@@ -1,5 +1,8 @@
 package com.ruqi.appserver.ruqi.geomesa.db;
 
+import com.google.inject.internal.util.$AsynchronousComputationException;
+import com.mysql.cj.util.LRUCache;
+import com.mysql.cj.util.StringUtils;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.HbaseConnectConfig;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -8,6 +11,7 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.geotools.data.DataStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +21,9 @@ import java.util.List;
 public class HbaseDbHandler {
     private static Connection connection;
     private static Admin admin;
+    private static  String IN_HBSE="1";
+    private static  String NOT_IN_HBSE="0";
+    private static LRUCache<String, String> mCaches=new LRUCache<String, String>(100);
     private static void init(){
         if (admin==null){
             Configuration configuration= HBaseConfiguration.create();
@@ -34,7 +41,14 @@ public class HbaseDbHandler {
         if (admin==null){
             init();
         }
-       return admin.tableExists(TableName.valueOf(table));
+        String  bingo=mCaches.get(table);
+        if (!StringUtils.isNullOrEmpty(bingo)){
+        } else {
+            Boolean isInHbase=admin.tableExists(TableName.valueOf(table));
+            bingo=isInHbase?IN_HBSE:NOT_IN_HBSE;
+            mCaches.put(table,bingo);
+        }
+        return IN_HBSE.equals(bingo);
     }
 
     /**
