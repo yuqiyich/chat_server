@@ -33,7 +33,7 @@ import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
  */
 public class RPHandleManager {
     private static RPHandleManager ins;
-    private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(RPHandleManager.class);
     public static final String DEV = "dev";//开发环境表名字段
     public static final String PRO = "pro";//正式环境表名字段
 
