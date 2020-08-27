@@ -250,31 +250,35 @@ public class GeoDbHandler {
             int count=0;
             try {
             DataStore datastore=MesaDataConnectManager.getIns().getDataStore(tableName);
-            String[] typeNames= datastore.getTypeNames();
-            Query query = new Query(typeNames[0]);
-            query.getHints().put(QueryHints.STATS_STRING(), "Count()");
-             try {
-                 if (!StringUtils.isEmpty(cqlFilter)){
-                     logger.info("count table"+tableName+"with filter:"+cqlFilter);
-                     query.setFilter(ECQL.toFilter(cqlFilter));
-                 }
-            } catch (CQLException e) {
-                e.printStackTrace();
-            }
-             List<SimpleFeature> queryResults = queryFeature(datastore,Arrays.asList(query));
-              if (queryResults!=null&&queryResults.size()==1){
-                  SimpleFeature feature = queryResults.get(0);
-                  if ("stat".equals(feature.getID())) {
-                      for (Property property : feature.getValue()
-                      ) {
-                          if ("stats".equals(property.getName().getURI())) {
-                              JsonElement jsonObject=JsonParser.parseString((String)property.getValue());
-                              logger.info("...property count:" + property.getValue());
-                               count = ((JsonObject) jsonObject).get("count").getAsInt();
-                          }
-                      }
-                  }
-              }
+                if (datastore != null) {
+                    String[] typeNames = datastore.getTypeNames();
+                    Query query = new Query(typeNames[0]);
+                    query.getHints().put(QueryHints.STATS_STRING(), "Count()");
+                    try {
+                        if (!StringUtils.isEmpty(cqlFilter)) {
+                            logger.info("count table" + tableName + "with filter:" + cqlFilter);
+                            query.setFilter(ECQL.toFilter(cqlFilter));
+                        }
+                    } catch (CQLException e) {
+                        e.printStackTrace();
+                    }
+                    List<SimpleFeature> queryResults = queryFeature(datastore, Arrays.asList(query));
+                    if (queryResults != null && queryResults.size() == 1) {
+                        SimpleFeature feature = queryResults.get(0);
+                        if ("stat".equals(feature.getID())) {
+                            for (Property property : feature.getValue()
+                            ) {
+                                if ("stats".equals(property.getName().getURI())) {
+                                    JsonElement jsonObject = JsonParser.parseString((String) property.getValue());
+                                    logger.info("...property count:" + property.getValue());
+                                    count = ((JsonObject) jsonObject).get("count").getAsInt();
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    logger.error("["+tableName+"] can not get dataAccess ,and Filter is:"+cqlFilter);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

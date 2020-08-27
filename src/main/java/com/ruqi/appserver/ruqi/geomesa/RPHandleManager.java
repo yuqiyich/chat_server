@@ -223,47 +223,47 @@ public class RPHandleManager {
 
 
     public int getTotalUploadTimes(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, env);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, env,true);
     }
 
     public int getLastDayUploadTimes(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getLastDayFilter(), env);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getLastDayFilter(), env,true);
     }
 
     public Map<String, Integer> getCityLastDayUploadTimes(String env) {
-        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getLastDayFilter(), env);
+        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getLastDayFilter(), env,true);
     }
 
     public int getLastDayRecommendDataCount(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getLastDayFilter(), env);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getLastDayFilter(), env,false);
     }
 
     public Map<String, Integer> getCityLastDayRecommendDataCount(String env) {
-        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getLastDayFilter(), env);
+        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getLastDayFilter(), env,false);
     }
 
     public int getTotalRecommendDataCount(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, env);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, env,false);
     }
 
     public int getLastDayRecommendPointCount(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getLastDayFilter(), env);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getLastDayFilter(), env,false);
     }
 
     public Map<String, Integer> getCityLastDayRecommendPointCount(String env) {
-        return queryTableCityCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getLastDayFilter(), env);
+        return queryTableCityCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getLastDayFilter(), env,false);
     }
 
     public int getTotalRecommendPointCount(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, env);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, env,false);
     }
 
-    private int queryTableDataCountWithAllCity(String tableNamePrefix, String env) {
-        return (int) queryTableDataCountWithAllCity(tableNamePrefix, "", env, false);
+    private int queryTableDataCountWithAllCity(String tableNamePrefix, String env,Boolean can) {
+        return (int) queryTableDataCountWithAllCity(tableNamePrefix, "", env, false,can);
     }
 
-    private int queryTableDataCountWithAllCity(String tableNamePrefix, String filter, String env) {
-        return (int) queryTableDataCountWithAllCity(tableNamePrefix, filter, env, false);
+    private int queryTableDataCountWithAllCity(String tableNamePrefix, String filter, String env,boolean canEarth) {
+        return (int) queryTableDataCountWithAllCity(tableNamePrefix, filter, env, false,canEarth);
     }
 
 
@@ -274,8 +274,8 @@ public class RPHandleManager {
      * @return
      * @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
      */
-    public HashMap<String, Integer> queryTableCityCount(String tableNamePrefix, String cqlFilter, String env) {
-        return (HashMap<String, Integer>) queryTableDataCountWithAllCity(tableNamePrefix, cqlFilter, env, true);
+    public HashMap<String, Integer> queryTableCityCount(String tableNamePrefix, String cqlFilter, String env,boolean can) {
+        return (HashMap<String, Integer>) queryTableDataCountWithAllCity(tableNamePrefix, cqlFilter, env, true,can);
 
     }
 
@@ -283,25 +283,32 @@ public class RPHandleManager {
      * 返回特定查询条件下的数据数目
      *
      * @param tableNamePrefix 表名前缀  例如下面的值
+     *                        @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
      * @param cqlFilter       cql的语句 like下面的方法
+     *                         @see #getLastDayFilter()
      * @param isDetail
+     * @param canEndWithEarth  是否查全球表的
      * @return
-     * @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
-     * @see #getLastDayFilter()
+     *
+     *
      */
-    private Object queryTableDataCountWithAllCity(String tableNamePrefix, String cqlFilter, String env, boolean isDetail) {
+    private Object queryTableDataCountWithAllCity(String tableNamePrefix, String cqlFilter, String env, boolean isDetail,boolean canEndWithEarth) {
         int counts = 0;
         HashMap<String, Integer> countRecords = new HashMap<>();
         if (!StringUtils.isEmpty(tableNamePrefix)) {
-            //todo 目前还根据dev环境写死代码查询，等待改成配置的环境来确定锁查询的表
-            List<String> tableNames = HbaseDbHandler.getGeoTableNames(tableNamePrefix + env);
+            List<String> tableNames = HbaseDbHandler.getGeoTableNamesWithPrefix(tableNamePrefix + env);
             if (tableNames.size() > 0) {
                 for (String name : tableNames) {
+                    if (name.endsWith(WORLD_CODE)&&!canEndWithEarth) {
+                        continue;
+                    }
                     String cityCode = name.substring(name.lastIndexOf("_")).replace("_", "");
                     int count = GeoDbHandler.queryTableRowCount(name, cqlFilter);
                     counts += count;
                     countRecords.put(cityCode, count);
                 }
+            }else {
+                logger.error("["+tableNamePrefix+" ]has no table in geomesa");
             }
         }
         if (isDetail) {

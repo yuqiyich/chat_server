@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class HbaseDbHandler {
     private static Connection connection;
     private static Admin admin;
@@ -36,7 +37,12 @@ public class HbaseDbHandler {
        return admin.tableExists(TableName.valueOf(table));
     }
 
-    public static List<String> getGeoTableNames(String tableNamePrifix) {
+    /**
+     *
+     * @param tableNamePrefix  以tableNamePrefix的名字开始的表名
+     * @return
+     */
+    public static List<String> getGeoTableNamesWithPrefix(String tableNamePrefix) {
         if (admin==null){
             init();
         }
@@ -47,7 +53,8 @@ public class HbaseDbHandler {
             for (HTableDescriptor hTableDescriptor : hTableDescriptors) {
                 String name = hTableDescriptor.getNameAsString();
 //                System.out.println("table name:" + name);
-                if (name.startsWith(tableNamePrifix)&&countString(name,"_")==3) {
+                //FIXME geo的表下滑线目前都是4个，后期看怎么处理geotable的准确定位方法
+                if (name.startsWith(tableNamePrefix)&&countString(name,"_")==4) {
                     names.add(name);
 //                    System.out.println("========bingo==============table name:" + name);
                 }
