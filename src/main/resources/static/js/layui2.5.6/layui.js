@@ -231,7 +231,7 @@ function formatDateTime(date) {
         return "";
     }
 
-    date = new Date(Date.parse(myTime(date)) + 8 * 3600000); // +8小时
+    date = new Date(Date.parse(myTime(date))); // +8小时
     var o = {
         'M+': date.getMonth() + 1, //month
         'd+': date.getDate(), //day
