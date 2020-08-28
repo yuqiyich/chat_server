@@ -223,47 +223,83 @@ public class RPHandleManager {
 
 
     public int getTotalUploadTimes(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, env,true);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, env, true);
     }
 
     public int getLastDayUploadTimes(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getLastDayFilter(), env,true);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getLastDayFilter(), env, true);
     }
 
     public Map<String, Integer> getCityLastDayUploadTimes(String env) {
-        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getLastDayFilter(), env,true);
+        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getLastDayFilter(), env, true);
+    }
+
+    public Map<String, Integer> getCityRecommendDataCountBeforeToday(String env) {
+        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getBeforeTodayFilter(), env, false);
+    }
+
+    /**
+     * 获取到今天之前的上报记录的每个城市总量
+     *
+     * @param env
+     * @return
+     */
+    public Map<String, Integer> getCityUploadCountBeforeToday(String env) {
+        return queryCityDataCountInEarth(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX, getBeforeTodayFilter(), env);
+    }
+
+    // 全球表中查询每个城市的数据量
+    private Map<String, Integer> queryCityDataCountInEarth(String tableNamePrefix, String cqlFilter, String env) {
+        HashMap<String, Integer> countRecords = new HashMap<>();
+        if (!StringUtils.isEmpty(tableNamePrefix) && !StringUtils.isEmpty(env)) {
+            String tabName = tableNamePrefix + env + "_" + WORLD_CODE;
+            try {
+                if (HbaseDbHandler.hasTable(tabName)) {
+                    countRecords.putAll(GeoDbHandler.queryGroupCount(tabName, cqlFilter, GeoTable.KEY_CITY_CODE));
+                } else {
+                    logger.error("[" + tabName + " ]has no table in geomesa");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return countRecords;
     }
 
     public int getLastDayRecommendDataCount(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getLastDayFilter(), env,false);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getLastDayFilter(), env, false);
     }
 
     public Map<String, Integer> getCityLastDayRecommendDataCount(String env) {
-        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getLastDayFilter(), env,false);
+        return queryTableCityCount(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, getLastDayFilter(), env, false);
     }
 
     public int getTotalRecommendDataCount(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, env,false);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMEND_DATA_PREFIX, env, false);
     }
 
     public int getLastDayRecommendPointCount(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getLastDayFilter(), env,false);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getLastDayFilter(), env, false);
+    }
+
+    public Map<String, Integer> getCityRecommendPointCountBeforeToday(String env) {
+        return queryTableCityCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getBeforeTodayFilter(), env, false);
     }
 
     public Map<String, Integer> getCityLastDayRecommendPointCount(String env) {
-        return queryTableCityCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getLastDayFilter(), env,false);
+        return queryTableCityCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, getLastDayFilter(), env, false);
     }
 
     public int getTotalRecommendPointCount(String env) {
-        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, env,false);
+        return queryTableDataCountWithAllCity(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, env, false);
     }
 
-    private int queryTableDataCountWithAllCity(String tableNamePrefix, String env,Boolean can) {
-        return (int) queryTableDataCountWithAllCity(tableNamePrefix, "", env, false,can);
+    private int queryTableDataCountWithAllCity(String tableNamePrefix, String env, Boolean can) {
+        return (int) queryTableDataCountWithAllCity(tableNamePrefix, "", env, false, can);
     }
 
-    private int queryTableDataCountWithAllCity(String tableNamePrefix, String filter, String env,boolean canEarth) {
-        return (int) queryTableDataCountWithAllCity(tableNamePrefix, filter, env, false,canEarth);
+    private int queryTableDataCountWithAllCity(String tableNamePrefix, String filter, String env, boolean canEarth) {
+        return (int) queryTableDataCountWithAllCity(tableNamePrefix, filter, env, false, canEarth);
     }
 
 
@@ -274,8 +310,8 @@ public class RPHandleManager {
      * @return
      * @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
      */
-    public HashMap<String, Integer> queryTableCityCount(String tableNamePrefix, String cqlFilter, String env,boolean can) {
-        return (HashMap<String, Integer>) queryTableDataCountWithAllCity(tableNamePrefix, cqlFilter, env, true,can);
+    public HashMap<String, Integer> queryTableCityCount(String tableNamePrefix, String cqlFilter, String env, boolean can) {
+        return (HashMap<String, Integer>) queryTableDataCountWithAllCity(tableNamePrefix, cqlFilter, env, true, can);
 
     }
 
@@ -283,23 +319,22 @@ public class RPHandleManager {
      * 返回特定查询条件下的数据数目
      *
      * @param tableNamePrefix 表名前缀  例如下面的值
-     *                        @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
      * @param cqlFilter       cql的语句 like下面的方法
-     *                         @see #getLastDayFilter()
      * @param isDetail
-     * @param canEndWithEarth  是否查全球表的
+     * @param canEndWithEarth 是否查全球表的
      * @return
-     *
-     *
+     * @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
+     * @see #getLastDayFilter()
      */
-    private Object queryTableDataCountWithAllCity(String tableNamePrefix, String cqlFilter, String env, boolean isDetail,boolean canEndWithEarth) {
+    private Object queryTableDataCountWithAllCity(String tableNamePrefix, String cqlFilter, String env, boolean isDetail, boolean canEndWithEarth) {
         int counts = 0;
         HashMap<String, Integer> countRecords = new HashMap<>();
         if (!StringUtils.isEmpty(tableNamePrefix)) {
             List<String> tableNames = HbaseDbHandler.getGeoTableNamesWithPrefix(tableNamePrefix + env);
+            logger.info("--->tableNames:" + tableNames);
             if (tableNames.size() > 0) {
                 for (String name : tableNames) {
-                    if (name.endsWith(WORLD_CODE)&&!canEndWithEarth) {
+                    if (name.endsWith(WORLD_CODE) && !canEndWithEarth) {
                         continue;
                     }
                     String cityCode = name.substring(name.lastIndexOf("_")).replace("_", "");
@@ -307,8 +342,8 @@ public class RPHandleManager {
                     counts += count;
                     countRecords.put(cityCode, count);
                 }
-            }else {
-                logger.error("["+tableNamePrefix+" ]has no table in geomesa");
+            } else {
+                logger.error("[" + tableNamePrefix + " ]has no table in geomesa");
             }
         }
         if (isDetail) {
@@ -325,6 +360,15 @@ public class RPHandleManager {
      */
     private String getLastDayFilter() {
         return "dtg DURING " + GeoMesaUtil.getGeoMesaTimeStr(DateTimeUtils.getYesterdayStartDate()) + "/" + GeoMesaUtil.getGeoMesaTimeStr(DateTimeUtils.getYesterdayEndDate());
+    }
+
+    /**
+     * 获取今天前的时间段cql
+     *
+     * @return
+     */
+    private String getBeforeTodayFilter() {
+        return "dtg DURING 2020-08-01T00:00:00+00:00/" + GeoMesaUtil.getGeoMesaTimeStr(DateTimeUtils.getTodayStartDate());
     }
 
 
@@ -346,20 +390,20 @@ public class RPHandleManager {
                 east, south, west);
         String fullcql = cqlBox;
         try {
-                    String tableName=tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
-                    if (HbaseDbHandler.hasTable(tableName)){
-                        DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(tableRecommondPonitPrefix + dev + "_" + WORLD_CODE);
-                        String typeName=MesaDataConnectManager.getIns().getTableTypeName(tableName);
-                        if (dataStore != null && !StringUtils.isEmpty(typeName) ) {
-                            List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
-                                    Arrays.asList(new Query(typeName, ECQL.toFilter(fullcql))));
-                            points = convertToPointDatas(features, tableRecommondPonitPrefix, sGeom);
-                        } else {
-                            logger.error("[" + tableName+ "] table not exists or schema is null by geomesa");
-                        }
-                    } else {
-                        logger.error("[" + tableName+ "] table not exists in hbase");
-                    }
+            String tableName = tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
+            if (HbaseDbHandler.hasTable(tableName)) {
+                DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(tableName);
+                String typeName = MesaDataConnectManager.getIns().getTableTypeName(tableName);
+                if (dataStore != null && !StringUtils.isEmpty(typeName)) {
+                    List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
+                            Arrays.asList(new Query(typeName, ECQL.toFilter(fullcql))));
+                    points = convertToPointDatas(features, tableRecommondPonitPrefix, sGeom);
+                } else {
+                    logger.error("[" + tableName + "] table not exists or schema is null by geomesa");
+                }
+            } else {
+                logger.error("[" + tableName + "] table not exists in hbase");
+            }
 
         } catch (IOException e) {
             e.printStackTrace();

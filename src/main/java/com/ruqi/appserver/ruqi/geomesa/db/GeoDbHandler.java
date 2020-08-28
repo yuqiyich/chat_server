@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import org.apache.commons.lang.StringUtils;
-
 import org.geotools.data.*;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQLException;
@@ -25,7 +24,7 @@ import java.util.*;
 
 public class GeoDbHandler {
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
-    private static boolean IS_DB_DEBUG=false;
+    private static boolean IS_DB_DEBUG = false;
 
     /**
      * 更新表数据的监听器 ，这边默认是根据fid来判断数据的
@@ -38,7 +37,7 @@ public class GeoDbHandler {
         void updateData(SimpleFeature oldData, SimpleFeature newData);
     }
 
-    public  static void setDebug(boolean isDebug){
+    public static void setDebug(boolean isDebug) {
         IS_DB_DEBUG = isDebug;
     }
 
@@ -76,7 +75,7 @@ public class GeoDbHandler {
             for (SimpleFeature feature : features) {
                 try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                              datastore.getFeatureWriter(sft.getTypeName(), ECQL.toFilter(fiDName + "='" + feature.getID() + "'"), Transaction.AUTO_COMMIT)) {
-                    logger.info(" [" + fiDName + "=  " + feature.getID() );
+                    logger.info(" [" + fiDName + "=  " + feature.getID());
                     boolean hasOldData = false;
                     while (writer.hasNext()) {
                         SimpleFeature next = writer.next();
@@ -130,17 +129,17 @@ public class GeoDbHandler {
             try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                          datastore.getFeatureWriterAppend(sft.getTypeName(), Transaction.AUTO_COMMIT)) {
                 for (SimpleFeature feature : features) {
-                    logger.debug("start  write  features for type:" + sft.getTypeName()+";"+DataUtilities.encodeFeature(feature));
+                    logger.debug("start  write  features for type:" + sft.getTypeName() + ";" + DataUtilities.encodeFeature(feature));
                     // using a geotools writer, you have to get a feature, modify it, then commit it
                     // appending writers will always return 'false' for haveNext, so we don't need to bother checking
 //                    logger.info("Writing test data start");
                     SimpleFeature toWrite = writer.next();
 
 
-                    Iterator<Property> properties= feature.getProperties().iterator();
-                    while(properties.hasNext()){
-                        Property property=properties.next();
-                        toWrite.setAttribute(property.getName(),feature.getAttribute(property.getName()));
+                    Iterator<Property> properties = feature.getProperties().iterator();
+                    while (properties.hasNext()) {
+                        Property property = properties.next();
+                        toWrite.setAttribute(property.getName(), feature.getAttribute(property.getName()));
                     }
                     // copy attributes
 //
@@ -176,12 +175,12 @@ public class GeoDbHandler {
         // we only need to do the once - however, calling it repeatedly is a no-op
         try {
             SimpleFeatureType oldSft = dataStore.getSchema(sft.getTypeName());
-            if (oldSft!=null && sft.getAttributeCount()!=oldSft.getAttributeCount()){
-                logger.error("there is old  schema : " + DataUtilities.encodeType(oldSft)+"；update old to new schema And new add schema:");
+            if (oldSft != null && sft.getAttributeCount() != oldSft.getAttributeCount()) {
+                logger.error("there is old  schema : " + DataUtilities.encodeType(oldSft) + "；update old to new schema And new add schema:");
                 //todo how use java api to update schema
 //                dataStore.updateSchema(sft.getTypeName(),GeoTable.getAddAttrSFT(sft.getTypeName()));
-                throw new UnsupportedOperationException(sft.getTypeName()+" can not update schema by java api ");
-            }else {
+                throw new UnsupportedOperationException(sft.getTypeName() + " can not update schema by java api ");
+            } else {
                 dataStore.createSchema(sft);
             }
 
@@ -194,8 +193,8 @@ public class GeoDbHandler {
 
     public static List<SimpleFeature> queryFeature(DataStore datastore, List<Query> queries) throws IOException {
         for (Query query : queries) {
-            logger.info("["+((HBaseDataStore) datastore).config().catalog()+"] table Running query " + ECQL.toCQL(query.getFilter())+"；typeName:"+query.getTypeName());
-            if (IS_DB_DEBUG){
+            logger.info("[" + ((HBaseDataStore) datastore).config().catalog() + "] table Running query " + ECQL.toCQL(query.getFilter()) + "；typeName:" + query.getTypeName());
+            if (IS_DB_DEBUG) {
                 if (query.getPropertyNames() != null) {
                     logger.info("Returning attributes " + Arrays.asList(query.getPropertyNames()));
                 }
@@ -204,7 +203,7 @@ public class GeoDbHandler {
                     logger.info("Sorting by " + sort.getPropertyName() + " " + sort.getSortOrder());
                 }
             }
-            List<SimpleFeature> sfs=new ArrayList<>();
+            List<SimpleFeature> sfs = new ArrayList<>();
             // submit the query, and get back an iterator over matching features
             // use try-with-resources to ensure the reader is closed
             try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
@@ -213,7 +212,7 @@ public class GeoDbHandler {
                 int n = 0;
                 while (reader.hasNext()) {
                     SimpleFeature feature = reader.next();
-                    if (IS_DB_DEBUG){
+                    if (IS_DB_DEBUG) {
                         if (n++ < 100) {
                             // use geotools data utilities to get a printable string
                             logger.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
@@ -227,11 +226,11 @@ public class GeoDbHandler {
                     logger.info("Returned " + n + " total features");
 
                 }
-            }catch (IOException e){
-                logger.error("query error",e);
+            } catch (IOException e) {
+                logger.error("query error", e);
             }
-            logger.info("Returned--result size:"+sfs.size());
-            return  sfs;
+            logger.info("Returned--result size:" + sfs.size());
+            return sfs;
         }
         return null;
     }
@@ -240,15 +239,15 @@ public class GeoDbHandler {
      * 查询表的行数
      *
      * @param tableName 表名
-     * @param cqlFilter  可为空,统计查询的限制条件
+     * @param cqlFilter 可为空,统计查询的限制条件
      * @return
      * @throws IOException
      */
-    public static int queryTableRowCount(String tableName,String cqlFilter)  {
+    public static int queryTableRowCount(String tableName, String cqlFilter) {
         if (!StringUtils.isEmpty(tableName)) {
-            int count=0;
+            int count = 0;
             try {
-            DataStore datastore=MesaDataConnectManager.getIns().getDataStore(tableName);
+                DataStore datastore = MesaDataConnectManager.getIns().getDataStore(tableName);
                 if (datastore != null) {
                     String typeName = MesaDataConnectManager.getIns().getTableTypeName(tableName);
                     Query query = new Query(typeName);
@@ -276,7 +275,7 @@ public class GeoDbHandler {
                         }
                     }
                 } else {
-                    logger.error("["+tableName+"] can not get dataAccess ,and Filter is:"+cqlFilter);
+                    logger.error("[" + tableName + "] can not get dataAccess ,and Filter is:" + cqlFilter);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -287,6 +286,57 @@ public class GeoDbHandler {
         return -1;
     }
 
+    // 查询表内的group by 的统计总量
+    public static Map<String, Integer> queryGroupCount(String tableName, String cqlFilter, String groupKey) {
+        Map<String, Integer> countMap = new HashMap<>();
+        if (!StringUtils.isEmpty(tableName)) {
+            try {
+                DataStore datastore = MesaDataConnectManager.getIns().getDataStore(tableName);
+                if (datastore != null) {
+                    String typeName = MesaDataConnectManager.getIns().getTableTypeName(tableName);
+                    Query query = new Query(typeName);
+                    query.getHints().put(QueryHints.STATS_STRING(), "GroupBy(\"" + groupKey + "\",Count())");
+                    try {
+                        if (!StringUtils.isEmpty(cqlFilter)) {
+                            logger.info("count table" + tableName + "with filter:" + cqlFilter);
+                            query.setFilter(ECQL.toFilter(cqlFilter));
+                        }
+                    } catch (CQLException e) {
+                        e.printStackTrace();
+                    }
+                    List<SimpleFeature> queryResults = queryFeature(datastore, Arrays.asList(query));
+                    if (queryResults != null && queryResults.size() > 0) {
+//                        logger.info("--->queryGroupCount queryResults.size():" + queryResults.size());
+//                        for (SimpleFeature feature : queryResults) {
+//                            logger.info("--->queryGroupCount feature:" + feature);
+//                        }
+
+                        SimpleFeature feature = queryResults.get(0);
+                        if ("stat".equals(feature.getID())) {
+                            for (Property property : feature.getValue()) {
+                                if ("stats".equals(property.getName().getURI())) {
+//                                    logger.info("--->queryGroupCount property.getValue():" + property.getValue());
+                                    JsonObject jsonObject = (JsonObject) JsonParser.parseString((String) property.getValue());
+//                                    {"440100":{"count":400},"440600":{"count":7}}
+                                    for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                                        String groupKeyValue = entry.getKey();
+                                        int count = ((JsonObject) entry.getValue()).get("count").getAsInt();
+                                        countMap.put(groupKeyValue, count);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    logger.error("[" + tableName + "] can not get dataAccess ,and Filter is:" + cqlFilter);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return countMap;
+    }
 
 
 }

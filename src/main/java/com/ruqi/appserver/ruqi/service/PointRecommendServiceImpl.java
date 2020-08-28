@@ -75,30 +75,20 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         }
         String dataEnv = queryPointsRequest.getEnvType();
 
-        boolean needOriginData = false;
-        boolean needRecmdData = false;
-        switch (queryPointsRequest.pointType) {
-            case QueryPointsRequest.POINT_TYPE_ALL:
-                needOriginData = true;
-                needRecmdData = true;
-                break;
-            case QueryPointsRequest.POINT_TYPE_ORIGIN:
-                needOriginData = true;
-                break;
-            case QueryPointsRequest.POINT_TYPE_RECMD:
-                needRecmdData = true;
-                break;
-        }
-        if (needOriginData) {
-            GeoDbHandler.setDebug(true);
-            dataList.addAll(RPHandleManager.getIns().queryPoints(queryPointsRequest.north, queryPointsRequest.east,
-                    queryPointsRequest.south, queryPointsRequest.west, dataEnv,
-                    GeoTable.TABLE_RECOMMEND_DATA_PREFIX, GeoTable.KEY_POINT_ORIGIN));
-        }
-        if (needRecmdData) {
-            dataList.addAll(RPHandleManager.getIns().queryPoints(queryPointsRequest.north, queryPointsRequest.east,
-                    queryPointsRequest.south, queryPointsRequest.west, dataEnv,
-                    GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, GeoTable.KEY_POINT_RECMD));
+        if (true || queryPointsRequest.getAreaType() == PointList.TYPE_AREA_POINT) {
+            if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
+                    queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ORIGIN) {
+                GeoDbHandler.setDebug(true);
+                dataList.addAll(RPHandleManager.getIns().queryPoints(queryPointsRequest.north, queryPointsRequest.east,
+                        queryPointsRequest.south, queryPointsRequest.west, dataEnv,
+                        GeoTable.TABLE_RECOMMEND_DATA_PREFIX, GeoTable.KEY_POINT_ORIGIN));
+            }
+            if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
+                    queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_RECMD) {
+                dataList.addAll(RPHandleManager.getIns().queryPoints(queryPointsRequest.north, queryPointsRequest.east,
+                        queryPointsRequest.south, queryPointsRequest.west, dataEnv,
+                        GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, GeoTable.KEY_POINT_RECMD));
+            }
         }
         return dataList;
     }
@@ -209,15 +199,17 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
 
     @Override
     public void staticRecommendPoint() {
-        //昨日天上报的原始记录次数
-        Map<String, Integer> lastUploadTimesDev = RPHandleManager.getIns().getCityLastDayUploadTimes(DEV);
-        Map<String, Integer> lastUploadTimesPro = RPHandleManager.getIns().getCityLastDayUploadTimes(PRO);
-        //一天新增的扎针点和推荐关系表
-        Map<String, Integer> lastdayRecommendDataCountDev = RPHandleManager.getIns().getCityLastDayRecommendDataCount(DEV);
-        Map<String, Integer> lastdayRecommendDataCountPro = RPHandleManager.getIns().getCityLastDayRecommendDataCount(PRO);
-        //一天新增的推荐点数目
-        Map<String, Integer> lastDayRecommendPointCountDev = RPHandleManager.getIns().getCityLastDayRecommendPointCount(DEV);
-        Map<String, Integer> lastDayRecommendPointCountPro = RPHandleManager.getIns().getCityLastDayRecommendPointCount(PRO);
+        //截止昨天，上报的原始记录次数
+        Map<String, Integer> lastUploadTimesDev = RPHandleManager.getIns().getCityUploadCountBeforeToday(DEV);
+        Map<String, Integer> lastUploadTimesPro = RPHandleManager.getIns().getCityUploadCountBeforeToday(PRO);
+
+        //截止昨天，扎针点和推荐关系表 数量
+        Map<String, Integer> lastdayRecommendDataCountDev = RPHandleManager.getIns().getCityRecommendDataCountBeforeToday(DEV);
+        Map<String, Integer> lastdayRecommendDataCountPro = RPHandleManager.getIns().getCityRecommendDataCountBeforeToday(PRO);
+
+        //截止昨天，推荐点数目
+        Map<String, Integer> lastDayRecommendPointCountDev = RPHandleManager.getIns().getCityRecommendPointCountBeforeToday(DEV);
+        Map<String, Integer> lastDayRecommendPointCountPro = RPHandleManager.getIns().getCityRecommendPointCountBeforeToday(PRO);
 
         if (lastUploadTimesDev != null &&
                 lastdayRecommendDataCountDev != null &&
@@ -231,9 +223,9 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 recommentPointStaticsInfo.setCityCode(cityCode);
                 recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
                 recommentPointStaticsInfo.setEnv(DEV);
-                recommentPointStaticsInfo.setTotalRecmdPointNum(uplaodTimesDev);
-                recommentPointStaticsInfo.setTotalOriginPointNum(recommendPointCountDev);
-                recommentPointStaticsInfo.setTotalRecordNum(recommendDataCountDev);
+                recommentPointStaticsInfo.setTotalRecmdPointNum(recommendPointCountDev);
+                recommentPointStaticsInfo.setTotalOriginPointNum(recommendDataCountDev);
+                recommentPointStaticsInfo.setTotalRecordNum(uplaodTimesDev);
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
                 cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -260,9 +252,9 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 recommentPointStaticsInfo.setCityCode(cityCode);
                 recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
                 recommentPointStaticsInfo.setEnv(DEV);
-                recommentPointStaticsInfo.setTotalRecmdPointNum(uplaodTimesPro);
-                recommentPointStaticsInfo.setTotalOriginPointNum(recommendPointCountPro);
-                recommentPointStaticsInfo.setTotalRecordNum(recommendDataCountPro);
+                recommentPointStaticsInfo.setTotalRecmdPointNum(recommendPointCountPro);
+                recommentPointStaticsInfo.setTotalOriginPointNum(recommendDataCountPro);
+                recommentPointStaticsInfo.setTotalRecordNum(uplaodTimesPro);
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
                 cal.set(Calendar.HOUR_OF_DAY, 0);

@@ -56,6 +56,14 @@ public class DateTimeUtils {
         return sp.format(d);//获取昨天日期
     }
 
+    public static Date getTodayStartDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        return cal.getTime();
+    }
+
     public static Date getYesterdayStartDate() {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
