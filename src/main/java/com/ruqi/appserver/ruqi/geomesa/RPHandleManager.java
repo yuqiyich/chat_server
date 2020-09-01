@@ -8,6 +8,7 @@ import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendDataUpdater;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendPointUpdater;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.apache.commons.lang.StringUtils;
@@ -404,14 +405,51 @@ public class RPHandleManager {
             } else {
                 logger.error("[" + tableName + "] table not exists in hbase");
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CQLException e) {
             e.printStackTrace();
         }
         return points;
+    }
 
+    // 查询范围内每个区域的数量
+    public List<PointList.Point> queryAreaPointCounts(double north, double east, double south, double west, String dev,
+                                                      String tableRecommondPonitPrefix, String groupKey, String sGeom) {
+        List<PointList.Point> points = new ArrayList<>();
+        String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)", sGeom, north,
+                east, south, west);
+
+        int pointType = 0;
+        if (MyStringUtils.isEqueals(tableRecommondPonitPrefix, GeoTable.TABLE_RECOMMOND_PONIT_PREFIX)) {
+            pointType = 2;
+        } else if (MyStringUtils.isEqueals(tableRecommondPonitPrefix, GeoTable.TABLE_RECOMMEND_DATA_PREFIX)) {
+            pointType = 1;
+        }
+
+        try {
+            String tableName = tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
+
+            if (HbaseDbHandler.hasTable(tableName)) {
+                Map<String, Integer> areaPointCountMap = GeoDbHandler.queryGroupCount(tableName, cqlBox, groupKey);
+                logger.info("areaPointCountMap:" + areaPointCountMap);
+                logger.info("areaPointCountMap.keySet():" + areaPointCountMap.keySet());
+                for (String key : areaPointCountMap.keySet()) {
+                    // 区域编码后面两位为0的话是城市编码了，应该是错误的，抛弃
+                    if (MyStringUtils.isEqueals(groupKey, GeoTable.KEY_AD_CODE) && key.endsWith("00")) {
+                        continue;
+                    }
+                    PointList.Point point = new PointList.Point(CityUtil.getCenterLngLat(key), pointType,
+                            CityUtil.getCityName(key), areaPointCountMap.get(key));
+                    points.add(point);
+                }
+            } else {
+                logger.error("[" + tableName + "] table not exists in hbase");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return points;
     }
 
     private List<PointList.Point> convertToPointDatas(List<SimpleFeature> results, String tableRecommondPonitPrefix, String sGeom) {

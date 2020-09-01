@@ -30,6 +30,13 @@ public class PointList {
             this.title = title;
         }
 
+        public Point(String x, int type, String title, int pointCount) {
+            lnglat = x;
+            pointType = type;
+            this.title = title;
+            this.pointCount = pointCount;
+        }
+
         public static final int TYPE_POINT_ORIGIN = 1;
         public static final int TYPE_POINT_RECMD = 2;
 
@@ -37,6 +44,7 @@ public class PointList {
         public String title;
         @ApiModelProperty(value = "点位类型，1：原始点 2：推荐点")
         public int pointType;
+        public int pointCount = -1;
     }
 }
 

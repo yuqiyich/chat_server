@@ -75,7 +75,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         }
         String dataEnv = queryPointsRequest.getEnvType();
 
-        if (true || queryPointsRequest.getAreaType() == PointList.TYPE_AREA_POINT) {
+        if (queryPointsRequest.getAreaType() == PointList.TYPE_AREA_POINT) {
             if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
                     queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ORIGIN) {
                 GeoDbHandler.setDebug(true);
@@ -88,6 +88,23 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 dataList.addAll(RPHandleManager.getIns().queryPoints(queryPointsRequest.north, queryPointsRequest.east,
                         queryPointsRequest.south, queryPointsRequest.west, dataEnv,
                         GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, GeoTable.KEY_POINT_RECMD));
+            }
+        } else if (queryPointsRequest.getAreaType() == PointList.TYPE_AREA_DISTRICT
+                || queryPointsRequest.getAreaType() == PointList.TYPE_AREA_CITY) {
+            boolean isCity = queryPointsRequest.getAreaType() == PointList.TYPE_AREA_CITY;
+            if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
+                    queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ORIGIN) {
+                dataList.addAll(RPHandleManager.getIns().queryAreaPointCounts(queryPointsRequest.north,
+                        queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west, dataEnv,
+                        GeoTable.TABLE_RECOMMEND_DATA_PREFIX, isCity ? GeoTable.KEY_CITY_CODE : GeoTable.KEY_AD_CODE,
+                        GeoTable.KEY_POINT_ORIGIN));
+            }
+            if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
+                    queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_RECMD) {
+                dataList.addAll(RPHandleManager.getIns().queryAreaPointCounts(queryPointsRequest.north,
+                        queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west, dataEnv,
+                        GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, isCity ? GeoTable.KEY_CITY_CODE : GeoTable.KEY_AD_CODE,
+                        GeoTable.KEY_POINT_RECMD));
             }
         }
         return dataList;
