@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
@@ -458,13 +459,18 @@ public class RPHandleManager {
             Point point = (Point) item.getAttribute(sGeom);
             String title = "";
             int pointType = 0;
+            String lnglat = "";
             if (MyStringUtils.isEqueals(tableRecommondPonitPrefix, GeoTable.TABLE_RECOMMOND_PONIT_PREFIX)) {
                 title = item.getAttribute(GeoTable.KEY_TITLE).toString();
                 pointType = 2;
+                lnglat = point.getX() + "," + point.getY();
             } else if (MyStringUtils.isEqueals(tableRecommondPonitPrefix, GeoTable.TABLE_RECOMMEND_DATA_PREFIX)) {
                 pointType = 1;
+
+                DecimalFormat df = new DecimalFormat("0.0000");
+                lnglat = df.format(point.getX()) + "," + df.format(point.getY());
             }
-            points.add(new PointList.Point(point.getX() + "," + point.getY(), pointType, title));
+            points.add(new PointList.Point(lnglat, pointType, title));
         }
         return points;
     }
