@@ -11,15 +11,15 @@ public class RecommentPointStaticsInfo {
     private String cityCode;
     private String cityName;
     /**
-     * 所有的原始记录数据量（推荐上车点为索引）
+     * 所有用户扎针点的推荐上车点的数据量（用户扎针点为索引）
      */
     private int totalOriginPointNum;
     /**
-     * 所有的推荐上车点数据量（记录为索引）
+     * 所有的推荐上车点数据量（推荐上车点为索引）
      */
     private int totalRecmdPointNum;
     /**
-     * 所有用户扎针点的推荐上车点的数据量（用户扎针点为索引）
+     * 所有的原始记录数据量（记录为索引）
      */
     private int totalRecordNum;
     private Date staticsDate;
