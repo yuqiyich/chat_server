@@ -268,7 +268,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
                 recommentPointStaticsInfo.setCityCode(cityCode);
                 recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
-                recommentPointStaticsInfo.setEnv(DEV);
+                recommentPointStaticsInfo.setEnv(PRO);
                 recommentPointStaticsInfo.setTotalRecmdPointNum(recommendPointCountPro);
                 recommentPointStaticsInfo.setTotalOriginPointNum(recommendDataCountPro);
                 recommentPointStaticsInfo.setTotalRecordNum(uplaodTimesPro);
