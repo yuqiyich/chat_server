@@ -126,7 +126,7 @@ public class MapRegionSnycTool {
             //推荐点的表
             System.out.println("==============================推荐点的表=============================");
             GeoDbHandler.setDebug(true);
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(TABLE_ADMIN_DIVISION),getTestQueries(TYPE_ADMIN_DIVISION_META));
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(TABLE_RECOMMEND_DATA_PREFIX+"pro_"+"440600"),getTestQueries(TYPE_RECOMMEND_DATA));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -239,7 +239,7 @@ public class MapRegionSnycTool {
 
             // most of the data is from 2018-01-01
             // note: DURING is endpoint exclusive
-            String during = "dtg DURING 2020-05-31T00:00:00.000Z/2021-11-02T00:00:00.000Z";
+            String during = "dtg DURING 2020-09-15T23:00:00.000Z/2021-11-02T00:00:00.000Z";
             String channel = "channel=2";
             //bbox rule  lng,lat,lng,lat
             String idrule="parentCode = '440100'";
@@ -248,10 +248,10 @@ public class MapRegionSnycTool {
             String contains=" CONTAINS(sGeom,SRID=4326;POINT(113.103284 23.120406))";
             String exist="rrId EXISTS";
             //矩形值多边形的值
-            String  interect="OVERLAPS(adBoard,POLYGON((113.046987 23.600684,113.046987 23.25015,113.297993 23.25015,113.297993 23.600684,113.046987 23.600684)))  AND  level='district'";
+//            String  interect="OVERLAPS(adBoard,POLYGON((113.046987 23.600684,113.046987 23.25015,113.297993 23.25015,113.297993 23.600684,113.046987 23.600684)))  AND  level='district'";
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(idrule)));
 //            query.add(new Query(sftypeName, ECQL.toFilter(during)));
-            query.add(new Query(sftypeName, ECQL.toFilter(interect)));
+            query.add(new Query(sftypeName, ECQL.toFilter(during)));
 //                query.add(queryTableRowCount(sftypeName));
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains+" AND " +during)));
             // bounding box over most of the united states

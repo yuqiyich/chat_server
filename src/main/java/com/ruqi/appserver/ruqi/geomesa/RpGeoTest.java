@@ -18,13 +18,32 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 public class RpGeoTest {
-    public static final String CITY_CODE ="440100";//开发环境的citycode dev_440100
-    public static final String Compose_CITY_CODE ="dev_"+CITY_CODE;
+    public static final String CITY_CODE ="441900";//开发环境的citycode dev_440100
+    public static final String Compose_CITY_CODE ="pro_"+CITY_CODE;
+
+
+    /**
+     * 初始化的城市列表
+     *
+     */
+    public static final String[] INIT_TABLE_CITYS={"440100","440300","440600","441900"};
 
     public static void main(String[] args) {
         GeoDbHandler.setDebug(true);
-//         RPHandleManager.getIns().saveRecommendDatasByCityCode("dev",CITY_CODE,getTestData());
-         queryAllData();
+//         RPHandleManager.getIns().saveRecommendDatasByCityCode("pro",CITY_CODE,getTestData());
+//         queryAllData("pro");
+           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412f,440100,"pro");
+    }
+
+    /**
+     * 主要用于所有表的初始化，迁移数据使用确保所有数据表都存在
+     * initAllTableIfNotExist
+     * initAllTableIfNotExist(Arrays.asList(INIT_TABLE_CITYS));
+     */
+    public static void initAllTableIfNotExist(List<String> cityCodes){
+        for (int i = 0; i < cityCodes.size(); i++) {
+            RPHandleManager.getIns().saveRecommendDatasByCityCode("dev",cityCodes.get(i),getTestData());
+        }
     }
 
    public static Query queryTableRowCount(String typeName){
@@ -40,26 +59,26 @@ public class RpGeoTest {
        return query;
     }
 
-    public static void queryAllData(){
+    public static void queryAllData(String env){
         try {
             //推荐点的表
             System.out.println("==============================推荐点的表=============================");
             GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT));
             System.out.println("==============================推荐点的全局表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT_ALL));
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT_ALL));
 //            System.out.println("数量是："+GeoDbHandler.queryTableRowCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE,null));  ;
             //记录表
             System.out.println("==============================记录表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RECORD));
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RECORD));
             //扎针点和上车点的表
             System.out.println("==============================扎针点和上车点的表=============================");
             GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA));
             System.out.println("==============================扎针点和上车点的全局表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA_ALL));
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA_ALL));
 
             //关系表
             System.out.println("==============================关系表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RELATED_RECORD));
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RELATED_RECORD));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,7 +92,7 @@ public class RpGeoTest {
 
                 // most of the data is from 2018-01-01
                 // note: DURING is endpoint exclusive
-                String during = "dtg DURING 2020-05-31T00:00:00.000Z/2020-11-02T00:00:00.000Z";
+                String during = "dtg DURING 2020-09-11T00:00:00.000Z/2020-09-11T03:00:00.000Z";
                 String dateequal = "dtg DURING 2019-12-31T00:00:00.000Z/2022-01-02T00:00:00.000Z";
                 String channel = "channel=2";
                 //bbox rule  lng,lat,lng,lat
@@ -117,21 +136,21 @@ public class RpGeoTest {
        testData.setChannel(GeoTable.CHANNEL_TX);
        testData.setSelectLat(23.987651);
        testData.setSelectLng(123.987651);
-       testData.setAdCode("41111111");
-       testData.setUserLat(23.987652);
-       testData.setUserLng(123.987652);
+       testData.setAdCode("11");
+       testData.setUserLat(23.000001);
+       testData.setUserLng(123.000001);
        testData.setRecommendPoint(getTestRecommendDatas());
        return testData;
     }
 
     private static List<RecommendPoint> getTestRecommendDatas() {
         List<RecommendPoint> data=new ArrayList<>();
-        for (int i = 85; i < 90 ; i++) {
+        for (int i = 0; i < 1 ; i++) {
             RecommendPoint recommendPoint=new RecommendPoint();
-            recommendPoint.setAddress("更改后地址"+i);
-            recommendPoint.setTitle("更改后title"+i);
-            recommendPoint.setLat(GeoMesaUtil.getPrecisionDouble(23.98665+0.000001*(i+1),6));
-            recommendPoint.setLng(GeoMesaUtil.getPrecisionDouble(122.98465+0.000001*(i+1),6));
+            recommendPoint.setAddress("ruqi_test"+i);
+            recommendPoint.setTitle("ruqi_test_title"+i);
+            recommendPoint.setLat(GeoMesaUtil.getPrecisionDouble(23.111111+0.000001*(i+1),6));
+            recommendPoint.setLng(GeoMesaUtil.getPrecisionDouble(122.111111+0.000001*(i+1),6));
             data.add(recommendPoint);
         }
         return data;

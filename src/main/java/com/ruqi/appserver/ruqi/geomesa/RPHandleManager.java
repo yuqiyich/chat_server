@@ -16,6 +16,8 @@ import org.geotools.data.DataStore;
 import org.geotools.data.Query;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.TABLE_RECORD_PRIMARY_KEY_PRECISION;
 import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
 
 /**
@@ -40,7 +43,8 @@ public class RPHandleManager {
     public static final String PRO = "pro";//正式环境表名字段
 
 
-    public static RPHandleManager getIns() {
+    public static RPHandleManager
+    getIns() {
         synchronized (RPHandleManager.class) {
             if (ins == null) {
                 ins = new RPHandleManager();
@@ -474,4 +478,79 @@ public class RPHandleManager {
         }
         return points;
     }
+
+    /**
+     *
+     * @param lat
+     * @param lng
+     * @param adCode
+     * @return
+     */
+    public List<RecommendPoint> queryRecommendPoints(float lat,float lng,int adCode,String env){
+
+      String id=  GeoMesaUtil.getPrecision(lat,TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" + GeoMesaUtil.getPrecision(lng,TABLE_RECORD_PRIMARY_KEY_PRECISION);
+      //精准查询扎针点的关系表
+        String recommonDatatableName = GeoTable.TABLE_RECOMMEND_DATA_PREFIX + env + "_" + WORLD_CODE;
+        DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(recommonDatatableName);
+        String typeName = MesaDataConnectManager.getIns().getTableTypeName(recommonDatatableName);
+        if (dataStore != null && !StringUtils.isEmpty(typeName)) {
+            try {
+                List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
+                        Arrays.asList(new Query(typeName, ECQL.toFilter(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_DATA+"='"+id+"'"))));
+                if (features!=null&&features.size()==1){
+                    MultiPoint points = (MultiPoint) features.get(0).getAttribute("rGeoms");
+                      //根据多点查具体信息
+                     return  queryRpPointsByID(points,env);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (CQLException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            logger.error("[" + recommonDatatableName + "] table not exists or schema is null by geomesa");
+        }
+      return null;
+    }
+
+    private List<RecommendPoint> queryRpPointsByID(  MultiPoint points,String env) {
+        StringBuilder cqlPoint = new StringBuilder(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT+" IN (");
+        int numPoints=points.getNumPoints();
+        Coordinate[] coordinates =points.getCoordinates();
+        for (int i = 0; i < numPoints; i++) {
+            cqlPoint.append("'"+coordinates[i].x+"_"+coordinates[i].y+"'"+((i==numPoints-1)?"":","));
+        }
+        cqlPoint.append(")");
+        String recommonPointtableName = GeoTable.TABLE_RECOMMOND_PONIT_PREFIX + env + "_" + WORLD_CODE;
+        String typeName = MesaDataConnectManager.getIns().getTableTypeName(recommonPointtableName);
+
+        DataStore dataStorePoint = GeoDbHandler.getHbaseTableDataStore(recommonPointtableName);
+        try {
+            List<SimpleFeature> featurePoints = GeoDbHandler.queryFeature(dataStorePoint,
+                    Arrays.asList(new Query(typeName, ECQL.toFilter(cqlPoint.toString()))));
+            if (featurePoints!=null &&featurePoints.size()>0){
+                List<RecommendPoint>  pointDatas=new ArrayList<>();
+                for (SimpleFeature simpleFeature : featurePoints) {
+                    RecommendPoint recommendPoint = new RecommendPoint();
+                    String title = (String) simpleFeature.getAttribute(GeoTable.KEY_TITLE);
+                    Point point = (Point) simpleFeature.getAttribute(GeoTable.KEY_POINT_RECMD);
+                    recommendPoint.setLat(point.getY());
+                    recommendPoint.setLng(point.getX());
+                    recommendPoint.setTitle(title);
+                    pointDatas.add(recommendPoint);
+                }
+                return pointDatas;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CQLException e) {
+            e.printStackTrace();
+        }
+
+        return  null;
+
+    }
+
 }
