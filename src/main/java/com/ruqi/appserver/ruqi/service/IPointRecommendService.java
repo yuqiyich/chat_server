@@ -30,7 +30,7 @@ public interface IPointRecommendService {
      * @param queryRecommendPointRequest
      * @return RecommendPointList<RecommendPoint>
      */
-    RecommendPointList<RecommendPoint> queryRecommendPoint(QueryRecommendPointRequest queryRecommendPointRequest);
+    RecommendPointList<RecommendPoint> queryRecommendPoint(QueryRecommendPointRequest queryRecommendPointRequest, String evn);
 
     /**
      * 查询统计推荐上车点

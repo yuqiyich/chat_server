@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -45,8 +44,13 @@ public class PointController extends BaseController {
                                                                             @RequestBody QueryRecommendPointRequest queryRecommendPointRequest) {
         try {
             logger.info("queryRecommendPoint params:" + JsonUtil.beanToJsonStr(queryRecommendPointRequest));
+            AppInfo appInfo = appInfoSevice.getAppInfoByKey(request.getHeader("app_key"));
             BaseBean<RecommendPointList<RecommendPoint>> result = new BaseBean<>();
-            result.data = pointRecommendService.queryRecommendPoint(queryRecommendPointRequest);
+            if (appInfo != null) {
+                int appId = appInfo.getAppId();
+                //硬编码指定环境
+                result.data = pointRecommendService.queryRecommendPoint(queryRecommendPointRequest, (appId == 1 || appId == 2) ? "pro" : "dev");
+            }
             return result;
         } catch (Exception e) {
             BaseBean<RecommendPointList<RecommendPoint>> result = new BaseBean<>();

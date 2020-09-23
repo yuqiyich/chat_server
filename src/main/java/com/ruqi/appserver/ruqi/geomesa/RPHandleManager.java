@@ -483,12 +483,11 @@ public class RPHandleManager {
      *
      * @param lat
      * @param lng
-     * @param adCode
      * @return
      */
-    public List<RecommendPoint> queryRecommendPoints(float lat,float lng,int adCode,String env){
+    public List<RecommendPoint> queryRecommendPoints(double lng, double lat, String env){
 
-      String id=  GeoMesaUtil.getPrecision(lat,TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" + GeoMesaUtil.getPrecision(lng,TABLE_RECORD_PRIMARY_KEY_PRECISION);
+      String id=  GeoMesaUtil.getPrecision(lng,TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" + GeoMesaUtil.getPrecision(lat,TABLE_RECORD_PRIMARY_KEY_PRECISION);
       //精准查询扎针点的关系表
         String recommonDatatableName = GeoTable.TABLE_RECOMMEND_DATA_PREFIX + env + "_" + WORLD_CODE;
         DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(recommonDatatableName);
@@ -535,10 +534,12 @@ public class RPHandleManager {
                 for (SimpleFeature simpleFeature : featurePoints) {
                     RecommendPoint recommendPoint = new RecommendPoint();
                     String title = (String) simpleFeature.getAttribute(GeoTable.KEY_TITLE);
+                    String address = (String) simpleFeature.getAttribute(GeoTable.KEY_ADDRESS);
                     Point point = (Point) simpleFeature.getAttribute(GeoTable.KEY_POINT_RECMD);
                     recommendPoint.setLat(point.getY());
                     recommendPoint.setLng(point.getX());
                     recommendPoint.setTitle(title);
+                    recommendPoint.setAddress(address);
                     pointDatas.add(recommendPoint);
                 }
                 return pointDatas;
