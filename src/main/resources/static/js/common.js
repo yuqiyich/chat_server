@@ -33,3 +33,26 @@ function getEndPointEventKeyValue(eventKey) {
             return "";
     }
 }
+
+function getVoiceDialEventKeyValue(eventKey) {
+    switch (eventKey) {
+        case "VOICE_CALL_START_CALL":
+            return "发起通话";
+        case "VOICE_CALL_CALLER_CONNECT_SUCCESS":
+            return "发起者连接成功";
+        case "VOICE_CALL_CALLER_CONNECT_FAIL":
+            return "发起者连接失败";
+        case "VOICE_CALL_CALLER_SEND_MSG":
+            return "发起者发送IM消息";
+        case "VOICE_CALL_RECEIVER_GOT_MSG":
+            return "接受者接收到IM消息";
+        case "VOICE_CALL_RECEIVER_JOIN_CHANNEL":
+            return "接受者加入频道";
+        case "VOICE_CALL_RECEIVER_CONNECT_SUCCESS":
+            return "接受者连接成功";
+        case "VOICE_CALL_RECEIVER_CONNECT_FAIL":
+            return "接收者连接失败";
+        default:
+            return "";
+    }
+}
