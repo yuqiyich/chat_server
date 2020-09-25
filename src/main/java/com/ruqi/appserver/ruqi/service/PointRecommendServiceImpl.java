@@ -50,8 +50,10 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     }
 
     @Override
-    public RecommendPointList<RecommendPoint> queryRecommendPoint(QueryRecommendPointRequest queryRecommendPointRequest) {
-        return null;
+    public RecommendPointList<RecommendPoint> queryRecommendPoint(QueryRecommendPointRequest queryRecommendPointRequest, String evn) {
+        RecommendPointList recommendPointList = new RecommendPointList();
+        recommendPointList.setPointList(RPHandleManager.getIns().queryRecommendPoints(queryRecommendPointRequest.getSelectLng(), queryRecommendPointRequest.getSelectLat(), evn));
+        return recommendPointList;
     }
 
     @Override

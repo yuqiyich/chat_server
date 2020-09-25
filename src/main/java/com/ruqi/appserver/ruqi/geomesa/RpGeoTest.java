@@ -32,7 +32,7 @@ public class RpGeoTest {
         GeoDbHandler.setDebug(true);
 //         RPHandleManager.getIns().saveRecommendDatasByCityCode("pro",CITY_CODE,getTestData());
 //         queryAllData("pro");
-           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412f,440100,"pro");
+           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412,"pro");
     }
 
     /**
