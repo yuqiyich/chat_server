@@ -65,6 +65,14 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         } else {
             recommentPointStaticsInfoList = recommendPointWrapper.getRecommendPointLastWeek(queryStaticRecommendPointsRequest.getEnv(), queryStaticRecommendPointsRequest.getCityCode());
         }
+        // 暂时没维护全国所有的的市区数据，所以有些会临时以未知保存到数据库
+        for (RecommentPointStaticsInfo recommentPointStaticsInfo : recommentPointStaticsInfoList) {
+            if ((MyStringUtils.isEmpty(recommentPointStaticsInfo.getCityName())
+                    || MyStringUtils.isEqueals(recommentPointStaticsInfo.getCityName(), "未知"))
+                    && !MyStringUtils.isEmpty(recommentPointStaticsInfo.getCityCode())) {
+                recommentPointStaticsInfo.setCityName(CityUtil.getCityName(recommentPointStaticsInfo.getCityCode()));
+            }
+        }
         recommentPointStaticsInfoRecommendPointList.setPointList(recommentPointStaticsInfoList);
         return recommentPointStaticsInfoRecommendPointList;
     }
