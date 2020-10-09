@@ -4,10 +4,7 @@ import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
-import com.ruqi.appserver.ruqi.request.QueryPointsRequest;
-import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
-import com.ruqi.appserver.ruqi.request.QueryStaticRecommendPointsRequest;
-import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.service.AppInfoSevice;
 import com.ruqi.appserver.ruqi.service.IPointRecommendService;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
@@ -18,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -36,7 +34,31 @@ public class PointController extends BaseController {
     @Autowired
     AppInfoSevice appInfoSevice;
 
-    @ApiOperation(value = "查询推荐上车点", notes = "")
+    @ApiOperation(value = "根据扎针点查询数据库中的全部推荐上车点", notes = "给中台查询使用")
+    @RequestMapping(value = "/obtainRecommendPointsForWeb", method = RequestMethod.POST)
+    @ResponseBody
+    @LogAnnotation
+    @CrossOrigin
+    public BaseBean<RecommendPointList<RecommendPoint>> obtainRecommendPointsForWeb(
+            @RequestBody QueryRecommendPointForWebRequest queryRecommendPointForWebRequest) {
+        try {
+            logger.info("obtainRecommendPointsForWeb params:" + JsonUtil.beanToJsonStr(queryRecommendPointForWebRequest));
+            BaseBean<RecommendPointList<RecommendPoint>> result = new BaseBean<>();
+            //硬编码指定环境
+            if (null != queryRecommendPointForWebRequest) {
+                result.data = pointRecommendService.queryRecommendPointForWeb(queryRecommendPointForWebRequest, queryRecommendPointForWebRequest.getEnv());
+            }
+            return result;
+        } catch (Exception e) {
+            BaseBean<RecommendPointList<RecommendPoint>> result = new BaseBean<>();
+            result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
+            result.errorMsg = e.getMessage();
+            logger.error("obtainRecommendPointsForWeb error. content:" + JsonUtil.beanToJsonStr(queryRecommendPointForWebRequest) + ", e:" + e);
+            return result;
+        }
+    }
+
+    @ApiOperation(value = "精准查询提供推荐上车点，给客户端提供使用", notes = "")
     @RequestMapping(value = "/obtainRecommendPoint", method = RequestMethod.POST)
     @ResponseBody
     @LogAnnotation
@@ -116,7 +138,8 @@ public class PointController extends BaseController {
     @RequestMapping(value = "/queryStaticsRecommendPoints", method = RequestMethod.POST)
     @ResponseBody
     @CrossOrigin
-    public BaseBean<RecommendPointList<RecommentPointStaticsInfo>> queryStaticsRecommendPoints(@RequestBody QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest) {
+    public BaseBean<RecommendPointList<RecommentPointStaticsInfo>> queryStaticsRecommendPoints(
+            @RequestBody QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest) {
         try {
             logger.info("queryStaticRecommendPointsRequest params:" + JsonUtil.beanToJsonStr(queryStaticRecommendPointsRequest));
             if (null == queryStaticRecommendPointsRequest) {

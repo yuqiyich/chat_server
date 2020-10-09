@@ -5,10 +5,7 @@ import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.RecommendPointList;
 import com.ruqi.appserver.ruqi.bean.RecommentPointStaticsInfo;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
-import com.ruqi.appserver.ruqi.request.QueryPointsRequest;
-import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
-import com.ruqi.appserver.ruqi.request.QueryStaticRecommendPointsRequest;
-import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.request.*;
 
 import java.util.List;
 
@@ -48,4 +45,6 @@ public interface IPointRecommendService {
     List<PointList.Point> queryPoints(QueryPointsRequest queryPointsRequest);
 
     void staticRecommendPoint();
+
+    RecommendPointList<RecommendPoint> queryRecommendPointForWeb(QueryRecommendPointForWebRequest queryRecommendPointForWebRequest, String env);
 }

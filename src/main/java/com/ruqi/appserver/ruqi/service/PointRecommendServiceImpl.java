@@ -11,10 +11,7 @@ import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
-import com.ruqi.appserver.ruqi.request.QueryPointsRequest;
-import com.ruqi.appserver.ruqi.request.QueryRecommendPointRequest;
-import com.ruqi.appserver.ruqi.request.QueryStaticRecommendPointsRequest;
-import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
@@ -53,6 +50,13 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     public RecommendPointList<RecommendPoint> queryRecommendPoint(QueryRecommendPointRequest queryRecommendPointRequest, String evn) {
         RecommendPointList recommendPointList = new RecommendPointList();
         recommendPointList.setPointList(RPHandleManager.getIns().queryRecommendPoints(queryRecommendPointRequest.getSelectLng(), queryRecommendPointRequest.getSelectLat(), evn));
+        return recommendPointList;
+    }
+
+    @Override
+    public RecommendPointList<RecommendPoint> queryRecommendPointForWeb(QueryRecommendPointForWebRequest queryRecommendPointForWebRequest, String evn) {
+        RecommendPointList recommendPointList = new RecommendPointList();
+        recommendPointList.setPointList(RPHandleManager.getIns().queryRecommendPoints(queryRecommendPointForWebRequest.getSelectLng(), queryRecommendPointForWebRequest.getSelectLat(), evn));
         return recommendPointList;
     }
 
