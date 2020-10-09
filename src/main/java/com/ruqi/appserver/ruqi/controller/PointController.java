@@ -37,7 +37,7 @@ public class PointController extends BaseController {
     AppInfoSevice appInfoSevice;
 
     @ApiOperation(value = "查询推荐上车点", notes = "")
-    @RequestMapping(value = "/queryRecommendPoint", method = RequestMethod.POST)
+    @RequestMapping(value = "/obtainRecommendPoint", method = RequestMethod.POST)
     @ResponseBody
     @LogAnnotation
     public BaseBean<RecommendPointList<RecommendPoint>> queryRecommendPoint(HttpServletRequest request,
