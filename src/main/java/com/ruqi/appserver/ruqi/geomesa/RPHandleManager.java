@@ -489,29 +489,27 @@ public class RPHandleManager {
 
       String id=  GeoMesaUtil.getPrecision(lng,TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" + GeoMesaUtil.getPrecision(lat,TABLE_RECORD_PRIMARY_KEY_PRECISION);
       //精准查询扎针点的关系表
-        String recommonDatatableName = GeoTable.TABLE_RECOMMEND_DATA_PREFIX + env + "_" + WORLD_CODE;
-        DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(recommonDatatableName);
-        String typeName = MesaDataConnectManager.getIns().getTableTypeName(recommonDatatableName);
-        if (dataStore != null && !StringUtils.isEmpty(typeName)) {
-            try {
-                List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
-                        Arrays.asList(new Query(typeName, ECQL.toFilter(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_DATA+"='"+id+"'"))));
-                if (features!=null&&features.size()==1){
-                    MultiPoint points = (MultiPoint) features.get(0).getAttribute("rGeoms");
-                      //根据多点查具体信息
-                     return  queryRpPointsByID(points,env);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (CQLException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-            logger.error("[" + recommonDatatableName + "] table not exists or schema is null by geomesa");
-        }
-      return null;
+      String recommonDatatableName = GeoTable.TABLE_RECOMMEND_DATA_PREFIX + env + "_" + WORLD_CODE;
+      DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(recommonDatatableName);
+      String typeName = MesaDataConnectManager.getIns().getTableTypeName(recommonDatatableName);
+      if (dataStore != null && !StringUtils.isEmpty(typeName)) {
+          try {
+              List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
+                      Arrays.asList(new Query(typeName, ECQL.toFilter(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_DATA+"='"+id+"'"))));
+              if (features!=null&&features.size()==1){
+                  MultiPoint points = (MultiPoint) features.get(0).getAttribute("rGeoms");
+                  //根据多点查具体信息
+                  return queryRpPointsByID(points,env);
+              }
+          }catch (IOException e) {
+              e.printStackTrace();
+          }catch (CQLException e) {
+              e.printStackTrace();
+          }
+      } else {
+          logger.error("[" + recommonDatatableName + "] table not exists or schema is null by geomesa");
+      }
+      return new ArrayList<RecommendPoint>();
     }
 
     private List<RecommendPoint> queryRpPointsByID(  MultiPoint points,String env) {
@@ -550,7 +548,7 @@ public class RPHandleManager {
             e.printStackTrace();
         }
 
-        return  null;
+        return new ArrayList<RecommendPoint>();
 
     }
 
