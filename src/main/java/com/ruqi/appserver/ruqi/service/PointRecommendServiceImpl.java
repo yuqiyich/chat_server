@@ -277,6 +277,10 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
             for (Map.Entry<String, Integer> entry : lastUploadTimesPro.entrySet()) {
                 String cityCode = entry.getKey();
                 int uplaodTimesPro = entry.getValue();
+                // 防止异常
+//                if (!lastdayRecommendDataCountPro.containsKey(cityCode) || !lastDayRecommendPointCountPro.containsKey(cityCode)) {
+//                    continue;
+//                }
                 int recommendDataCountPro = lastdayRecommendDataCountPro.get(cityCode);
                 int recommendPointCountPro = lastDayRecommendPointCountPro.get(cityCode);
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
