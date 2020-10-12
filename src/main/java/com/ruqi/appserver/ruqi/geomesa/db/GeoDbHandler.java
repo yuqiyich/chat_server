@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
+import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendRecordDataUpdater;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.*;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -21,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+
+import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.*;
 
 public class GeoDbHandler {
     private static Logger logger = LoggerFactory.getLogger(GeoDbHandler.class);
@@ -338,5 +341,23 @@ public class GeoDbHandler {
         return countMap;
     }
 
+    /**
+     * 全球记录表，某个id的数据变更cityCode值
+     * updateRecordDataCityCode("pro", "06fd83f4-cbd4-41ed-87e1-a0cb639d80f4", "440100");
+     *
+     * @param env         环境
+     * @param rrid        id值，通过查询得到
+     * @param newCityCode 新的cityCode
+     */
+    public static void updateRecordDataCityCode(String env, String rrid, String newCityCode) {
+        SimpleFeatureType sft = GeoTable.getRecommendRecordSimpleType(GeoTable.WORLD_CODE, true);
+        List<SimpleFeature> features = new ArrayList<>();
+        SimpleFeatureBuilderWrapper builder = new SimpleFeatureBuilderWrapper(sft);
+        builder.set(PRIMARY_KEY_TYPE_RECOMMEND_POINT, rrid);
+        builder.set(KEY_CITY_CODE, "440100");
+        features.add(builder.buildFeature(rrid));
+        GeoDbHandler.updateExistDataOrInsert(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX + env + "_" + GeoTable.WORLD_CODE),
+                sft, features, PRIMARY_KEY_TYPE_RECOMMEND_RECORD, new RecommendRecordDataUpdater());
+    }
 
 }
