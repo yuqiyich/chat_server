@@ -2,6 +2,7 @@ package com.ruqi.appserver.ruqi.dao.mappers;
 
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataH5Hybrid;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -48,7 +49,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.userType!=0'>AND user_type = #{dotEventInfo.content.userType}  </if>",
             "<if test='dotEventInfo.content.eventType!=null'>",
             "<if test='dotEventInfo.content.eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE')  </if>",
-            "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT')  </if>",
+            "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT' or event_key = 'FALLBACK_SUCCESS_GAIA_RECOMMEND')  </if>",
             "<if test='dotEventInfo.content.eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION')  </if>",
             "<if test='dotEventInfo.content.eventType==\"endPoint\" '>AND (event_key = 'FB_SUC_DES_POP_SHOW' or event_key = 'FB_SUC_DES_POP_SELECT' or event_key = 'FB_SUC_DES_POP_ORDER' or event_key = 'FB_SUC_DES_LIST_SHOW' or event_key = 'FB_SUC_DES_LIST_SELECT' or event_key = 'FB_SUC_DES_LIST_ORDER')  </if>",
             "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
@@ -84,7 +85,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.userType!=0'>AND user_type=#{dotEventInfo.content.userType} </if>",
             "<if test='dotEventInfo.content.eventType!=null'>",
             "<if test='dotEventInfo.content.eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE')  </if>",
-            "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT')  </if>",
+            "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT' or event_key = 'FALLBACK_SUCCESS_GAIA_RECOMMEND')  </if>",
             "<if test='dotEventInfo.content.eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION')  </if>",
             "<if test='dotEventInfo.content.eventType==\"endPoint\" '>AND (event_key = 'FB_SUC_DES_POP_SHOW' or event_key = 'FB_SUC_DES_POP_SELECT' or event_key = 'FB_SUC_DES_POP_ORDER' or event_key = 'FB_SUC_DES_LIST_SHOW' or event_key = 'FB_SUC_DES_LIST_SELECT' or event_key = 'FB_SUC_DES_LIST_ORDER')  </if>",
             "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
@@ -156,7 +157,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.eventType!=null'>",
             "<if test='dotEventInfo.content.eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE')  </if>",
             "<if test='dotEventInfo.content.eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE')  </if>",
-            "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT')  </if>",
+            "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT' or event_key = 'FALLBACK_SUCCESS_GAIA_RECOMMEND')  </if>",
             "<if test='dotEventInfo.content.eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION')  </if>",
             "<if test='dotEventInfo.content.eventType==\"endPoint\" '>AND (event_key = 'FB_SUC_DES_POP_SHOW' or event_key = 'FB_SUC_DES_POP_SELECT' or event_key = 'FB_SUC_DES_POP_ORDER' or event_key = 'FB_SUC_DES_LIST_SHOW' or event_key = 'FB_SUC_DES_LIST_SELECT' or event_key = 'FB_SUC_DES_LIST_ORDER')  </if>",
             "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
@@ -186,7 +187,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.userType!=0'>AND user_type=#{dotEventInfo.content.userType} </if>",
             "<if test='dotEventInfo.content.eventType!=null'>",
             "<if test='dotEventInfo.content.eventType==\"nav\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_ROUTE_RETRY' or event_key = 'FALLBACK_SUCCESS_TX_ROUTE_CACHE' or event_key = 'FALLBACK_SUCCESS_ROUTE_GAODE' or event_key = 'FALLBACK_SUCCESS_ROUTE_BAIDU' or event_key = 'FALLBACK_SUCCESS_ROUTE_TENCENT' or event_key = 'FALLBACK_FAIL_ROUTE')  </if>",
-            "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT')  </if>",
+            "<if test='dotEventInfo.content.eventType==\"recmdPoint\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_RECOMMEND' or event_key = 'FALLBACK_SUCCESS_TX_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_GEO' or event_key = 'FALLBACK_SUCCESS_RUQI_RECOMMEND' or event_key = 'FALLBACK_FAIL_BOARDING_POINT' or event_key = 'FALLBACK_SUCCESS_GAIA_RECOMMEND')  </if>",
             "<if test='dotEventInfo.content.eventType==\"driverLocation\" '>AND (event_key = 'FALLBACK_SUCCESS_TX_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_TX_DEVICE_LOCATION' or event_key = 'FALLBACK_SUCCESS_DEVICE_HISTORY_LOCATION' or event_key = 'FALLBACK_SUCCESS_APP_HISTORY_LOCATION' or event_key = 'FALLBACK_FAIL_LOCATION')  </if>",
             "<if test='dotEventInfo.content.eventType==\"endPoint\" '>AND (event_key = 'FB_SUC_DES_POP_SHOW' or event_key = 'FB_SUC_DES_POP_SELECT' or event_key = 'FB_SUC_DES_POP_ORDER' or event_key = 'FB_SUC_DES_LIST_SHOW' or event_key = 'FB_SUC_DES_LIST_SELECT' or event_key = 'FB_SUC_DES_LIST_ORDER')  </if>",
             "<if test='dotEventInfo.content.eventType==\"h5hybrid\" '>AND (event_key = 'H5_HYBRID_LOAD_SUCCESS' or event_key = 'H5_HYBRID_LOAD_FAIL' or event_key = 'H5_HYBRID_RELOAD_SUCCESS' or event_key = 'H5_HYBRID_RELOAD_FAIL')  </if>",
@@ -215,4 +216,14 @@ public interface DotEventInfoWrapper {
             "group by date(record_time), platform, user_id ORDER BY count(*) DESC",
             "</script>"})
     List<DBEventDayDataH5Hybrid> queryWeekDataUserCountH5Hybrid();
+
+    @Select({"<script>",
+            " select date(record_time) as date, platform, event_key as eventKey, count(*) as totalCount",
+            " from dot_event_record",
+            " where record_time >= date_sub(curdate(), interval 6 day)",
+            "<if test='isWithOrder == true'> AND order_id IS NOT NULL AND order_id!=''</if>",
+            " AND (event_key='FALLBACK_SUCCESS_GAIA_RECOMMEND') AND app_id=2",
+            " group by date(record_time), platform, event_key",
+            "</script>"})
+    List<DBEventDayItemDataGaiaRecmd> queryWeekDataGaiaRecmd(@Param("isWithOrder") boolean isWithOrder);
 }

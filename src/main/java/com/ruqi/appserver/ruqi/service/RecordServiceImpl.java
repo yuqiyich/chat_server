@@ -2,7 +2,9 @@ package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.response.EventDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.constans.DotEventKey;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
@@ -264,6 +266,47 @@ public class RecordServiceImpl implements IRecordService {
                             eventDayUserH5Hybrid.reloadFailCountA = item.totalCount;
                             break;
                     }
+                }
+            }
+        }
+        return resultList;
+    }
+
+    @Override
+    public List<EventDataGaiaRecmd> queryWeekDataGaiaRecmd() {
+        // 初始化要返回的结构体、日期
+        List<EventDataGaiaRecmd> resultList = new ArrayList<>();
+        List<String> daysBetwwen = DateTimeUtils.getDaysBetwwen(6);
+        for (String dateStr : daysBetwwen) {
+            EventDataGaiaRecmd item = new EventDataGaiaRecmd();
+            item.date = dateStr;
+            resultList.add(item);
+        }
+
+        // sql查看每天每个平台每个key的数量，处理
+        List<DBEventDayItemDataGaiaRecmd> allGaiaRecmds = dotEventInfoWrapper.queryWeekDataGaiaRecmd(false);
+        for (DBEventDayItemDataGaiaRecmd item : allGaiaRecmds) {
+            // 每一条数据，需要变更返回结果中的某一条
+            int dataindex = daysBetwwen.indexOf(item.date);
+            if (-1 != dataindex) {
+                EventDataGaiaRecmd eventDataGaiaRecmd = resultList.get(dataindex);
+                if (BaseRecordInfo.PLATFORM_IOS.equals(item.platform)) {
+                    eventDataGaiaRecmd.gaiaRecmdCountI = item.totalCount;
+                } else if (BaseRecordInfo.PLATFORM_ANDROID.equals(item.platform)) {
+                    eventDataGaiaRecmd.gaiaRecmdCountA = item.totalCount;
+                }
+            }
+        }
+        List<DBEventDayItemDataGaiaRecmd> orderGaiaRecmds = dotEventInfoWrapper.queryWeekDataGaiaRecmd(true);
+        for (DBEventDayItemDataGaiaRecmd item : orderGaiaRecmds) {
+            // 每一条数据，需要变更返回结果中的某一条
+            int dataindex = daysBetwwen.indexOf(item.date);
+            if (-1 != dataindex) {
+                EventDataGaiaRecmd eventDataGaiaRecmd = resultList.get(dataindex);
+                if (BaseRecordInfo.PLATFORM_IOS.equals(item.platform)) {
+                    eventDataGaiaRecmd.gaiaRecmdOrderCountI = item.totalCount;
+                } else if (BaseRecordInfo.PLATFORM_ANDROID.equals(item.platform)) {
+                    eventDataGaiaRecmd.gaiaRecmdOrderCountA = item.totalCount;
                 }
             }
         }
