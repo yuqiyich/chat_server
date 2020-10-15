@@ -43,5 +43,5 @@ public interface IRecordService {
 
     List<EventDayDataH5Hybrid> queryWeekDataH5Hybrid();
 
-    List<EventDataGaiaRecmd> queryWeekDataGaiaRecmd();
+    List<EventDataGaiaRecmd> queryWeekDataGaiaRecmd(String appId);
 }

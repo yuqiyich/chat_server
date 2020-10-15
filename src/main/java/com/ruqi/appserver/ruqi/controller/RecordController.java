@@ -2,6 +2,7 @@ package com.ruqi.appserver.ruqi.controller;
 
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.request.GaiaRecmdWeekDataRequest;
 import com.ruqi.appserver.ruqi.bean.response.EventDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
@@ -357,10 +358,10 @@ public class RecordController extends BaseController {
     @RequestMapping(value = "/queryWeekDataGaiaRecmd", method = RequestMethod.POST)
     @ResponseBody
     @CrossOrigin
-    public BaseBean<List<EventDataGaiaRecmd>> queryWeekDataGaiaRecmd() {
+    public BaseBean<List<EventDataGaiaRecmd>> queryWeekDataGaiaRecmd(@RequestBody GaiaRecmdWeekDataRequest request) {
         logger.info("queryWeekDataGaiaRecmd");
         BaseBean<List<EventDataGaiaRecmd>> result = new BaseBean<>();
-        List<EventDataGaiaRecmd> receiverEntities = recordService.queryWeekDataGaiaRecmd();
+        List<EventDataGaiaRecmd> receiverEntities = recordService.queryWeekDataGaiaRecmd(request.appId);
         result.data = receiverEntities;
         return result;
     }

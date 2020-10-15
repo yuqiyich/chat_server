@@ -273,7 +273,7 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
-    public List<EventDataGaiaRecmd> queryWeekDataGaiaRecmd() {
+    public List<EventDataGaiaRecmd> queryWeekDataGaiaRecmd(String appId) {
         // 初始化要返回的结构体、日期
         List<EventDataGaiaRecmd> resultList = new ArrayList<>();
         List<String> daysBetwwen = DateTimeUtils.getDaysBetwwen(6);
@@ -284,7 +284,7 @@ public class RecordServiceImpl implements IRecordService {
         }
 
         // sql查看每天每个平台每个key的数量，处理
-        List<DBEventDayItemDataGaiaRecmd> allGaiaRecmds = dotEventInfoWrapper.queryWeekDataGaiaRecmd(false);
+        List<DBEventDayItemDataGaiaRecmd> allGaiaRecmds = dotEventInfoWrapper.queryWeekDataGaiaRecmd(appId, false);
         for (DBEventDayItemDataGaiaRecmd item : allGaiaRecmds) {
             // 每一条数据，需要变更返回结果中的某一条
             int dataindex = daysBetwwen.indexOf(item.date);
@@ -297,7 +297,7 @@ public class RecordServiceImpl implements IRecordService {
                 }
             }
         }
-        List<DBEventDayItemDataGaiaRecmd> orderGaiaRecmds = dotEventInfoWrapper.queryWeekDataGaiaRecmd(true);
+        List<DBEventDayItemDataGaiaRecmd> orderGaiaRecmds = dotEventInfoWrapper.queryWeekDataGaiaRecmd(appId, true);
         for (DBEventDayItemDataGaiaRecmd item : orderGaiaRecmds) {
             // 每一条数据，需要变更返回结果中的某一条
             int dataindex = daysBetwwen.indexOf(item.date);

@@ -222,8 +222,9 @@ public interface DotEventInfoWrapper {
             " from dot_event_record",
             " where record_time >= date_sub(curdate(), interval 6 day)",
             "<if test='isWithOrder == true'> AND order_id IS NOT NULL AND order_id!=''</if>",
-            " AND (event_key='FALLBACK_SUCCESS_GAIA_RECOMMEND') AND app_id=2",
+            " AND (event_key='FALLBACK_SUCCESS_GAIA_RECOMMEND')",
+            "<if test='appId!=null and appId!=\"\"'> AND app_id = #{appId}</if>",
             " group by date(record_time), platform, event_key",
             "</script>"})
-    List<DBEventDayItemDataGaiaRecmd> queryWeekDataGaiaRecmd(@Param("isWithOrder") boolean isWithOrder);
+    List<DBEventDayItemDataGaiaRecmd> queryWeekDataGaiaRecmd(@Param("appId") String appId, @Param("isWithOrder") boolean isWithOrder);
 }
