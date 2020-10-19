@@ -36,4 +36,6 @@ public class RecordDotEventInfo {
     public String scene;
     public String orderId;
     public int userType;
+
+    public long totalSize;
 }

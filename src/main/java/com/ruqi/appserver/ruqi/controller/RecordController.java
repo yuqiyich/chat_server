@@ -326,7 +326,11 @@ public class RecordController extends BaseController {
         logger.info("queryCommonEventListForLayui params:" + params);
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
         List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params);
-        long totalSize = recordService.queryTotalSizeCommonEvent(params);
+//        long totalSize = recordService.queryTotalSizeCommonEvent(params);
+        long totalSize = 0;
+        if (receiverEntities.size() > 0) {
+            totalSize = receiverEntities.get(0).totalSize;
+        }
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
 
         return result;
