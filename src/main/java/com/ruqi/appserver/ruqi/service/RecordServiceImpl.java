@@ -2,7 +2,9 @@ package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.response.EventDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.constans.DotEventKey;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
@@ -10,6 +12,7 @@ import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
+import com.ruqi.appserver.ruqi.utils.DotEventDataUtils;
 import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.slf4j.Logger;
@@ -152,7 +155,14 @@ public class RecordServiceImpl implements IRecordService {
 
     @Override
     public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
-        return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params);
+        return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params, getEventTypeStr(params));
+    }
+
+    private String getEventTypeStr(RecordInfo<DotEventInfo> params) {
+        if (null != params && null != params.getContent() && !MyStringUtils.isEmpty(params.getContent().eventType)) {
+            return DotEventDataUtils.getInstance().getSqlStr(params.getContent().eventType);
+        }
+        return null;
     }
 
 //    @Override
@@ -177,17 +187,17 @@ public class RecordServiceImpl implements IRecordService {
 
     @Override
     public long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> recordInfo) {
-        return dotEventInfoWrapper.queryTotalSizeCommonEvent(recordInfo);
+        return dotEventInfoWrapper.queryTotalSizeCommonEvent(recordInfo, getEventTypeStr(recordInfo));
     }
 
     @Override
     public long queryEventTotalUserSize(RecordInfo<DotEventInfo> recordInfo) {
-        return dotEventInfoWrapper.queryEventTotalUserSize(recordInfo);
+        return dotEventInfoWrapper.queryEventTotalUserSize(recordInfo, getEventTypeStr(recordInfo));
     }
 
     @Override
     public long queryEventTotalOrderSize(RecordInfo<DotEventInfo> recordInfo) {
-        return dotEventInfoWrapper.queryEventTotalOrderSize(recordInfo);
+        return dotEventInfoWrapper.queryEventTotalOrderSize(recordInfo, getEventTypeStr(recordInfo));
     }
 
     @Override
@@ -264,6 +274,47 @@ public class RecordServiceImpl implements IRecordService {
                             eventDayUserH5Hybrid.reloadFailCountA = item.totalCount;
                             break;
                     }
+                }
+            }
+        }
+        return resultList;
+    }
+
+    @Override
+    public List<EventDataGaiaRecmd> queryWeekDataGaiaRecmd(String appId) {
+        // 初始化要返回的结构体、日期
+        List<EventDataGaiaRecmd> resultList = new ArrayList<>();
+        List<String> daysBetwwen = DateTimeUtils.getDaysBetwwen(6);
+        for (String dateStr : daysBetwwen) {
+            EventDataGaiaRecmd item = new EventDataGaiaRecmd();
+            item.date = dateStr;
+            resultList.add(item);
+        }
+
+        // sql查看每天每个平台每个key的数量，处理
+        List<DBEventDayItemDataGaiaRecmd> allGaiaRecmds = dotEventInfoWrapper.queryWeekDataGaiaRecmd(appId, false);
+        for (DBEventDayItemDataGaiaRecmd item : allGaiaRecmds) {
+            // 每一条数据，需要变更返回结果中的某一条
+            int dataindex = daysBetwwen.indexOf(item.date);
+            if (-1 != dataindex) {
+                EventDataGaiaRecmd eventDataGaiaRecmd = resultList.get(dataindex);
+                if (BaseRecordInfo.PLATFORM_IOS.equals(item.platform)) {
+                    eventDataGaiaRecmd.gaiaRecmdCountI = item.totalCount;
+                } else if (BaseRecordInfo.PLATFORM_ANDROID.equals(item.platform)) {
+                    eventDataGaiaRecmd.gaiaRecmdCountA = item.totalCount;
+                }
+            }
+        }
+        List<DBEventDayItemDataGaiaRecmd> orderGaiaRecmds = dotEventInfoWrapper.queryWeekDataGaiaRecmd(appId, true);
+        for (DBEventDayItemDataGaiaRecmd item : orderGaiaRecmds) {
+            // 每一条数据，需要变更返回结果中的某一条
+            int dataindex = daysBetwwen.indexOf(item.date);
+            if (-1 != dataindex) {
+                EventDataGaiaRecmd eventDataGaiaRecmd = resultList.get(dataindex);
+                if (BaseRecordInfo.PLATFORM_IOS.equals(item.platform)) {
+                    eventDataGaiaRecmd.gaiaRecmdOrderCountI = item.totalCount;
+                } else if (BaseRecordInfo.PLATFORM_ANDROID.equals(item.platform)) {
+                    eventDataGaiaRecmd.gaiaRecmdOrderCountA = item.totalCount;
                 }
             }
         }

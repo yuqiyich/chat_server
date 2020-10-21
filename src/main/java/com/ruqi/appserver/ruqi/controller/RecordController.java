@@ -2,6 +2,8 @@ package com.ruqi.appserver.ruqi.controller;
 
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.request.GaiaRecmdWeekDataRequest;
+import com.ruqi.appserver.ruqi.bean.response.EventDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
@@ -324,7 +326,11 @@ public class RecordController extends BaseController {
         logger.info("queryCommonEventListForLayui params:" + params);
         BaseBean<BasePageBean<RecordDotEventInfo>> result = new BaseBean<>();
         List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params);
-        long totalSize = recordService.queryTotalSizeCommonEvent(params);
+//        long totalSize = recordService.queryTotalSizeCommonEvent(params);
+        long totalSize = 0;
+        if (receiverEntities.size() > 0) {
+            totalSize = receiverEntities.get(0).totalSize;
+        }
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
 
         return result;
@@ -343,6 +349,23 @@ public class RecordController extends BaseController {
         logger.info("queryWeekDataH5Hybrid");
         BaseBean<List<EventDayDataH5Hybrid>> result = new BaseBean<>();
         List<EventDayDataH5Hybrid> receiverEntities = recordService.queryWeekDataH5Hybrid();
+        result.data = receiverEntities;
+        return result;
+    }
+
+    /**
+     * 推荐上车点盖亚兜底7天内数据总量
+     *
+     * @return
+     */
+    @ApiOperation(value = "推荐上车点盖亚兜底7天内数据总量", notes = "")
+    @RequestMapping(value = "/queryWeekDataGaiaRecmd", method = RequestMethod.POST)
+    @ResponseBody
+    @CrossOrigin
+    public BaseBean<List<EventDataGaiaRecmd>> queryWeekDataGaiaRecmd(@RequestBody GaiaRecmdWeekDataRequest request) {
+        logger.info("queryWeekDataGaiaRecmd");
+        BaseBean<List<EventDataGaiaRecmd>> result = new BaseBean<>();
+        List<EventDataGaiaRecmd> receiverEntities = recordService.queryWeekDataGaiaRecmd(request.appId);
         result.data = receiverEntities;
         return result;
     }

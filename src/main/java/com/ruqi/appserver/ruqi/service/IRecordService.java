@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.response.EventDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 
@@ -42,4 +43,5 @@ public interface IRecordService {
 
     List<EventDayDataH5Hybrid> queryWeekDataH5Hybrid();
 
+    List<EventDataGaiaRecmd> queryWeekDataGaiaRecmd(String appId);
 }
