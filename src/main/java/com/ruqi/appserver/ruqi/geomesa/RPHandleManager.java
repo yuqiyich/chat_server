@@ -51,7 +51,6 @@ public class RPHandleManager {
     private static Logger logger = LoggerFactory.getLogger(RPHandleManager.class);
     public static final String DEV = "dev";//开发环境表名字段
     public static final String PRO = "pro";//正式环境表名字段
-    private KNearestNeighborSearchProcess mKNNprocess = new KNearestNeighborSearchProcess();
     private RecommendPointStrategyExecutor mRecommendPointStrategyExecutor;
 
     public static RPHandleManager
