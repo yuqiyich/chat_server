@@ -1,24 +1,41 @@
 package com.ruqi.appserver.ruqi.geomesa;
 
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
-import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
-import com.ruqi.appserver.ruqi.geomesa.db.GeoMesaUtil;
-import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
+import com.ruqi.appserver.ruqi.geomesa.db.*;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.utils.JsonUtil;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureTypeImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.Converter;
+import org.locationtech.geomesa.features.ScalaSimpleFeature;
 import org.locationtech.geomesa.index.conf.QueryHints;
+import org.locationtech.geomesa.process.query.KNearestNeighborSearchProcess;
 import org.locationtech.geomesa.utils.geotools.converters.JavaTimeConverterFactory;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.*;
 
 public class RpGeoTest {
-    public static final String CITY_CODE ="441900";//开发环境的citycode dev_440100
+    private static Logger logger = LoggerFactory.getLogger(RpGeoTest.class);
+    public static final String CITY_CODE ="440100";//开发环境的citycode dev_440100
     public static final String Compose_CITY_CODE ="pro_"+CITY_CODE;
 
 
@@ -26,13 +43,16 @@ public class RpGeoTest {
      * 初始化的城市列表
      *
      */
-    public static final String[] INIT_TABLE_CITYS={"440100","440300","440600","441900"};
+    public static final String[] INIT_TABLE_CITYS={"440100","440300","440600","441900","110000"};
 
     public static void main(String[] args) {
         GeoDbHandler.setDebug(true);
-//         RPHandleManager.getIns().saveRecommendDatasByCityCode("pro",CITY_CODE,getTestData());
+//        initAllTableIfNotExist(Arrays.asList(INIT_TABLE_CITYS));
+//         RPHandleManager.getIns().saveRecommendDatasByCityCode("dev",CITY_CODE,getTestData());
 //         queryAllData("pro");
-           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412,"pro");
+//           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412,"pro");
+        RPHandleManager.getIns().queryRecommendPoints(113.3348123,23.1067123,"pro");
+        RPHandleManager.getIns().queryRecommendPoints(113.3352123,23.1064123,"pro");
     }
 
     /**
@@ -42,7 +62,7 @@ public class RpGeoTest {
      */
     public static void initAllTableIfNotExist(List<String> cityCodes){
         for (int i = 0; i < cityCodes.size(); i++) {
-            RPHandleManager.getIns().saveRecommendDatasByCityCode("dev",cityCodes.get(i),getTestData());
+            RPHandleManager.getIns().saveRecommendDatasByCityCode("pro",cityCodes.get(i),getTestData());
         }
     }
 
@@ -61,28 +81,63 @@ public class RpGeoTest {
 
     public static void queryAllData(String env){
         try {
-            //推荐点的表
-            System.out.println("==============================推荐点的表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT));
-            System.out.println("==============================推荐点的全局表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT_ALL));
-//            System.out.println("数量是："+GeoDbHandler.queryTableRowCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE,null));  ;
-            //记录表
-            System.out.println("==============================记录表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RECORD));
-            //扎针点和上车点的表
-            System.out.println("==============================扎针点和上车点的表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA));
-            System.out.println("==============================扎针点和上车点的全局表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA_ALL));
+            List<SimpleFeature> dataSets=GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA_ALL));
+            logger.info("开始本地运算KNN算法");
 
-            //关系表
-            System.out.println("==============================关系表=============================");
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RELATED_RECORD));
+            SimpleFeatureType sft = dataSets.get(0).getFeatureType();
+            DefaultFeatureCollection inputFeatures = new DefaultFeatureCollection(GeoTable.TYPE_RECOMMEND_POINT_ALL,sft);
+            ScalaSimpleFeature inputsimpleFeature = convertPointToRecordSF(113.3348,23.1067,sft);
+            inputFeatures.add(inputsimpleFeature);
+            logger.info("开始本地运算KNN算法1");
+            DefaultFeatureCollection dataSetFeatures = new DefaultFeatureCollection(GeoTable.TYPE_RECOMMEND_POINT_ALL,sft);
+             if (dataSets!=null&&dataSets.size()>0){
+                 dataSetFeatures.addAll(dataSets);
+                 logger.info("开始本地运算KNN算法2");
+                 KNearestNeighborSearchProcess process=new KNearestNeighborSearchProcess();
+                SimpleFeatureCollection datas= process.execute(inputFeatures,dataSetFeatures,1,0d,500d);
+                 try ( SimpleFeatureIterator iterator = datas.features() ) {
+                     while (iterator.hasNext()) {
+                         SimpleFeature feature = iterator.next();
+                         logger.info("result " + DataUtilities.encodeFeature(feature));
+                     }
+                 }
+               logger.info("结束本地运算KNN算法：结果为"+datas.size());
+             }
+
+//            //推荐点的表
+//            System.out.println("==============================推荐点的表=============================");
+//            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT));
+//            System.out.println("==============================推荐点的全局表=============================");
+//            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT_ALL));
+////            System.out.println("数量是："+GeoDbHandler.queryTableRowCount(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+ Compose_CITY_CODE,null));  ;
+//            //记录表
+//            System.out.println("==============================记录表=============================");
+//            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RECORD));
+//            //扎针点和上车点的表
+//            System.out.println("==============================扎针点和上车点的表=============================");
+//            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA_ALL));
+//            System.out.println("==============================扎针点和上车点的全局表=============================");
+//            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_DATA_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_DATA_ALL));
+//
+//            //关系表
+//            System.out.println("==============================关系表=============================");
+//            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_SELECT_AND_RECOMMEND_RELATED_PREFIX+ env+"_"+GeoTable.WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_RELATED_RECORD));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static ScalaSimpleFeature convertPointToRecordSF(double lng, double lat, SimpleFeatureType sft) {
+        String  fid = UUID.randomUUID().toString();
+        ScalaSimpleFeature builder = new ScalaSimpleFeature(sft,"rrId",null,null);
+            //23.107395,113.322317
+            String selectPoint = "POINT ("+lng  + " " +lat + ")";
+        builder.setAttribute("rrId",fid);
+        builder.setAttribute("lGeom",selectPoint);
+        builder.setAttribute("sGeom",selectPoint);
+
+        return  builder;
     }
 
     public static List<Query> getTestQueries(String sftypeName) {
@@ -92,17 +147,18 @@ public class RpGeoTest {
 
                 // most of the data is from 2018-01-01
                 // note: DURING is endpoint exclusive
-                String during = "dtg DURING 2020-09-11T00:00:00.000Z/2020-09-11T03:00:00.000Z";
+//                String during = "dtg DURING 2020-09-11T00:00:00.000Z/2020-09-11T03:00:00.000Z";
                 String dateequal = "dtg DURING 2019-12-31T00:00:00.000Z/2022-01-02T00:00:00.000Z";
                 String channel = "channel=2";
                 //bbox rule  lng,lat,lng,lat
                 String idrule="rpId = '122.984662_23.986662'";
                 String bbox = "bbox(sGeom,113.11344,23.11344,113.11344,23.11344)";
                 String equals=" EQUALS(sGeom,POINT(113.103284 23.120406))";
-                String contains=" CONTAINS(sGeom,SRID=4326;POINT(113.103284 23.120406))";
+                String contains=" CONTAINS(sGeom,SRID=4326;POINT(113.3348 23.1067))";
                 String exist="rrId EXISTS";
+               String withIn=" DWITHIN( sGeom , POINT(113.3348 23.1067) , 100 , meters )";
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(idrule)));
-                query.add(new Query(sftypeName, ECQL.toFilter(during)));
+                query.add(new Query(sftypeName, ECQL.toFilter(withIn)));
 //                query.add(queryTableRowCount(sftypeName));
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains+" AND " +during)));
                 // bounding box over most of the united states
@@ -155,4 +211,27 @@ public class RpGeoTest {
         }
         return data;
     }
+
+    public static void testJdk8SStream(){
+        List<RecommendPoint> datas=new ArrayList<>();
+        for (int i = 0; i <5 ; i++) {
+            RecommendPoint recommendPoint=new RecommendPoint();
+            if (i<3){
+                recommendPoint.setAddress("address");
+            } else {
+                recommendPoint.setAddress("address"+i);
+            }
+             datas.add(recommendPoint);
+        }
+        System.out.println(JsonUtil.beanToJsonStr(datas));
+       List<RecommendPoint > dataChange = datas.stream().filter(distinctByKey(RecommendPoint::getAddress)).collect(Collectors.toList());
+        System.out.println(JsonUtil.beanToJsonStr(dataChange));
+    }
+
+
+    static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
 }

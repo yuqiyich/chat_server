@@ -7,15 +7,25 @@ import com.ruqi.appserver.ruqi.geomesa.db.*;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendDataUpdater;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendPointUpdater;
+import com.ruqi.appserver.ruqi.geomesa.recommendpoint.RecommendPointStrategyExecutor;
+import com.ruqi.appserver.ruqi.geomesa.recommendpoint.base.PointQueryConfig;
+import com.ruqi.appserver.ruqi.geomesa.recommendpoint.pointquerystrategy.KnnQueryStrategy;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
+import com.ruqi.appserver.ruqi.utils.BusinessException;
 import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
+import org.locationtech.geomesa.features.ScalaSimpleFeature;
+import org.locationtech.geomesa.process.query.KNearestNeighborSearchProcess;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
@@ -41,7 +51,8 @@ public class RPHandleManager {
     private static Logger logger = LoggerFactory.getLogger(RPHandleManager.class);
     public static final String DEV = "dev";//开发环境表名字段
     public static final String PRO = "pro";//正式环境表名字段
-
+    private KNearestNeighborSearchProcess mKNNprocess = new KNearestNeighborSearchProcess();
+    private RecommendPointStrategyExecutor mRecommendPointStrategyExecutor;
 
     public static RPHandleManager
     getIns() {
@@ -54,6 +65,15 @@ public class RPHandleManager {
     }
 
     private RPHandleManager() {
+        try {
+            PointQueryConfig config=new PointQueryConfig();
+            mRecommendPointStrategyExecutor = new RecommendPointStrategyExecutor(
+                    config.addQueryStrategy(new KnnQueryStrategy())
+            );
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            logger.error("create RecommendPointStrategyExecutor failed");
+        }
     }
 
     /**
@@ -480,78 +500,22 @@ public class RPHandleManager {
     }
 
     /**
-     *
      * @param lat
      * @param lng
      * @return
      */
-    public List<RecommendPoint> queryRecommendPoints(double lng, double lat, String env){
-
-      String id=  GeoMesaUtil.getPrecision(lng,TABLE_RECORD_PRIMARY_KEY_PRECISION)  + "_" + GeoMesaUtil.getPrecision(lat,TABLE_RECORD_PRIMARY_KEY_PRECISION);
-      //精准查询扎针点的关系表
-        String recommonDatatableName = GeoTable.TABLE_RECOMMEND_DATA_PREFIX + env + "_" + WORLD_CODE;
-        DataStore dataStore = GeoDbHandler.getHbaseTableDataStore(recommonDatatableName);
-        String typeName = MesaDataConnectManager.getIns().getTableTypeName(recommonDatatableName);
-        if (dataStore != null && !StringUtils.isEmpty(typeName)) {
-            try {
-                List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
-                        Arrays.asList(new Query(typeName, ECQL.toFilter(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_DATA+"='"+id+"'"))));
-                if (features!=null&&features.size()==1){
-                    MultiPoint points = (MultiPoint) features.get(0).getAttribute("rGeoms");
-                      //根据多点查具体信息
-                     return  queryRpPointsByID(points,env);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (CQLException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-            logger.error("[" + recommonDatatableName + "] table not exists or schema is null by geomesa");
+    public List<RecommendPoint> queryRecommendPoints(double lng, double lat, String env) {
+        if (mRecommendPointStrategyExecutor!=null){
+           return mRecommendPointStrategyExecutor.queryBestRecommendPoints(lng,lat,env);
         }
-      return null;
+        logger.error("mRecommendPointStrategyExecutor is null");
+        return null;
+
     }
 
-    private List<RecommendPoint> queryRpPointsByID(  MultiPoint points,String env) {
-        StringBuilder cqlPoint = new StringBuilder(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT+" IN (");
-        int numPoints=points.getNumPoints();
-        Coordinate[] coordinates =points.getCoordinates();
-        for (int i = 0; i < numPoints; i++) {
-            cqlPoint.append("'"+coordinates[i].x+"_"+coordinates[i].y+"'"+((i==numPoints-1)?"":","));
-        }
-        cqlPoint.append(")");
-        String recommonPointtableName = GeoTable.TABLE_RECOMMOND_PONIT_PREFIX + env + "_" + WORLD_CODE;
-        String typeName = MesaDataConnectManager.getIns().getTableTypeName(recommonPointtableName);
 
-        DataStore dataStorePoint = GeoDbHandler.getHbaseTableDataStore(recommonPointtableName);
-        try {
-            List<SimpleFeature> featurePoints = GeoDbHandler.queryFeature(dataStorePoint,
-                    Arrays.asList(new Query(typeName, ECQL.toFilter(cqlPoint.toString()))));
-            if (featurePoints!=null &&featurePoints.size()>0){
-                List<RecommendPoint>  pointDatas=new ArrayList<>();
-                for (SimpleFeature simpleFeature : featurePoints) {
-                    RecommendPoint recommendPoint = new RecommendPoint();
-                    String title = (String) simpleFeature.getAttribute(GeoTable.KEY_TITLE);
-                    String address = (String) simpleFeature.getAttribute(GeoTable.KEY_ADDRESS);
-                    Point point = (Point) simpleFeature.getAttribute(GeoTable.KEY_POINT_RECMD);
-                    recommendPoint.setLat(point.getY());
-                    recommendPoint.setLng(point.getX());
-                    recommendPoint.setTitle(title);
-                    recommendPoint.setAddress(address);
-                    pointDatas.add(recommendPoint);
-                }
-                return pointDatas;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CQLException e) {
-            e.printStackTrace();
-        }
 
-        return  null;
 
-    }
+
 
 }
