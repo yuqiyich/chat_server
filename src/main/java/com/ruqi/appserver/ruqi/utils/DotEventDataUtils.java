@@ -68,6 +68,11 @@ public class DotEventDataUtils {
         voiceDialKeySet.add("VOICE_CALL_RECEIVER_CONNECT_SUCCESS");
         voiceDialKeySet.add("VOICE_CALL_RECEIVER_CONNECT_FAIL");
         dotEventDataMap.put("voiceDial", voiceDialKeySet);
+
+        Set<String> adKeySet = new HashSet<>();
+        adKeySet.add("FULL_LINK_AD_CLICK");
+        adKeySet.add("FULL_LINK_AD_EXPOSURE");
+        dotEventDataMap.put("ad", adKeySet);
     }
 
     public static DotEventDataUtils getInstance() { // 1
