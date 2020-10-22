@@ -15,14 +15,14 @@ public interface DotEventInfoWrapper {
 
     @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,record_time,device_brand," +
             "system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode," +
-            "device_model,request_ip, order_id, scene, user_type) " +
+            "device_model,request_ip, order_id, scene, user_type, ext) " +
             "values(#{dotEventInfo.content.eventKey},#{dotEventInfo.userInfo.userId},#{dotEventInfo.content.deviceId}," +
             "#{dotEventInfo.content.eventDetail},#{createDate},#{recordTime}," +
             "#{dotEventInfo.content.deviceBrand},#{dotEventInfo.content.systemVersion},#{dotEventInfo.content.appVersionName}," +
             "#{dotEventInfo.content.netState},#{dotEventInfo.content.locationLat},#{dotEventInfo.content.locationLng}," +
             "#{dotEventInfo.content.channel},#{appId},#{dotEventInfo.content.platform}," +
             "#{dotEventInfo.content.appVersionCode},#{dotEventInfo.content.deviceModel},#{requestIp}," +
-            "#{dotEventInfo.content.orderId},#{dotEventInfo.content.scene},#{dotEventInfo.content.userType})")
+            "#{dotEventInfo.content.orderId},#{dotEventInfo.content.scene},#{dotEventInfo.content.userType},#{dotEventInfo.content.ext})")
     void insertDotEventRecord(@Param("dotEventInfo") UploadRecordInfo<BaseUploadRecordInfo> uploadRecordInfo,
                               @Param("createDate") Date createDate,
                               @Param("appId") int appId,

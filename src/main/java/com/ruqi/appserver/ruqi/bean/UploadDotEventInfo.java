@@ -39,7 +39,6 @@ public class UploadDotEventInfo extends BaseUploadRecordInfo {
      */
     public String eventKey;
     public String eventDetail;
-    public String ext;
     /**
      * 订单id
      */

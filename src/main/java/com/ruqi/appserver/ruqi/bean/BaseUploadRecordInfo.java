@@ -20,6 +20,7 @@ public class BaseUploadRecordInfo {
     public float locationLng;
     public String locationName;
     public String netState;
+    public String ext;
 
     /*****
      *查询字段参数
@@ -130,4 +131,11 @@ public class BaseUploadRecordInfo {
         this.platform = platform;
     }
 
+    public String getExt() {
+        return ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
+    }
 }
