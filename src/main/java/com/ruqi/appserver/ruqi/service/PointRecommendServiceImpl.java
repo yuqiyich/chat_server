@@ -248,8 +248,14 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
             for (Map.Entry<String, Integer> entry : lastUploadTimesDev.entrySet()) {
                 String cityCode = entry.getKey();
                 int uplaodTimesDev = entry.getValue();
-                int recommendDataCountDev = lastdayRecommendDataCountDev.get(cityCode);
-                int recommendPointCountDev = lastDayRecommendPointCountDev.get(cityCode);
+                int recommendDataCountDev = 0;
+                if(lastdayRecommendDataCountDev.containsKey(cityCode)) {
+                    recommendDataCountDev = lastdayRecommendDataCountDev.get(cityCode);
+                }
+                int recommendPointCountDev = 0;
+                if(lastDayRecommendPointCountDev.containsKey(cityCode)) {
+                    recommendPointCountDev = lastDayRecommendPointCountDev.get(cityCode);
+                }
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
                 recommentPointStaticsInfo.setCityCode(cityCode);
                 recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
@@ -277,12 +283,14 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
             for (Map.Entry<String, Integer> entry : lastUploadTimesPro.entrySet()) {
                 String cityCode = entry.getKey();
                 int uplaodTimesPro = entry.getValue();
-                // 防止异常
-//                if (!lastdayRecommendDataCountPro.containsKey(cityCode) || !lastDayRecommendPointCountPro.containsKey(cityCode)) {
-//                    continue;
-//                }
-                int recommendDataCountPro = lastdayRecommendDataCountPro.get(cityCode);
-                int recommendPointCountPro = lastDayRecommendPointCountPro.get(cityCode);
+                int recommendDataCountPro = 0;
+                if(lastdayRecommendDataCountPro.containsKey(cityCode)){
+                    recommendDataCountPro = lastdayRecommendDataCountPro.get(cityCode);
+                }
+                int recommendPointCountPro = 0;
+                if(lastDayRecommendPointCountPro.containsKey(cityCode)){
+                    recommendPointCountPro = lastDayRecommendPointCountPro.get(cityCode);
+                }
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
                 recommentPointStaticsInfo.setCityCode(cityCode);
                 recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
