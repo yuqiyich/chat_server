@@ -67,6 +67,8 @@ public class DotEventDataUtils {
         voiceDialKeySet.add("VOICE_CALL_RECEIVER_JOIN_CHANNEL");
         voiceDialKeySet.add("VOICE_CALL_RECEIVER_CONNECT_SUCCESS");
         voiceDialKeySet.add("VOICE_CALL_RECEIVER_CONNECT_FAIL");
+        voiceDialKeySet.add("VOICE_CALL_CALLER_FAIL_MICROPHONE_NOT_ALLOW");
+        voiceDialKeySet.add("VOICE_CALL_RECEIVER_FAIL_MICROPHONE_NOT_ALLOW");
         dotEventDataMap.put("voiceDial", voiceDialKeySet);
 
         Set<String> adKeySet = new HashSet<>();
