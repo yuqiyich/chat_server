@@ -69,6 +69,16 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         } else {
             recommentPointStaticsInfoList = recommendPointWrapper.getRecommendPointLastWeek(queryStaticRecommendPointsRequest.getEnv(), queryStaticRecommendPointsRequest.getCityCode());
         }
+        if (null != recommentPointStaticsInfoList && recommentPointStaticsInfoList.size() > 0) {
+            for (int i = recommentPointStaticsInfoList.size() - 1; i >= 0; i--) {
+                RecommentPointStaticsInfo recommentPointStaticsInfo = recommentPointStaticsInfoList.get(i);
+                if (recommentPointStaticsInfo.getCityCode().length() != 6) { // citycode、adcode都应该是6位数
+                    recommentPointStaticsInfoList.remove(i);
+                } else if (MyStringUtils.isEmpty(CityUtil.getCityName(recommentPointStaticsInfo.getCityCode()))) {
+                    recommentPointStaticsInfoList.remove(i);
+                }
+            }
+        }
         // 暂时没维护全国所有的的市区数据，所以有些会临时以未知保存到数据库
         for (RecommentPointStaticsInfo recommentPointStaticsInfo : recommentPointStaticsInfoList) {
             if ((MyStringUtils.isEmpty(recommentPointStaticsInfo.getCityName())
@@ -249,11 +259,11 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 String cityCode = entry.getKey();
                 int uplaodTimesDev = entry.getValue();
                 int recommendDataCountDev = 0;
-                if(lastdayRecommendDataCountDev.containsKey(cityCode)) {
+                if (lastdayRecommendDataCountDev.containsKey(cityCode)) {
                     recommendDataCountDev = lastdayRecommendDataCountDev.get(cityCode);
                 }
                 int recommendPointCountDev = 0;
-                if(lastDayRecommendPointCountDev.containsKey(cityCode)) {
+                if (lastDayRecommendPointCountDev.containsKey(cityCode)) {
                     recommendPointCountDev = lastDayRecommendPointCountDev.get(cityCode);
                 }
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
@@ -284,11 +294,11 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 String cityCode = entry.getKey();
                 int uplaodTimesPro = entry.getValue();
                 int recommendDataCountPro = 0;
-                if(lastdayRecommendDataCountPro.containsKey(cityCode)){
+                if (lastdayRecommendDataCountPro.containsKey(cityCode)) {
                     recommendDataCountPro = lastdayRecommendDataCountPro.get(cityCode);
                 }
                 int recommendPointCountPro = 0;
-                if(lastDayRecommendPointCountPro.containsKey(cityCode)){
+                if (lastDayRecommendPointCountPro.containsKey(cityCode)) {
                     recommendPointCountPro = lastDayRecommendPointCountPro.get(cityCode);
                 }
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();

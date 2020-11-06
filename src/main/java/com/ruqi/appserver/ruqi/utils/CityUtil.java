@@ -21,13 +21,13 @@ public class CityUtil {
         nameMap = new HashMap<>();
         centerLnglatMap = new HashMap<>();
 
-        nameMap.put("110000", "北京市");
+//        nameMap.put("110000", "北京市");
 //        nameMap.put("110100", "北京城区");
-        centerLnglatMap.put("110000", "116.405285,39.904989");
+//        centerLnglatMap.put("110000", "116.405285,39.904989");
 //        centerLnglatMap.put("110100", "116.405285,39.904989");
 
-        nameMap.put("441900", "东莞市");
-        centerLnglatMap.put("441900", "113.746262,23.046237");
+//        nameMap.put("441900", "东莞市");
+//        centerLnglatMap.put("441900", "113.746262,23.046237");
 
 
         nameMap.put("440100", "广州市");
@@ -68,26 +68,26 @@ public class CityUtil {
         centerLnglatMap.put("440605", "113.145577,23.031562");
         centerLnglatMap.put("440604", "113.112414,23.019643");
 
-        nameMap.put("440300", "深圳市");
-        nameMap.put("440306", "宝安区");
-        nameMap.put("440305", "南山区");
-        nameMap.put("440304", "福田区");
-        nameMap.put("440308", "盐田区");
-        nameMap.put("440303", "罗湖区");
-        nameMap.put("440310", "坪山区");
-        nameMap.put("440307", "龙岗区");
-        nameMap.put("440309", "龙华区");
-        nameMap.put("440311", "光明区");
-        centerLnglatMap.put("440300", "114.085947,22.547");
-        centerLnglatMap.put("440306", "113.828671,22.754741");
-        centerLnglatMap.put("440305", "113.92943,22.531221");
-        centerLnglatMap.put("440304", "114.05096,22.541009");
-        centerLnglatMap.put("440308", "114.235366,22.555069");
-        centerLnglatMap.put("440303", "114.123885,22.555341");
-        centerLnglatMap.put("440310", "114.338441,22.69423");
-        centerLnglatMap.put("440307", "114.251372,22.721511");
-        centerLnglatMap.put("440309", "114.044346,22.691963");
-        centerLnglatMap.put("440311", "113.935895,22.748816");
+//        nameMap.put("440300", "深圳市");
+//        nameMap.put("440306", "宝安区");
+//        nameMap.put("440305", "南山区");
+//        nameMap.put("440304", "福田区");
+//        nameMap.put("440308", "盐田区");
+//        nameMap.put("440303", "罗湖区");
+//        nameMap.put("440310", "坪山区");
+//        nameMap.put("440307", "龙岗区");
+//        nameMap.put("440309", "龙华区");
+//        nameMap.put("440311", "光明区");
+//        centerLnglatMap.put("440300", "114.085947,22.547");
+//        centerLnglatMap.put("440306", "113.828671,22.754741");
+//        centerLnglatMap.put("440305", "113.92943,22.531221");
+//        centerLnglatMap.put("440304", "114.05096,22.541009");
+//        centerLnglatMap.put("440308", "114.235366,22.555069");
+//        centerLnglatMap.put("440303", "114.123885,22.555341");
+//        centerLnglatMap.put("440310", "114.338441,22.69423");
+//        centerLnglatMap.put("440307", "114.251372,22.721511");
+//        centerLnglatMap.put("440309", "114.044346,22.691963");
+//        centerLnglatMap.put("440311", "113.935895,22.748816");
     }
 
     public static String getCityName(String cityCode) {
@@ -98,7 +98,8 @@ public class CityUtil {
         if (nameMap.containsKey(cityCode)) {
             return nameMap.get(cityCode);
         } else {
-            return "未知" + cityCode + "，JsonUtil.beanToJsonStr(nameMap)";
+            logger.info("未知cityCode:" + cityCode);
+            return "";
         }
     }
 

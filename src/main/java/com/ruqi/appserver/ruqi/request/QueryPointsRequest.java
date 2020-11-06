@@ -38,7 +38,7 @@ public class QueryPointsRequest extends BaseRequest {
     }
 
     public int getAreaType() {
-        if (mapZoom >= 16) {
+        if (mapZoom >= 18) {
             return PointList.TYPE_AREA_POINT;
         } else if (mapZoom >= 12) {
             return PointList.TYPE_AREA_DISTRICT;

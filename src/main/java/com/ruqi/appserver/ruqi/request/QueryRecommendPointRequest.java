@@ -1,5 +1,7 @@
 package com.ruqi.appserver.ruqi.request;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Author:liangbingkun
  * Time:2020/7/22
