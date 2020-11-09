@@ -24,14 +24,14 @@ public class PointList {
         public Point() {
         }
 
-        public Point(String x, int type, String title) {
-            lnglat = x;
+        public Point(String lnglat, int type, String title) {
+            this.lnglat = lnglat;
             pointType = type;
             this.title = title;
         }
 
-        public Point(String x, int type, String title, int pointCount) {
-            lnglat = x;
+        public Point(String lnglat, int type, String title, int pointCount) {
+            this.lnglat = lnglat;
             pointType = type;
             this.title = title;
             this.pointCount = pointCount;

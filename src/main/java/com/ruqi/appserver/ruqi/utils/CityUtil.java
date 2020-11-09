@@ -110,6 +110,7 @@ public class CityUtil {
         if (centerLnglatMap.containsKey(cityCode)) {
             return centerLnglatMap.get(cityCode);
         } else {
+            logger.error("--->getCenterLngLat no exiets cityCode=" + cityCode);
             return "0,0";
         }
     }
