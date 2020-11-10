@@ -74,9 +74,28 @@ public class RPHandleManager {
      * @param record   记录数据
      */
     public void saveRecommendDatasByCityCode(String evn, String cityCode, UploadRecommendPointRequest<RecommendPoint> record) {
+        if (record==null){
+            logger.error("record can not be null");
+            return;
+        }
         ArrayList<UploadRecommendPointRequest<RecommendPoint>> records = new ArrayList<>();
         records.add(record);
         saveRecommendRecordsByCityCode(evn, cityCode, records);
+    }
+
+    /**
+     * 存储记录数据
+     *
+     * @param evn      存储表的环境
+     * @param cityCode 城市编码
+     * @param record   记录数据
+     */
+    public void batchSaveRecommendDatasByCityCode(String evn, String cityCode, List<UploadRecommendPointRequest<RecommendPoint>> record) {
+        if (record==null&&!record.isEmpty()){
+            logger.error("record can not be null");
+            return;
+        }
+        saveRecommendRecordsByCityCode(evn, cityCode, record);
     }
 
     public void saveRecommendRecordsByCityCode(String evn, String cityCode, List<UploadRecommendPointRequest<RecommendPoint>> records) {

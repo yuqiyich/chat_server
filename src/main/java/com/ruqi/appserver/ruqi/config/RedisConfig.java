@@ -89,6 +89,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         Map<String, RedisCacheConfiguration> configMap = new HashMap<>();
         configMap.put(RedisUtil.GROUP_USER_INFO, cacheConfiguration.entryTtl(Duration.ofDays(7)));
         configMap.put(RedisUtil.GROUP_APP_VERSION_NAME, cacheConfiguration.entryTtl(Duration.ofDays(7)));
+        configMap.put(RedisUtil.GROUP_RECOMMEND_POINT, cacheConfiguration.entryTtl(Duration.ofDays(30)));
         configMap.put("app_info", cacheConfiguration.entryTtl(Duration.ofDays(30)));
 
         logger.info("cache class Loader:" + cacheLoader + "my cache RedisCacheConfiguration :" + cacheConfiguration);

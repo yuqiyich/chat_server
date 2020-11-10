@@ -1,11 +1,14 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.AppResponeInfo;
+import com.ruqi.appserver.ruqi.bean.RecommendPoint;
+import com.ruqi.appserver.ruqi.controller.PointController;
 import com.ruqi.appserver.ruqi.dao.mappers.AppInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RiskInfoWrapper;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
 import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
+import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
 import org.slf4j.Logger;
@@ -37,6 +40,8 @@ public class AnalyseServices {
 
     @Autowired
     AppInfoWrapper appInfoWrapper;
+
+
 
     @Autowired
     private IPointRecommendService iPointRecommendService;

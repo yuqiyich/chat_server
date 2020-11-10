@@ -19,6 +19,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.math.Ordering;
 
 import java.io.IOException;
 import java.util.*;
@@ -75,40 +76,47 @@ public class GeoDbHandler {
                 logger.error(" [" + fiDName + "] dont exits in  " + attrNamesist.toString());
             }
             List<SimpleFeature> newData = new ArrayList<>();
+            //ID IN ('river.1', 'river.2') INFO 这里一定要写好CQL语句要不然会很慢，之前用的每一个ID查一下，就会超级慢
+            Map<String, SimpleFeature> tempDatas = new HashMap<>();
+            StringBuilder cql = new StringBuilder(fiDName + " IN (");
             for (SimpleFeature feature : features) {
-                try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
-                             datastore.getFeatureWriter(sft.getTypeName(), ECQL.toFilter(fiDName + "='" + feature.getID() + "'"), Transaction.AUTO_COMMIT)) {
-                    logger.info(" [" + fiDName + "=  " + feature.getID());
-                    boolean hasOldData = false;
-                    while (writer.hasNext()) {
-                        SimpleFeature next = writer.next();
-                        if (next != null) {
-                            hasOldData = true;
-                            if (iUpdateDataListener != null) {
-                                iUpdateDataListener.updateData(next, feature);
-                                writer.write();
-                            } else {
-                                //or throw error ?
-                                logger.error("no iUpdateData listener，then return");
-                                return;
-                            }
+                tempDatas.put(feature.getID(), feature);
+                cql.append("'" + feature.getID() + "'" + ",");
+            }
+            cql.deleteCharAt(cql.length() - 1);
+            cql.append(")");
+            try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                         datastore.getFeatureWriter(sft.getTypeName(), ECQL.toFilter(cql.toString()), Transaction.AUTO_COMMIT)) {
+                while (writer.hasNext()) {
+                    SimpleFeature next = writer.next();
+                    if (next != null) {
+                        if (iUpdateDataListener != null) {
+                            SimpleFeature oldSf = tempDatas.get(next.getID());
+                            tempDatas.remove(next.getID());//移除旧的key的数据
+                            iUpdateDataListener.updateData(next, oldSf);
+                            writer.write();
+                        } else {
+                            //or throw error ?
+                            logger.error("no iUpdateData listener，then return");
+                            return;
                         }
+                    }
 //                     next.setAttribute("cityName", "武汉是");
 //                     writer.write(); // or, to delete it: writer.remove();
-                    }
-                    if (!hasOldData) {
-                        newData.add(feature);
-                    }
-                } catch (IOException | CQLException e) {
-                    e.printStackTrace();
                 }
+                //添加新的数据到新的列表中
+                tempDatas.forEach((k, v) -> newData.add(v));
+            } catch (IOException | CQLException e) {
+                e.printStackTrace();
             }
+            logger.info("updateExistDataOrInsert--> update " + features.size() + " features for " + sft.getTypeName());
             if (newData.size() > 0) {
                 try {
                     //FIXME 如果新增数据中有fid一样的数据，怎么处理
                     logger.info("there are new data,then write new " + newData.size() + " datas");
                     writeNewFeaturesData(datastore, sft, newData);
                 } catch (IOException e) {
+                    logger.error("write new data error", e);
                     e.printStackTrace();
                 }
             }
@@ -167,14 +175,15 @@ public class GeoDbHandler {
 
                     // write the feature
                     writer.write();
+
                 }
             }
-            logger.info("Wrote " + features.size() + " features for " + sft.getTypeName());
+            logger.info("writeNewFeaturesData-->Wrote " + features.size() + " features for " + sft.getTypeName());
         }
     }
 
     public static void createOrUpdateSchema(DataStore dataStore, SimpleFeatureType sft) {
-        logger.info("Creating new  schema: " + DataUtilities.encodeType(sft));
+//        logger.info("Creating new  schema: " + DataUtilities.encodeType(sft));
         // we only need to do the once - however, calling it repeatedly is a no-op
         try {
             SimpleFeatureType oldSft = dataStore.getSchema(sft.getTypeName());
@@ -191,7 +200,7 @@ public class GeoDbHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        logger.info("");
+//        logger.info("");
     }
 
     public static List<SimpleFeature> queryFeature(DataStore datastore, List<Query> queries) throws IOException {

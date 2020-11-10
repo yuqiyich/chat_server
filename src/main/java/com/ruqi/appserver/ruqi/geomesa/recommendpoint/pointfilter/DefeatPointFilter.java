@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class DefeatPointFilter implements IPointFilter {
 
     public static double MAX_DISTANCE = 10;//单位米，最大的相近距离
-    public static  Random random=new Random();
+    public static Random random = new Random();
 
     @Override
     public List<SimpleFeature> doFilter(double lng, double lat, List<SimpleFeature> inputPoints,String env) {

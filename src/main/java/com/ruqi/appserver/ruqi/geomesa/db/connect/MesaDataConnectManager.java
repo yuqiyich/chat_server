@@ -38,11 +38,11 @@ public class MesaDataConnectManager implements IDataConnectManager {
 
     @Override
     public DataStore getDataStore(String tableName) {
-        logger.info(tableName + "get connect start ");
+//        logger.info(tableName + "get connect start ");
         DataStore cache = mCaches.get(tableName);
         if (cache == null) {
             try {
-                logger.info(tableName + "not in memory  ，and create it start ");
+                logger.info("["+tableName + "]not in memory  ，and create it start ");
                 HashMap<String, String> configs = new HashMap<>();
                 configs.put(HbaseConnectConfig.KEY_ZOOKEEPER, HbaseConnectConfig.VALUE_ZOOKEEPER);
                 configs.put(HbaseConnectConfig.KEY_CATALOG, tableName);
@@ -50,10 +50,12 @@ public class MesaDataConnectManager implements IDataConnectManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            logger.info(tableName + "not in memory  ，and create it ok ");
+            logger.info("["+tableName + "]not in memory  ，and create it ok "+cache);
             mCaches.put(tableName, cache);
+        }else {
+            logger.info("["+tableName + " ]get cache  end"+cache);
         }
-        logger.info(tableName + " get connect  end");
+//     logger.info(tableName + " get connect  end");
         return cache;
     }
 

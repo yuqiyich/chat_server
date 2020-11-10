@@ -15,6 +15,7 @@ import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
+import com.ruqi.appserver.ruqi.utils.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,10 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     DotEventInfoWrapper dotEventInfoWrapper;
 
     @Override
-    @Async("taskExecutor")
+//    @Async("taskExecutor")
     public BaseCodeMsgBean saveRecommendPoint(UploadRecommendPointRequest uploadRecommendPointRequest, String evn) {
         BaseCodeMsgBean baseCodeMsgBean = new BaseCodeMsgBean();
+        logger.info("jvm 总的线程数："+ ThreadUtils.getAllThreadNum());
         RPHandleManager.getIns().saveRecommendDatasByCityCode(evn, uploadRecommendPointRequest.getCityCode(), (UploadRecommendPointRequest<RecommendPoint>) uploadRecommendPointRequest);
         return baseCodeMsgBean;
     }

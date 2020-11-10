@@ -4,23 +4,31 @@ import com.ruqi.appserver.ruqi.aspect.ApiVersion;
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
+import com.ruqi.appserver.ruqi.config.ThreadPoolTaskConfig;
+import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
+import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
 import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.service.AppInfoSevice;
 import com.ruqi.appserver.ruqi.service.IPointRecommendService;
+import com.ruqi.appserver.ruqi.service.PointSaveStartRunner;
+import com.ruqi.appserver.ruqi.service.RedisUtil;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
+import com.ruqi.appserver.ruqi.utils.SpringContextUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 推荐上车点的控制器
@@ -31,12 +39,18 @@ import javax.servlet.http.HttpServletRequest;
 @Api(tags = "推荐上车点的入口")
 @RequestMapping(value = "/point")
 public class PointController extends BaseController {
+    public  static String SAVE_POINT_QUEUES= "save_points"+ PointSaveStartRunner.POINT_SAVE_ENV;
     Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    RedisUtil redisUtil;
     @Autowired
     IPointRecommendService pointRecommendService;
     @Autowired
     AppInfoSevice appInfoSevice;
+
+    @Autowired
+    protected KafkaProducer kafkaProducer;
 
     @ApiOperation(value = "根据扎针点查询数据库中的全部推荐上车点", notes = "给中台查询使用")
     @RequestMapping(value = "/obtainRecommendPointsForWeb", method = RequestMethod.POST)
@@ -99,8 +113,12 @@ public class PointController extends BaseController {
             BaseCodeMsgBean baseCodeMsgBean = new BaseCodeMsgBean();
             if (appInfo != null) {
                 int appId = appInfo.getAppId();
-                //硬编码指定环境
-                pointRecommendService.saveRecommendPoint(uploadRecommendPointRequest, (appId == 1 || appId == 2) ? "pro" : "dev");
+                //fixme 硬编码指定环境 暂时去掉
+                StringBuilder res = new StringBuilder("") ;
+                redisUtil.putQueueData(RedisUtil.GROUP_RECOMMEND_POINT, SAVE_POINT_QUEUES, uploadRecommendPointRequest);
+                res.append("已经将数据放入redis，redis中存储的数据：" + redisUtil.getQueueSize(RedisUtil.GROUP_RECOMMEND_POINT, PointController.SAVE_POINT_QUEUES));
+                logger.info(res.toString());
+                kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.WARN,res.toString());
             }
             return baseCodeMsgBean;
         } catch (Exception e) {
