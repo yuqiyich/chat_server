@@ -94,7 +94,7 @@ public class CityUtil {
         if (null == nameMap) {
             init();
         }
-        logger.info("---->cityCode:" + cityCode + ", nameMap:" + JsonUtil.beanToJsonStr(nameMap));
+//        logger.info("---->cityCode:" + cityCode + ", nameMap:" + JsonUtil.beanToJsonStr(nameMap));
         if (nameMap.containsKey(cityCode)) {
             return nameMap.get(cityCode);
         } else {
