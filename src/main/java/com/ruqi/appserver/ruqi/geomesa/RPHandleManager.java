@@ -17,17 +17,9 @@ import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
-import org.locationtech.geomesa.features.ScalaSimpleFeature;
-import org.locationtech.geomesa.process.query.KNearestNeighborSearchProcess;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -38,7 +30,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.TABLE_RECORD_PRIMARY_KEY_PRECISION;
 import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
 
 /**
@@ -65,7 +56,7 @@ public class RPHandleManager {
 
     private RPHandleManager() {
         try {
-            PointQueryConfig config=new PointQueryConfig();
+            PointQueryConfig config = new PointQueryConfig();
             mRecommendPointStrategyExecutor = new RecommendPointStrategyExecutor(
                     config.addQueryStrategy(new KnnQueryStrategy())
             );
@@ -455,12 +446,24 @@ public class RPHandleManager {
             String tableName = tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
 
             if (HbaseDbHandler.hasTable(tableName)) {
+                // 区域对应数量（可见区域内）
                 Map<String, Integer> areaPointCountMap = GeoDbHandler.queryGroupCount(tableName, cqlBox, groupKey);
+                StringBuilder sb = new StringBuilder();
+                for (String key : areaPointCountMap.keySet()) {
+                    sb.append(groupKey + "=" + key + " or ");
+                }
+                String cqlCount = sb.substring(0, sb.length() - 4);
+                // 区域对应数量
+                areaPointCountMap = GeoDbHandler.queryGroupCount(tableName, cqlCount, groupKey);
+
                 logger.info("areaPointCountMap:" + areaPointCountMap);
                 logger.info("areaPointCountMap.keySet():" + areaPointCountMap.keySet());
                 for (String key : areaPointCountMap.keySet()) {
                     // 区域编码后面两位为0的话是城市编码了，应该是错误的，抛弃
                     if (MyStringUtils.isEqueals(groupKey, GeoTable.KEY_AD_CODE) && key.endsWith("00")) {
+                        continue;
+                    }
+                    if (MyStringUtils.isEqueals("0,0", CityUtil.getCenterLngLat(key))) {
                         continue;
                     }
                     PointList.Point point = new PointList.Point(CityUtil.getCenterLngLat(key), pointType,
@@ -504,17 +507,13 @@ public class RPHandleManager {
      * @return
      */
     public List<RecommendPoint> queryRecommendPoints(double lng, double lat, String env) {
-        if (mRecommendPointStrategyExecutor!=null){
-           return mRecommendPointStrategyExecutor.queryBestRecommendPoints(lng,lat,env);
+        if (mRecommendPointStrategyExecutor != null) {
+            return mRecommendPointStrategyExecutor.queryBestRecommendPoints(lng, lat, env);
         }
         logger.error("mRecommendPointStrategyExecutor is null");
         return null;
 
     }
-
-
-
-
 
 
 }

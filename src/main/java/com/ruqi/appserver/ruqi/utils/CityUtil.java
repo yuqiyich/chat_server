@@ -94,7 +94,7 @@ public class CityUtil {
         if (null == nameMap) {
             init();
         }
-        logger.info("---->cityCode:" + cityCode + ", nameMap:" + JsonUtil.beanToJsonStr(nameMap));
+//        logger.info("---->cityCode:" + cityCode + ", nameMap:" + JsonUtil.beanToJsonStr(nameMap));
         if (nameMap.containsKey(cityCode)) {
             return nameMap.get(cityCode);
         } else {
@@ -110,6 +110,7 @@ public class CityUtil {
         if (centerLnglatMap.containsKey(cityCode)) {
             return centerLnglatMap.get(cityCode);
         } else {
+            logger.error("--->getCenterLngLat no exiets cityCode=" + cityCode);
             return "0,0";
         }
     }

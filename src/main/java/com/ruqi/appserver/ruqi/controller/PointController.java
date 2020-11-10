@@ -1,9 +1,11 @@
 package com.ruqi.appserver.ruqi.controller;
 
+import com.ruqi.appserver.ruqi.aspect.ApiVersion;
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
+import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
 import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.service.AppInfoSevice;
 import com.ruqi.appserver.ruqi.service.IPointRecommendService;
@@ -14,6 +16,8 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -135,25 +139,57 @@ public class PointController extends BaseController {
     }
 
     @ApiOperation(value = "查询推荐上车点中台统计数据", notes = "for web")
-    @RequestMapping(value = "/queryStaticsRecommendPoints", method = RequestMethod.POST)
+    @RequestMapping(value = "/{apiVersion}/queryStaticsRecommendPoints", method = RequestMethod.POST)
     @ResponseBody
     @CrossOrigin
+    @ApiVersion()
     public BaseBean<RecommendPointList<RecommentPointStaticsInfo>> queryStaticsRecommendPoints(
-            @RequestBody QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest) {
-        try {
-            logger.info("queryStaticRecommendPointsRequest params:" + JsonUtil.beanToJsonStr(queryStaticRecommendPointsRequest));
-            if (null == queryStaticRecommendPointsRequest) {
-                queryStaticRecommendPointsRequest = new QueryStaticRecommendPointsRequest();
-            }
-            BaseBean<RecommendPointList<RecommentPointStaticsInfo>> result = new BaseBean<>();
-            result.data = pointRecommendService.queryStaticsRecommendPoint(queryStaticRecommendPointsRequest);
+            @Validated @RequestBody QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            BaseBean result = new BaseBean<>();
+            result.errorCode = ErrorCodeMsg.ERROR_INVALID_PARAMS.errorCode;
+            result.errorMsg = bindingResult.getFieldError().getDefaultMessage();
             return result;
-        } catch (Exception e) {
+        } else {
+            try {
+                logger.info("queryStaticRecommendPointsRequest params:" + JsonUtil.beanToJsonStr(queryStaticRecommendPointsRequest));
+                if (null == queryStaticRecommendPointsRequest) {
+                    queryStaticRecommendPointsRequest = new QueryStaticRecommendPointsRequest();
+                }
+                BaseBean<RecommendPointList<RecommentPointStaticsInfo>> result = new BaseBean<>();
+                result.data = pointRecommendService.queryStaticsRecommendPoint(queryStaticRecommendPointsRequest);
+                return result;
+            } catch (Exception e) {
+                BaseBean result = new BaseBean<>();
+                result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
+                result.errorMsg = MyStringUtils.isEmpty(e.getMessage()) ?
+                        ErrorCode.ERROR_SYSTEM.errorMsg : e.getMessage();
+                logger.error("queryStaticRecommendPointsRequest error params:" + JsonUtil.beanToJsonStr(queryStaticRecommendPointsRequest) + ". e:" + e);
+                return result;
+            }
+        }
+    }
+
+    @ApiOperation(value = "查询推荐上车点中台统计数据V2", notes = "for web")
+    @RequestMapping(value = "/{apiVersion}/queryStaticsRecommendPoints", method = RequestMethod.POST)
+    @ResponseBody
+    @CrossOrigin
+    @ApiVersion(2)
+    public BaseBean<RecommendPointList<RecommentPointStaticsInfo>> queryStaticsRecommendPointsV2(
+            @Validated @RequestBody QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest,
+            BindingResult bindingResult) {
+        logger.error("queryStaticsRecommendPointsV2 params:" + (null == queryStaticRecommendPointsRequest
+                ? "" : JsonUtil.beanToJsonStr(queryStaticRecommendPointsRequest)));
+        if (bindingResult.hasErrors()) {
+            BaseBean result = new BaseBean<>();
+            result.errorCode = ErrorCodeMsg.ERROR_INVALID_PARAMS.errorCode;
+            result.errorMsg = bindingResult.getFieldError().getDefaultMessage();
+            return result;
+        } else {
             BaseBean result = new BaseBean<>();
             result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
-            result.errorMsg = MyStringUtils.isEmpty(e.getMessage()) ?
-                    ErrorCode.ERROR_SYSTEM.errorMsg : e.getMessage();
-            logger.error("queryStaticRecommendPointsRequest error params:" + JsonUtil.beanToJsonStr(queryStaticRecommendPointsRequest) + ". e:" + e);
+            result.errorMsg = ErrorCode.ERROR_SYSTEM.errorMsg;
             return result;
         }
     }
