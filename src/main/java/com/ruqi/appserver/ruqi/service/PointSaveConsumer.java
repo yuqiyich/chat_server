@@ -70,7 +70,6 @@ public class PointSaveConsumer  {
                 POINT_SAVE_ENV = DEV;
                 PointController.SAVE_POINT_QUEUES = "dev_point_save";
             }
-            mLastGetFromRedisTime = 0;
             long lastOpearteTimes = (System.currentTimeMillis() - mLastGetFromRedisTime) / 1000;
             if (lastOpearteTimes > POINT_GET_DATA_FROM_REDIS_MIN_TIME_INTERVAL) {//大于上次取数间隔
                 mLastGetFromRedisTime = System.currentTimeMillis();
