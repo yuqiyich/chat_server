@@ -4,7 +4,6 @@ import com.ruqi.appserver.ruqi.aspect.ApiVersion;
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
-import com.ruqi.appserver.ruqi.config.ThreadPoolTaskConfig;
 import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
 import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
@@ -12,23 +11,20 @@ import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
 import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.service.AppInfoSevice;
 import com.ruqi.appserver.ruqi.service.IPointRecommendService;
-import com.ruqi.appserver.ruqi.service.PointSaveStartRunner;
+import com.ruqi.appserver.ruqi.service.PointSaveConsumer;
 import com.ruqi.appserver.ruqi.service.RedisUtil;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
-import com.ruqi.appserver.ruqi.utils.SpringContextUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 推荐上车点的控制器
@@ -39,7 +35,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Api(tags = "推荐上车点的入口")
 @RequestMapping(value = "/point")
 public class PointController extends BaseController {
-    public  static String SAVE_POINT_QUEUES= "save_points"+ PointSaveStartRunner.POINT_SAVE_ENV;
+    public  static String SAVE_POINT_QUEUES= "save_points"+ PointSaveConsumer.POINT_SAVE_ENV;
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

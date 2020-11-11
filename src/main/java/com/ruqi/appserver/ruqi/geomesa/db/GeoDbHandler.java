@@ -93,8 +93,14 @@ public class GeoDbHandler {
                         if (iUpdateDataListener != null) {
                             SimpleFeature oldSf = tempDatas.get(next.getID());
                             tempDatas.remove(next.getID());//移除旧的key的数据
-                            iUpdateDataListener.updateData(next, oldSf);
-                            writer.write();
+                            if (oldSf!=null){
+                                iUpdateDataListener.updateData(next, oldSf);
+                                writer.write();
+                            } else {
+                                logger.error("id:"+next.getID()+"  can not find in new Feature");
+                                //nothing contiue next one
+                            }
+
                         } else {
                             //or throw error ?
                             logger.error("no iUpdateData listener，then return");

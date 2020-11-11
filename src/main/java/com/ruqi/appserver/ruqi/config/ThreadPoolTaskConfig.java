@@ -34,11 +34,11 @@ public class ThreadPoolTaskConfig {
     /** 核心线程数（默认线程数） */
     private static final int corePoolSize =  Runtime.getRuntime().availableProcessors();//IO密集型
     /** 最大线程数 */
-    private static final int maxPoolSize = corePoolSize+2;//使用与核心线程多几个
+    private static final int maxPoolSize = corePoolSize+1;//使用与核心线程多几个
     /** 允许线程空闲时间（单位：默认为秒） */
     private static final int keepAliveTime = 60;
     /** 缓冲队列大小 */
-    public static final int queueCapacity = 10;//上一次是200感觉比较少，调整到1000
+    public static final int queueCapacity = 1000;//上一次是200感觉比较少，调整到1000
     /** 线程池名前缀 */
     private static final String threadNamePrefix = "Async-Service-";
 

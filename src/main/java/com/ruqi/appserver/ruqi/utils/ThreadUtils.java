@@ -1,5 +1,7 @@
 package com.ruqi.appserver.ruqi.utils;
 
+import com.ruqi.appserver.ruqi.service.PointSaveConsumer;
+
 public class ThreadUtils {
     public static int  getAllThreadNum(){
         ThreadGroup group = Thread.currentThread().getThreadGroup();
@@ -17,11 +19,11 @@ public class ThreadUtils {
         Thread[] atualThreads = new Thread[actualSize];
         // 复制slackThreads中有效的值到atualThreads
         System.arraycopy(slackThreads, 0, atualThreads, 0, actualSize);
-        if (atualThreads.length == 3600) {
-            for (Thread thread : atualThreads) {
-                System.out.println("Thread group:" + thread.getThreadGroup().getName() + "Thread name : " + thread.getName());
-            }
-        }
+//        if (atualThreads.length > 3600 &&atualThreads.length <3650) {
+//            for (Thread thread : atualThreads) {
+//                System.out.println("Thread group:" + thread.getThreadGroup().getName() + "Thread name : " + thread.getName());
+//            }
+//        }
 
         return atualThreads.length;
     }

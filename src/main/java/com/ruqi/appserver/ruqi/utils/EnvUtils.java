@@ -13,4 +13,8 @@ public class EnvUtils {
     public static boolean isEnvProd() {
         return MyStringUtils.isEqueals(ENV_PROD, mEnv);
     }
+
+    public static boolean isEnvProd(String evn) {
+        return MyStringUtils.isEqueals(ENV_PROD, evn);
+    }
 }

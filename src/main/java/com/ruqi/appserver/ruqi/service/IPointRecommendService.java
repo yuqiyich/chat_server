@@ -15,6 +15,14 @@ import java.util.List;
 public interface IPointRecommendService {
 
     /**
+     * 批量采集推荐上车点
+     *
+     * @param records
+     */
+    BaseCodeMsgBean batchSaveRecommendPoint(List<UploadRecommendPointRequest<RecommendPoint>> records,String cityCode,  String env);
+
+
+    /**
      * 采集推荐上车点
      *
      * @param uploadRecommendPointRequest

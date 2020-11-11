@@ -40,6 +40,15 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     DotEventInfoWrapper dotEventInfoWrapper;
 
     @Override
+    @Async("taskExecutor")
+    public BaseCodeMsgBean batchSaveRecommendPoint( List<UploadRecommendPointRequest<RecommendPoint>> record,String cityCode, String evn) {
+        BaseCodeMsgBean baseCodeMsgBean = new BaseCodeMsgBean();
+//        logger.info("jvm 总的线程数："+ ThreadUtils.getAllThreadNum());
+        RPHandleManager.getIns().batchSaveRecommendDatasByCityCode(evn,cityCode, record);
+        return baseCodeMsgBean;
+    }
+
+    @Override
 //    @Async("taskExecutor")
     public BaseCodeMsgBean saveRecommendPoint(UploadRecommendPointRequest uploadRecommendPointRequest, String evn) {
         BaseCodeMsgBean baseCodeMsgBean = new BaseCodeMsgBean();
