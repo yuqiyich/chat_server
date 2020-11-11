@@ -111,6 +111,9 @@ public class PointController extends BaseController {
                 int appId = appInfo.getAppId();
                 //fixme 硬编码指定环境 暂时去掉
                 StringBuilder res = new StringBuilder("") ;
+                if (uploadRecommendPointRequest.getTimeStamp() <= 0) {//如果没有时间
+                    uploadRecommendPointRequest.setTimeStamp(System.currentTimeMillis());
+                }
                 redisUtil.putQueueData(RedisUtil.GROUP_RECOMMEND_POINT, SAVE_POINT_QUEUES, uploadRecommendPointRequest);
                 res.append("已经将数据放入redis，redis中存储的数据：" + redisUtil.getQueueSize(RedisUtil.GROUP_RECOMMEND_POINT, PointController.SAVE_POINT_QUEUES));
                 logger.info(res.toString());

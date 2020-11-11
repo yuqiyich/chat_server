@@ -70,10 +70,10 @@ public class PointSaveConsumer  {
                 POINT_SAVE_ENV = DEV;
                 PointController.SAVE_POINT_QUEUES = "dev_point_save";
             }
-            long lastOpearteTimes = (System.currentTimeMillis() - mLastGetFromRedisTime) / 1000;
+            long lastOpearteTimes = (System.currentTimeMillis() - mLastGetFromRedisTime);
             if (lastOpearteTimes > POINT_GET_DATA_FROM_REDIS_MIN_TIME_INTERVAL) {//大于上次取数间隔
                 mLastGetFromRedisTime = System.currentTimeMillis();
-                printLog(",lastTimePeriod-:" + lastOpearteTimes + "s;准备取出数据，redis中存储的数据总数：" + redisUtil.getQueueSize(RedisUtil.GROUP_RECOMMEND_POINT, PointController.SAVE_POINT_QUEUES));
+                printLog(",lastTimePeriod-:" + lastOpearteTimes + "ms;准备取出数据，redis中存储的数据总数：" + redisUtil.getQueueSize(RedisUtil.GROUP_RECOMMEND_POINT, PointController.SAVE_POINT_QUEUES));
                 Object firstData = redisUtil.popQueueDataBlock(RedisUtil.GROUP_RECOMMEND_POINT, PointController.SAVE_POINT_QUEUES);
                 List redisDatas = redisUtil.rangeQueueDataBlock(RedisUtil.GROUP_RECOMMEND_POINT, PointController.SAVE_POINT_QUEUES, POINT_REDIS_GET_NUM_PER_TIME);
                 if (redisDatas != null && firstData != null) {
