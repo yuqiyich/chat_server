@@ -2,6 +2,7 @@ package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.controller.PointController;
+import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
 import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
@@ -65,6 +66,7 @@ public class PointSaveConsumer  {
 
     @Scheduled(fixedRate = POINT_GET_DATA_FROM_REDIS_MIN_TIME_INTERVAL)
     public void savePointsFromRedis() {
+
         if (EnvUtils.isEnvProd(mEnv) || IS_DEBUG) {
             if (IS_DEBUG) {
                 POINT_SAVE_ENV = DEV;

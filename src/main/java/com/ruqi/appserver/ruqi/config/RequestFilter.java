@@ -3,6 +3,7 @@ package com.ruqi.appserver.ruqi.config;
 
 import com.ruqi.appserver.ruqi.network.RequestWrapper;
 import com.ruqi.appserver.ruqi.network.ResponseWrapper;
+import com.ruqi.appserver.ruqi.service.GaiaInitializer;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class RequestFilter extends OncePerRequestFilter {
         String url = request.getRequestURI();
         RequestWrapper requestWrapper = null;
 
-        logger.info("========================》  IP:" + IpUtil.getIpAddr(request));
+        logInfo("========================》  IP:" + IpUtil.getIpAddr(request));
         StringBuilder sb = new StringBuilder();
         if (request instanceof HttpServletRequest) {
             requestWrapper = new RequestWrapper(request);
@@ -56,13 +57,14 @@ public class RequestFilter extends OncePerRequestFilter {
         } else {
             filterChain.doFilter(requestWrapper, responseWrapper);
         }
-        logger.info("========================》  url:" + url + " & queryString:" + path+" & servletPath:"+servletPath);
-        logger.info("========================》request uri: {}",request.getRequestURI());
-        logger.info("========================》request ContentType: {}",request.getContentType());
-        logger.info("========================》request param: {}",sb.toString());
+        logInfo("========================》  url:" + url + " & queryString:" + path + " & servletPath:" + servletPath);
+        logInfo("========================》request uri: {}", request.getRequestURI());
+        logInfo("========================》request ContentType: {}", request.getContentType());
+        logInfo("========================》request param: {}", sb.toString());
 
-        logger.info("========================》response status: {}",response.getStatus());
-        logger.info("========================》response ContentType: {}",response.getContentType());
+        logInfo("========================》response status: {}", response.getStatus());
+        logInfo("========================》response ContentType: {}", response.getContentType());
+
 
 
         String result=new String(responseWrapper.getResponseData());
@@ -71,8 +73,20 @@ public class RequestFilter extends OncePerRequestFilter {
         outputStream.flush();
         outputStream.close();
         // 打印response
-        logger.info("========================》response return data: {} \t" + result);
+        logInfo("========================》response return data: {} \t" + result);
 
+    }
+
+    public void logInfo(String log){
+        if (GaiaInitializer.DEBUG){
+            logger.info(log);
+        }
+    }
+
+    public void logInfo(String log,Object key){
+        if (GaiaInitializer.DEBUG){
+            logger.info(log,key);
+        }
     }
 
 }

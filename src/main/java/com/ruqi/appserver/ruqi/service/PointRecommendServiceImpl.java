@@ -113,7 +113,6 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         if (queryPointsRequest.getAreaType() == PointList.TYPE_AREA_POINT) {
             if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
                     queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ORIGIN) {
-                GeoDbHandler.setDebug(true);
                 dataList.addAll(RPHandleManager.getIns().queryPoints(queryPointsRequest.north, queryPointsRequest.east,
                         queryPointsRequest.south, queryPointsRequest.west, dataEnv,
                         GeoTable.TABLE_RECOMMEND_DATA_PREFIX, GeoTable.KEY_POINT_ORIGIN));

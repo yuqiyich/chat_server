@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendRecordDataUpdater;
+import com.ruqi.appserver.ruqi.utils.EnvUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.*;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -97,7 +98,9 @@ public class GeoDbHandler {
                                 iUpdateDataListener.updateData(next, oldSf);
                                 writer.write();
                             } else {
-                                logger.error("id:"+next.getID()+"  can not find in new Feature");
+                                if (IS_DB_DEBUG){
+                                    logger.error("id:"+next.getID()+"can not find in new Feature");
+                                }
                                 //nothing contiue next one
                             }
 

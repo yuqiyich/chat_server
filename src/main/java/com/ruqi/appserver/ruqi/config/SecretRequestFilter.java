@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ruqi.appserver.ruqi.bean.EncryptResponse;
 import com.ruqi.appserver.ruqi.request.EncryptBaseRequest;
+import com.ruqi.appserver.ruqi.service.GaiaInitializer;
 import com.ruqi.appserver.ruqi.service.RedisUtil;
 import com.ruqi.appserver.ruqi.utils.AESUtils;
 import com.ruqi.appserver.ruqi.utils.Base64Util;
@@ -49,7 +50,7 @@ public class SecretRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String requestBody = getRequestBody((HttpServletRequest) request);
-        logger.info("request body:" + requestBody);
+        logInfo("request body:" + requestBody);
         //解密请求报文
         String[] requestData = decryptRequestBody(requestBody);
 
@@ -58,7 +59,7 @@ public class SecretRequestFilter extends OncePerRequestFilter {
         chain.doFilter(wrapRequest, wrapResponse);
         byte[] data = wrapResponse.getResponseData();
         String responseBody = new String(data, "utf-8");
-        logger.info("加密前原始返回数据： " + responseBody);
+        logInfo("加密前原始返回数据： " + responseBody);
         responseBody = encryResponse(requestData[1], responseBody);
         writeResponse(response, responseBody);
     }
@@ -66,15 +67,15 @@ public class SecretRequestFilter extends OncePerRequestFilter {
     private String encryResponse(String aesKey, String responseBody){
         // 加密返回报文
         if(!StringUtils.isEmpty(aesKey)){
-            logger.info("返回结果需要加密");
+            logInfo("返回结果需要加密");
             String encryResponse = AESUtils.des(responseBody, aesKey, Cipher.ENCRYPT_MODE);
             EncryptResponse encryptResponse = new EncryptResponse(true);
             encryptResponse.data = encryResponse;
             responseBody = JsonUtil.beanToJsonStr(encryptResponse);
-            logger.info("加密后返回的数据： " + responseBody);
+            logInfo("加密后返回的数据： " + responseBody);
         }else{
-            logger.info("返回结果是明文");
-            logger.info("明文返回的数据： " + responseBody);
+            logInfo("返回结果是明文");
+            logInfo("明文返回的数据： " + responseBody);
         }
         return responseBody;
     }
@@ -87,20 +88,20 @@ public class SecretRequestFilter extends OncePerRequestFilter {
             jsonObject = JSON.parseObject(body);
         }catch (Exception e){
             e.printStackTrace();
-            logger.error("json parse error："+ e.getMessage());
+            logError("json parse error："+ e.getMessage());
         }
         if(jsonObject != null && jsonObject.containsKey(REQ) && jsonObject.containsKey(SIGN)){
             EncryptBaseRequest encryptBaseRequest = JsonUtil.jsonStrToBean(EncryptBaseRequest.class, body);
             String sign = encryptBaseRequest.getSign();
             String aesKey = String.valueOf(redisUtil.getKey(RedisUtil.GROUP_ENCRYPT_UTIL_SIGN, sign));
-            logger.info("aesKey："+ aesKey);
+            logInfo("aesKey："+ aesKey);
             result[0] = AESUtils.des(encryptBaseRequest.getReq(), aesKey, Cipher.DECRYPT_MODE);
             result[1] = aesKey;
-            logger.info("请求数据是密文");
-            logger.info("解密后的请求数据："+ result[0]);
+            logInfo("请求数据是密文");
+            logInfo("解密后的请求数据："+ result[0]);
         }else{
-            logger.info("请求数据是明文");
-            logger.info("请求数据："+ body);
+            logInfo("请求数据是明文");
+            logInfo("请求数据："+ body);
         }
         return result;
     }
@@ -116,7 +117,7 @@ public class SecretRequestFilter extends OncePerRequestFilter {
             String json = sb.toString();
             return json;
         } catch (IOException e) {
-            logger.info("请求体读取失败"+e.getMessage());
+            logInfo("请求体读取失败"+e.getMessage());
         }
         return "";
     }
@@ -127,6 +128,25 @@ public class SecretRequestFilter extends OncePerRequestFilter {
         out.print(responseString);
         out.flush();
         out.close();
+    }
+
+    public void logInfo(String log){
+        if (GaiaInitializer.DEBUG){
+            logger.info(log);
+        }
+    }
+
+    public void logError(String log){
+        if (GaiaInitializer.DEBUG){
+            logger.error(log);
+        }
+    }
+
+
+    public void logInfo(String log,Object key){
+        if (GaiaInitializer.DEBUG){
+            logger.info(log,key);
+        }
     }
 
 }

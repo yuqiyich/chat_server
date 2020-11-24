@@ -115,9 +115,9 @@ public class PointController extends BaseController {
                     uploadRecommendPointRequest.setTimeStamp(System.currentTimeMillis());
                 }
                 redisUtil.putQueueData(RedisUtil.GROUP_RECOMMEND_POINT, SAVE_POINT_QUEUES, uploadRecommendPointRequest);
-                res.append("已经将数据放入redis，redis中存储的数据：" + redisUtil.getQueueSize(RedisUtil.GROUP_RECOMMEND_POINT, PointController.SAVE_POINT_QUEUES));
-                logger.info(res.toString());
-                kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.WARN,res.toString());
+//                res.append("已经将数据放入redis，redis中存储的数据：" + redisUtil.getQueueSize(RedisUtil.GROUP_RECOMMEND_POINT, PointController.SAVE_POINT_QUEUES));
+//                logger.info(res.toString());
+//                kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.WARN,res.toString());
             }
             return baseCodeMsgBean;
         } catch (Exception e) {
