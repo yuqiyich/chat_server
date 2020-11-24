@@ -110,8 +110,9 @@ public class PointSaveConsumer  {
         StringBuilder  res = new StringBuilder();
         res.append("loop_process_point_id:" + mLastGetFromRedisTime + ";");
         res.append(log);
-        kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.WARN, res.toString());
-        logger.info(res.toString());
+        //日志不用打了，卡发卡就不用发了，现在已经不需要了
+//        kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.WARN, res.toString());
+//        logger.info(res.toString());
     }
 
     private String getSuitableCityCode() {
