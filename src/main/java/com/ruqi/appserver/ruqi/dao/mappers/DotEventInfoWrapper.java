@@ -1,9 +1,9 @@
 package com.ruqi.appserver.ruqi.dao.mappers;
 
 import com.ruqi.appserver.ruqi.bean.*;
-import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataH5Hybrid;
-import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataGaiaRecmd;
-import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.dbbean.*;
+import com.ruqi.appserver.ruqi.bean.request.NewEventKeyRequest;
+import com.ruqi.appserver.ruqi.bean.request.NewEventTypeRequest;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +12,32 @@ import java.util.List;
 
 @Repository
 public interface DotEventInfoWrapper {
+
+    @Insert("insert into event_type(type_key, type_key_name, remark, status, create_user_id, create_time)" +
+            " values(#{eventType.typeKey}, #{eventType.typeKeyName}, #{eventType.remark}, 1," +
+            " #{createUserId}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))")
+    long insertDotEventType(@Param("eventType") NewEventTypeRequest request, @Param("createUserId") long createUserId);
+
+    @Insert("insert into event_key(type_id, event_key, event_key_name, remark, status, create_user_id, create_time)" +
+            " values(#{eventKey.typeId}, #{eventKey.eventKey}, #{eventKey.eventKeyName}, #{eventKey.remark}, 1," +
+            " #{createUserId}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))")
+    long insertDotEventKey(@Param("eventKey") NewEventKeyRequest newEventKeyRequest, @Param("createUserId") long createUserId);
+
+    @Select({"<script>",
+            "select event_type.id, type_key as typeKey, type_key_name as typeKeyName, remark, status,",
+            " user.nickname as createUserName, event_type.create_time as createTime",
+            " from event_type, user",
+            " where event_type.create_user_id = user.id",
+            "</script>"})
+    List<DBEventType> getEventTypes();
+
+    @Select({"<script>",
+            "select event_key.id, type_id as typeId, event_key as eventKey, event_key_name as eventKeyName, remark, status,",
+            " user.nickname as createUserName, event_key.create_time as createTime",
+            " from event_key, user",
+            " where event_key.create_user_id = user.id",
+            "</script>"})
+    List<DBEventKey> getEventKeys();
 
     @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,record_time,device_brand," +
             "system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode," +
@@ -57,8 +83,7 @@ public interface DotEventInfoWrapper {
     long queryTotalSizeCommonEvent(@Param("dotEventInfo") RecordInfo<DotEventInfo> dotEventInfo, String eventTypeStr);
 
     @Select({"<script>",
-            "SELECT a.*, b.app_name, c.totalSize FROM",
-//            "SELECT a.*, b.app_name FROM",
+            "SELECT a.*, event_key.event_key_name, b.app_name, c.totalSize FROM",
             "(SELECT * FROM dot_event_record",
             "WHERE 1=1",
             "<if test='eventTypeStr!=null and eventTypeStr!=\"\"'>AND (${eventTypeStr}) </if>",
@@ -102,7 +127,8 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.userType!=0'>AND user_type = #{dotEventInfo.content.userType}  </if>",
             "</if>",
             " ) as c",
-            " where a.app_id =b.app_id;",
+            " , event_key",
+            " where a.app_id =b.app_id and a.event_key = event_key.event_key;",
             "</script>"})
     @Results({@Result(property = "id", column = "id"),
             @Result(property = "userId", column = "user_id"),
@@ -125,6 +151,7 @@ public interface DotEventInfoWrapper {
             @Result(property = "ext", column = "ext"),
             @Result(property = "requestIp", column = "request_ip"),
             @Result(property = "eventKey", column = "event_key"),
+            @Result(property = "eventKeyName", column = "event_key_name"),
             @Result(property = "scene", column = "scene"),
             @Result(property = "orderId", column = "order_id"),
             @Result(property = "systemVersion", column = "system_version"),

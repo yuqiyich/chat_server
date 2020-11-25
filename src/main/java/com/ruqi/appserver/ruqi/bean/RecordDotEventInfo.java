@@ -15,6 +15,7 @@ public class RecordDotEventInfo {
     public int riskLevel;
 //    public String userPhone;
     public String eventKey;
+    public String eventKeyName;
     //device info
     public String deviceId;
     public String deviceBrand;

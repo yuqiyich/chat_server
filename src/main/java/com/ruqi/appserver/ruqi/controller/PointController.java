@@ -155,7 +155,7 @@ public class PointController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "查询推荐上车点中台统计数据", notes = "for web")
+    @ApiOperation(value = "查询推荐上车点中台统计数据V1", notes = "for web")
     @RequestMapping(value = "/{apiVersion}/queryStaticsRecommendPoints", method = RequestMethod.POST)
     @ResponseBody
     @CrossOrigin

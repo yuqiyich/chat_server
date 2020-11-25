@@ -30,7 +30,7 @@ import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.PRO;
  */
 @Configuration
 @EnableScheduling   // 1.开启定时任务
-public class PointSaveConsumer  {
+public class PointSaveConsumer {
     Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     protected KafkaProducer kafkaProducer;
@@ -103,13 +103,13 @@ public class PointSaveConsumer  {
                 printLog("can  not get redis time，cur time:" + System.currentTimeMillis());
             }
         } else {
-            logger.error("推荐点不处理");
+//            logger.error("推荐点不处理");
         }
     }
 
 
     private void printLog(String log) {
-        StringBuilder  res = new StringBuilder();
+        StringBuilder res = new StringBuilder();
         res.append("loop_process_point_id:" + mLastGetFromRedisTime + ";");
         res.append(log);
         //日志不用打了，卡发卡就不用发了，现在已经不需要了

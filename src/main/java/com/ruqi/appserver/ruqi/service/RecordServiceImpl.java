@@ -37,6 +37,9 @@ public class RecordServiceImpl implements IRecordService {
     @Autowired
     DotEventInfoWrapper dotEventInfoWrapper;
 
+    @Autowired
+    private EventService eventService;
+
 //    @Autowired
 //    RecordInfoDAO recordInfoDAO;
 
@@ -160,7 +163,7 @@ public class RecordServiceImpl implements IRecordService {
 
     private String getEventTypeStr(RecordInfo<DotEventInfo> params) {
         if (null != params && null != params.getContent() && !MyStringUtils.isEmpty(params.getContent().eventType)) {
-            return DotEventDataUtils.getInstance().getSqlStr(params.getContent().eventType);
+            return DotEventDataUtils.getInstance().getSqlStr(params.getContent().eventType, eventService.getEventTypeKeys());
         }
         return null;
     }
