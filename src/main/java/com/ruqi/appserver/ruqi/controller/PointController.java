@@ -4,7 +4,8 @@ import com.ruqi.appserver.ruqi.aspect.ApiVersion;
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
-import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
+import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
+import com.ruqi.appserver.ruqi.bean.response.RecPointDayDataList;
 import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
@@ -35,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 @Api(tags = "推荐上车点的入口")
 @RequestMapping(value = "/point")
 public class PointController extends BaseController {
-    public  static String SAVE_POINT_QUEUES= "save_points"+ PointSaveConsumer.POINT_SAVE_ENV;
+    public static String SAVE_POINT_QUEUES = "save_points" + PointSaveConsumer.POINT_SAVE_ENV;
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -110,7 +111,7 @@ public class PointController extends BaseController {
             if (appInfo != null) {
                 int appId = appInfo.getAppId();
                 //fixme 硬编码指定环境 暂时去掉
-                StringBuilder res = new StringBuilder("") ;
+                StringBuilder res = new StringBuilder("");
                 if (uploadRecommendPointRequest.getTimeStamp() <= 0) {//如果没有时间
                     uploadRecommendPointRequest.setTimeStamp(System.currentTimeMillis());
                 }
@@ -209,6 +210,31 @@ public class PointController extends BaseController {
             result.errorMsg = ErrorCode.ERROR_SYSTEM.errorMsg;
             return result;
         }
+    }
+
+    @ApiOperation(value = "查询推荐上车点事件日统计数据V1", notes = "15天")
+    @RequestMapping(value = "/{apiVersion}/queryDayStaticsRecPointDatas", method = RequestMethod.POST)
+    @ResponseBody
+    @CrossOrigin
+    @ApiVersion()
+    public BaseBean<RecPointDayDataList<RecPointDayData>>
+    queryDayStaticsRecPointDatas(@Validated @RequestBody QueryDayStaticRecPointDatasRequest queryDayStaticRecPointDatasRequest,
+                                 BindingResult bindingResult) {
+        BaseBean<RecPointDayDataList<RecPointDayData>> result = checkRequestInvalid(bindingResult);
+        if (null == result) {
+            result = new BaseBean<>();
+            try {
+                result.data = new RecPointDayDataList();
+                result.data.recPointEventList = pointRecommendService.queryDayStaticsRecPointDatas(queryDayStaticRecPointDatasRequest);
+                return result;
+            } catch (Exception e) {
+                result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
+                result.errorMsg = MyStringUtils.isEmpty(e.getMessage()) ? ErrorCode.ERROR_SYSTEM.errorMsg : e.getMessage();
+                logger.error("queryDayStaticsRecPointDatas error:" + e);
+                return result;
+            }
+        }
+        return result;
     }
 
 }

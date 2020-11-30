@@ -4,6 +4,7 @@ import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.dbbean.*;
 import com.ruqi.appserver.ruqi.bean.request.NewEventKeyRequest;
 import com.ruqi.appserver.ruqi.bean.request.NewEventTypeRequest;
+import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -301,4 +302,14 @@ public interface DotEventInfoWrapper {
             " #{dbEventDayDataRecPoint.gaia_total_count_android}, #{dbEventDayDataRecPoint.gaia_order_count_android}, #{dbEventDayDataRecPoint.gaia_total_count_ios}, #{dbEventDayDataRecPoint.gaia_order_count_ios})",
             "</script>"})
     void saveRecPointDayData(@Param("dbEventDayDataRecPoint") DBEventDayDataRecPoint dbEventDayDataRecPoint);
+
+    @Select({"<script>",
+            "select date, env, didi_total_count_android as didiTotalCountAndroid, didi_total_count_ios as didiTotalCountIOS, didi_order_count_android as didiOrderCountAndroid, didi_order_count_ios as didiOrderCountIOS,",
+            " tencent_total_count_android as tencentTotalCountAndroid, tencent_total_count_ios as tencentTotalCountIOS, tencent_order_count_android as tencentOrderCountAndroid, tencent_order_count_ios as tencentOrderCountIOS,",
+            " gaia_total_count_android as gaiaTotalCountAndroid, gaia_total_count_ios as gaiaTotalCountIOS, gaia_order_count_android as gaiaOrderCountAndroid, gaia_order_count_ios as gaiaOrderCountIOS",
+            " from rec_point_event_statics",
+            " where date >= date_sub(curdate(), interval 15 day)",
+            " AND env = #{env} order by date",
+            "</script>"})
+    List<RecPointDayData> queryDayStaticsRecPointDatas(@Param("env") String env);
 }

@@ -4,12 +4,13 @@ import com.ruqi.appserver.ruqi.bean.BaseCodeMsgBean;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.RecommendPointList;
 import com.ruqi.appserver.ruqi.bean.RecommentPointStaticsInfo;
+import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataRecPoint;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
+import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RecommendPointWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
-import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
 import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.utils.CityUtil;
@@ -41,10 +42,10 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
 
     @Override
     @Async("taskExecutor")
-    public BaseCodeMsgBean batchSaveRecommendPoint( List<UploadRecommendPointRequest<RecommendPoint>> record,String cityCode, String evn) {
+    public BaseCodeMsgBean batchSaveRecommendPoint(List<UploadRecommendPointRequest<RecommendPoint>> record, String cityCode, String evn) {
         BaseCodeMsgBean baseCodeMsgBean = new BaseCodeMsgBean();
 //        logger.info("jvm 总的线程数："+ ThreadUtils.getAllThreadNum());
-        RPHandleManager.getIns().batchSaveRecommendDatasByCityCode(evn,cityCode, record);
+        RPHandleManager.getIns().batchSaveRecommendDatasByCityCode(evn, cityCode, record);
         return baseCodeMsgBean;
     }
 
@@ -52,7 +53,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
 //    @Async("taskExecutor")
     public BaseCodeMsgBean saveRecommendPoint(UploadRecommendPointRequest uploadRecommendPointRequest, String evn) {
         BaseCodeMsgBean baseCodeMsgBean = new BaseCodeMsgBean();
-        logger.info("jvm 总的线程数："+ ThreadUtils.getAllThreadNum());
+        logger.info("jvm 总的线程数：" + ThreadUtils.getAllThreadNum());
         RPHandleManager.getIns().saveRecommendDatasByCityCode(evn, uploadRecommendPointRequest.getCityCode(), (UploadRecommendPointRequest<RecommendPoint>) uploadRecommendPointRequest);
         return baseCodeMsgBean;
     }
@@ -69,6 +70,16 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         RecommendPointList recommendPointList = new RecommendPointList();
         recommendPointList.setPointList(RPHandleManager.getIns().queryRecommendPoints(queryRecommendPointForWebRequest.getSelectLng(), queryRecommendPointForWebRequest.getSelectLat(), evn));
         return recommendPointList;
+    }
+
+    @Override
+    public List<RecPointDayData> queryDayStaticsRecPointDatas(QueryDayStaticRecPointDatasRequest queryDayStaticRecPointDatasRequest) {
+        // 初始化要返回的结构体、日期
+        if (null == queryDayStaticRecPointDatasRequest) {
+            return null;
+        }
+        List<RecPointDayData> resultList = dotEventInfoWrapper.queryDayStaticsRecPointDatas(queryDayStaticRecPointDatasRequest.env);
+        return resultList;
     }
 
     @Override

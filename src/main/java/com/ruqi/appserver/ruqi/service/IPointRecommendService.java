@@ -4,7 +4,10 @@ import com.ruqi.appserver.ruqi.bean.BaseCodeMsgBean;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.RecommendPointList;
 import com.ruqi.appserver.ruqi.bean.RecommentPointStaticsInfo;
+import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataRecPoint;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
+import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
+import com.ruqi.appserver.ruqi.bean.response.RecPointDayDataList;
 import com.ruqi.appserver.ruqi.request.*;
 
 import java.util.List;
@@ -19,7 +22,7 @@ public interface IPointRecommendService {
      *
      * @param records
      */
-    BaseCodeMsgBean batchSaveRecommendPoint(List<UploadRecommendPointRequest<RecommendPoint>> records,String cityCode,  String env);
+    BaseCodeMsgBean batchSaveRecommendPoint(List<UploadRecommendPointRequest<RecommendPoint>> records, String cityCode, String env);
 
 
     /**
@@ -55,4 +58,6 @@ public interface IPointRecommendService {
     void staticRecommendPoint();
 
     RecommendPointList<RecommendPoint> queryRecommendPointForWeb(QueryRecommendPointForWebRequest queryRecommendPointForWebRequest, String env);
+
+    List<RecPointDayData> queryDayStaticsRecPointDatas(QueryDayStaticRecPointDatasRequest queryDayStaticRecPointDatasRequest);
 }
