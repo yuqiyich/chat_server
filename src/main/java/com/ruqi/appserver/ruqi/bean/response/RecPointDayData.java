@@ -3,8 +3,6 @@ package com.ruqi.appserver.ruqi.bean.response;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
-
 /**
  * @author ZhangYu
  * @date 2020/11/30
@@ -13,7 +11,7 @@ import java.util.Date;
 @ApiModel
 public class RecPointDayData {
     // 日期
-    public Date date;
+    public String date;
     public String env;
     @ApiModelProperty(value = "滴滴吸附总数-Android")
     public int didiTotalCountAndroid;

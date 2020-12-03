@@ -232,7 +232,10 @@ public interface DotEventInfoWrapper {
             " select date(record_time) as date, platform, event_key as eventKey, count(*) as totalCount",
             " from dot_event_record",
             " where record_time >= date_sub(curdate(), interval 6 day)",
-            "<if test='isWithOrder == true'> AND order_id IS NOT NULL AND order_id!=''</if>",
+            "<choose>",
+            "<when test='isWithOrder == true'> AND order_id IS NOT NULL AND order_id!=''</when>",
+            "<otherwise> AND (order_id IS NULL OR order_id='')</otherwise>",
+            "</choose>",
             " AND (event_key='FALLBACK_SUCCESS_GAIA_RECOMMEND')",
             "<if test='appId!=null and appId!=\"\"'> AND app_id = #{appId}</if>",
             " group by date(record_time), platform, event_key",
@@ -304,7 +307,7 @@ public interface DotEventInfoWrapper {
     void saveRecPointDayData(@Param("dbEventDayDataRecPoint") DBEventDayDataRecPoint dbEventDayDataRecPoint);
 
     @Select({"<script>",
-            "select date, env, didi_total_count_android as didiTotalCountAndroid, didi_total_count_ios as didiTotalCountIOS, didi_order_count_android as didiOrderCountAndroid, didi_order_count_ios as didiOrderCountIOS,",
+            "select date(date) as date, env, didi_total_count_android as didiTotalCountAndroid, didi_total_count_ios as didiTotalCountIOS, didi_order_count_android as didiOrderCountAndroid, didi_order_count_ios as didiOrderCountIOS,",
             " tencent_total_count_android as tencentTotalCountAndroid, tencent_total_count_ios as tencentTotalCountIOS, tencent_order_count_android as tencentOrderCountAndroid, tencent_order_count_ios as tencentOrderCountIOS,",
             " gaia_total_count_android as gaiaTotalCountAndroid, gaia_total_count_ios as gaiaTotalCountIOS, gaia_order_count_android as gaiaOrderCountAndroid, gaia_order_count_ios as gaiaOrderCountIOS",
             " from rec_point_event_statics",
