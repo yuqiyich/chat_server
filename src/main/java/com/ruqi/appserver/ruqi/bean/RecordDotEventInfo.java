@@ -39,4 +39,7 @@ public class RecordDotEventInfo {
     public int userType;
 
     public long totalSize;
+
+    public double startLng;
+    public double startLat;
 }

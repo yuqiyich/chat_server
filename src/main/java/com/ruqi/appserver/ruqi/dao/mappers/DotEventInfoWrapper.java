@@ -42,18 +42,16 @@ public interface DotEventInfoWrapper {
 
     @Insert("insert into dot_event_record(event_key,user_id,device_id,event_detail,create_time,record_time,device_brand," +
             "system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode," +
-            "device_model,request_ip, order_id, scene, user_type, ext) " +
+            "device_model,request_ip, order_id, scene, user_type, start_lng, start_lat, ext) " +
             "values(#{dotEventInfo.content.eventKey},#{dotEventInfo.userInfo.userId},#{dotEventInfo.content.deviceId}," +
-            "#{dotEventInfo.content.eventDetail},#{createDate},#{recordTime}," +
+            "#{dotEventInfo.content.eventDetail},#{dotEventInfo.content.eventDetail},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')," +
             "#{dotEventInfo.content.deviceBrand},#{dotEventInfo.content.systemVersion},#{dotEventInfo.content.appVersionName}," +
             "#{dotEventInfo.content.netState},#{dotEventInfo.content.locationLat},#{dotEventInfo.content.locationLng}," +
-            "#{dotEventInfo.content.channel},#{appId},#{dotEventInfo.content.platform}," +
-            "#{dotEventInfo.content.appVersionCode},#{dotEventInfo.content.deviceModel},#{requestIp}," +
-            "#{dotEventInfo.content.orderId},#{dotEventInfo.content.scene},#{dotEventInfo.content.userType},#{dotEventInfo.content.ext})")
+            "#{dotEventInfo.content.channel},#{appId},#{dotEventInfo.content.platform}, #{dotEventInfo.content.appVersionCode}," +
+            "#{dotEventInfo.content.deviceModel},#{requestIp}, #{dotEventInfo.content.orderId}, #{dotEventInfo.content.scene}," +
+            "#{dotEventInfo.content.userType}, #{dotEventInfo.content.startLng}, #{dotEventInfo.content.startLat}, #{dotEventInfo.content.ext})")
     void insertDotEventRecord(@Param("dotEventInfo") UploadRecordInfo<BaseUploadRecordInfo> uploadRecordInfo,
-                              @Param("createDate") Date createDate,
                               @Param("appId") int appId,
-                              @Param("recordTime") Date recordTime,
                               @Param("requestIp") String requestIp);
 
     @Select({"<script>",
@@ -155,6 +153,8 @@ public interface DotEventInfoWrapper {
             @Result(property = "eventKeyName", column = "event_key_name"),
             @Result(property = "scene", column = "scene"),
             @Result(property = "orderId", column = "order_id"),
+            @Result(property = "startLng", column = "start_lng"),
+            @Result(property = "startLat", column = "start_lat"),
             @Result(property = "systemVersion", column = "system_version"),
             @Result(property = "totalSize", column = "totalSize")}
     )
@@ -170,7 +170,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.scene!=null and dotEventInfo.content.scene!=\"\" '>AND scene = #{dotEventInfo.content.scene} </if>",
             "<if test='dotEventInfo.content.orderIdFilter==\"1\" '>AND order_id IS NOT NULL AND order_id!=''  </if>",
             "<if test='dotEventInfo.content.orderIdFilter==\"2\" '>AND (order_id IS NULL OR order_id='')  </if>",
-            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userPhone} </if>",
+            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userId} </if>",
             "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName} </if>",
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model=#{dotEventInfo.content.deviceModel} </if>",
             "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand=#{dotEventInfo.content.deviceBrand} </if>",
@@ -194,7 +194,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.scene!=null and dotEventInfo.content.scene!=\"\" '>AND scene = #{dotEventInfo.content.scene} </if>",
             "<if test='dotEventInfo.content.orderIdFilter==\"1\" '>AND order_id IS NOT NULL AND order_id!=''  </if>",
             "<if test='dotEventInfo.content.orderIdFilter==\"2\" '>AND (order_id IS NULL OR order_id='')  </if>",
-            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userPhone} </if>",
+            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.userInfo.userId} </if>",
             "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName} </if>",
             "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model=#{dotEventInfo.content.deviceModel} </if>",
             "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand=#{dotEventInfo.content.deviceBrand} </if>",

@@ -9,6 +9,8 @@ import java.util.Map;
  */
 public class DotEventInfo extends BaseRecordInfo {
     public static final String NAME_USER_TYPE = "userType";
+    public static final String NAME_START_LNG = "startLng";
+    public static final String NAME_START_LAT = "startLat";
 
     /**
      * <p>

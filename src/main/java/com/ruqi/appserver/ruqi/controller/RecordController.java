@@ -128,12 +128,6 @@ public class RecordController extends BaseController {
     @LogAnnotation
     public BaseCodeMsgBean uploadDotEventData(HttpServletRequest request, @RequestBody UploadRecordInfo<UploadDotEventInfo> content) {
         try {
-            if (null != content && null != content.getContent() && null != content.getContent().eventData) {
-                Map<String, Object> eventData = content.getContent().eventData;
-                if (eventData.containsKey(DotEventInfo.NAME_USER_TYPE)) {
-                    content.getContent().userType = (int) eventData.get(DotEventInfo.NAME_USER_TYPE);
-                }
-            }
             BaseCodeMsgBean baseCodeMsgBean = saveDotData(content);
             return baseCodeMsgBean;
         } catch (Exception e) {
@@ -153,6 +147,18 @@ public class RecordController extends BaseController {
         //从获取RequestAttributes中获取HttpServletRequest的信息
         HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
         if (null != content && null != content.getContent()) {
+            if (null != content.getContent().eventData) {
+                Map<String, Object> eventData = content.getContent().eventData;
+                if (eventData.containsKey(DotEventInfo.NAME_USER_TYPE)) {
+                    content.getContent().userType = (int) eventData.get(DotEventInfo.NAME_USER_TYPE);
+                }
+                if (eventData.containsKey(DotEventInfo.NAME_START_LNG)) {
+                    content.getContent().startLng = (double) eventData.get(DotEventInfo.NAME_START_LNG);
+                }
+                if (eventData.containsKey(DotEventInfo.NAME_START_LAT)) {
+                    content.getContent().startLat = (double) eventData.get(DotEventInfo.NAME_START_LAT);
+                }
+            }
             recordService.saveDotRecord(content, IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
         }
 

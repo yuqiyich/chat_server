@@ -103,18 +103,13 @@ public class RecordServiceImpl implements IRecordService {
             if (appInfo != null && appInfo.getAppId() > 0) {
                 if (null != data.getContent() && data.getRecordType() == RecordTypeEnum.DOT_EVENT_RECORD.getId()
                         && data.getContent() instanceof UploadDotEventInfo) {
-                    if (data.getContent().getCreateTime() <= 0) {
-                        data.getContent().setCreateTime(System.currentTimeMillis());
-                    }
-                    Date createDate = new Date();
-                    createDate.setTime(data.getContent().getCreateTime());
                     if (null == data.getUserInfo() || data.getUserInfo().getUserId() <= 0) {
                         UploadUserEntity uploadUserEntity = new UploadUserEntity();
                         uploadUserEntity.setUserId(((UploadDotEventInfo) data.getContent()).userId);
                         data.setUserInfo(uploadUserEntity);
                     }
 
-                    saveDotEventRecord(data, createDate, appInfo.getAppId(), requestIp);
+                    saveDotEventRecord(data, appInfo.getAppId(), requestIp);
                 }
             } else {
                 logger.info("this appKey[" + data.getAppInfo().getAppKey() + "] not exists,throw this msg");
@@ -122,9 +117,9 @@ public class RecordServiceImpl implements IRecordService {
         }
     }
 
-    private <T extends BaseUploadRecordInfo> void saveDotEventRecord(UploadRecordInfo<T> uploadRecordInfo, Date createDate, int appId, String requestIp) {
+    private <T extends BaseUploadRecordInfo> void saveDotEventRecord(UploadRecordInfo<T> uploadRecordInfo, int appId, String requestIp) {
         if (uploadRecordInfo != null && uploadRecordInfo.getContent() instanceof UploadDotEventInfo) {
-            dotEventInfoWrapper.insertDotEventRecord((UploadRecordInfo<BaseUploadRecordInfo>) uploadRecordInfo, createDate, appId, new Date(), requestIp);
+            dotEventInfoWrapper.insertDotEventRecord((UploadRecordInfo<BaseUploadRecordInfo>) uploadRecordInfo, appId, requestIp);
         }
     }
 

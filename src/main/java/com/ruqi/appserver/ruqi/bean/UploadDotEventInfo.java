@@ -36,6 +36,8 @@ public class UploadDotEventInfo extends BaseUploadRecordInfo {
      * 用户类型 可见用户类型. 1:APP通用 2:未登录用户 3:专车用户 4:顺风车乘客 5:顺风车车主
      */
     public int userType;
+    public double startLng;
+    public double startLat;
 
     public long userId;
 }
