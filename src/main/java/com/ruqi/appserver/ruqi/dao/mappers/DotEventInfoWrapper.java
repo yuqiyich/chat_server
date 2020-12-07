@@ -44,7 +44,7 @@ public interface DotEventInfoWrapper {
             "system_version,app_versionname,net_state,location_lat,location_lng,channel,app_id,platform,app_versioncode," +
             "device_model,request_ip, order_id, scene, user_type, start_lng, start_lat, ext) " +
             "values(#{dotEventInfo.content.eventKey},#{dotEventInfo.userInfo.userId},#{dotEventInfo.content.deviceId}," +
-            "#{dotEventInfo.content.eventDetail},#{dotEventInfo.content.eventDetail},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')," +
+            "#{dotEventInfo.content.eventDetail},#{dotEventInfo.content.createTime},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')," +
             "#{dotEventInfo.content.deviceBrand},#{dotEventInfo.content.systemVersion},#{dotEventInfo.content.appVersionName}," +
             "#{dotEventInfo.content.netState},#{dotEventInfo.content.locationLat},#{dotEventInfo.content.locationLng}," +
             "#{dotEventInfo.content.channel},#{appId},#{dotEventInfo.content.platform}, #{dotEventInfo.content.appVersionCode}," +
