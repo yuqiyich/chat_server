@@ -4,14 +4,15 @@ import com.ruqi.appserver.ruqi.bean.BaseCodeMsgBean;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.RecommendPointList;
 import com.ruqi.appserver.ruqi.bean.RecommentPointStaticsInfo;
-import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataRecPoint;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RecommendPointWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
+import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
+import com.ruqi.appserver.ruqi.geomesa.db.HbaseDbHandler;
 import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
@@ -23,10 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.DEV;
 import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.PRO;
+import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
 
 @Service
 public class PointRecommendServiceImpl implements IPointRecommendService {
@@ -137,19 +140,32 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         } else if (queryPointsRequest.getAreaType() == PointList.TYPE_AREA_DISTRICT
                 || queryPointsRequest.getAreaType() == PointList.TYPE_AREA_CITY) {
             boolean isCity = queryPointsRequest.getAreaType() == PointList.TYPE_AREA_CITY;
+            String groupKey = isCity ? GeoTable.KEY_CITY_CODE : GeoTable.KEY_AD_CODE;
+            // 如果需要查询原始点，则会以原始点的那些区去查询推荐点的区的数量
+            List<String> areaKeyList = new LinkedList<>();
+            String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)", GeoTable.KEY_POINT_ORIGIN, queryPointsRequest.north,
+                    queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west);
+            String tableName = GeoTable.TABLE_RECOMMEND_DATA_PREFIX + dataEnv + "_" + WORLD_CODE;
+            try {
+                if (HbaseDbHandler.hasTable(tableName)) {
+                    // 区域对应数量（可见区域内）
+                    areaKeyList = GeoDbHandler.queryGroupKeys(tableName, cqlBox, groupKey);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
                     queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ORIGIN) {
-                dataList.addAll(RPHandleManager.getIns().queryAreaPointCounts(queryPointsRequest.north,
-                        queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west, dataEnv,
-                        GeoTable.TABLE_RECOMMEND_DATA_PREFIX, isCity ? GeoTable.KEY_CITY_CODE : GeoTable.KEY_AD_CODE,
-                        GeoTable.KEY_POINT_ORIGIN));
+                dataList.addAll(RPHandleManager.getIns().queryAreaPointCounts(dataEnv,
+                        GeoTable.TABLE_RECOMMEND_DATA_PREFIX,
+                        groupKey, areaKeyList));
             }
             if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
                     queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_RECMD) {
-                dataList.addAll(RPHandleManager.getIns().queryAreaPointCounts(queryPointsRequest.north,
-                        queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west, dataEnv,
-                        GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, isCity ? GeoTable.KEY_CITY_CODE : GeoTable.KEY_AD_CODE,
-                        GeoTable.KEY_POINT_RECMD));
+                dataList.addAll(RPHandleManager.getIns().queryAreaPointCounts(dataEnv,
+                        GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,
+                        groupKey, areaKeyList));
             }
         }
         return dataList;

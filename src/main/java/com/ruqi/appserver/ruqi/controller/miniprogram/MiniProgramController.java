@@ -34,8 +34,17 @@ public class MiniProgramController {
         } else {
             result.data = new MiniProgramAdInfoResp();
             result.data.adList = new ArrayList<>();
-            result.data.adList.add(new MiniProgramAdInfoResp.MiniProgramAdInfo("https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1422969837,1773444198&fm=26&gp=0.jpg"));
-            result.data.adList.add(new MiniProgramAdInfoResp.MiniProgramAdInfo("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1606921742527&di=c945e167a49c4050f6e4fe458d45f772&imgtype=0&src=http%3A%2F%2Fimg.pconline.com.cn%2Fimages%2Fupload%2Fupc%2Ftx%2Fwallpaper%2F1606%2F30%2Fc3%2F23589301_1467290861869_800x800.jpg"));
+            switch (request.type) {
+                case "top_unlogin":
+                    result.data.adList.add(new MiniProgramAdInfoResp.MiniProgramAdInfo("https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1422969837,1773444198&fm=26&gp=0.jpg"));
+                    break;
+                case "top_logined":
+                    result.data.adList.add(new MiniProgramAdInfoResp.MiniProgramAdInfo("https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1422969837,1773444198&fm=26&gp=0.jpg"));
+                    result.data.adList.add(new MiniProgramAdInfoResp.MiniProgramAdInfo("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1606921742527&di=c945e167a49c4050f6e4fe458d45f772&imgtype=0&src=http%3A%2F%2Fimg.pconline.com.cn%2Fimages%2Fupload%2Fupc%2Ftx%2Fwallpaper%2F1606%2F30%2Fc3%2F23589301_1467290861869_800x800.jpg"));
+                    break;
+                default:
+                    break;
+            }
         }
         return result;
     }

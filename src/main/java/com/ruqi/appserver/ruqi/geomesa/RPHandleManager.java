@@ -11,7 +11,10 @@ import com.ruqi.appserver.ruqi.geomesa.recommendpoint.RecommendPointStrategyExec
 import com.ruqi.appserver.ruqi.geomesa.recommendpoint.base.PointQueryConfig;
 import com.ruqi.appserver.ruqi.geomesa.recommendpoint.pointquerystrategy.KnnQueryStrategy;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
-import com.ruqi.appserver.ruqi.utils.*;
+import com.ruqi.appserver.ruqi.utils.BusinessException;
+import com.ruqi.appserver.ruqi.utils.CityUtil;
+import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
+import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.Query;
@@ -22,7 +25,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -72,7 +74,7 @@ public class RPHandleManager {
      * @param record   记录数据
      */
     public void saveRecommendDatasByCityCode(String evn, String cityCode, UploadRecommendPointRequest<RecommendPoint> record) {
-        if (record==null){
+        if (record == null) {
             logger.error("record can not be null");
             return;
         }
@@ -89,7 +91,7 @@ public class RPHandleManager {
      * @param record   记录数据
      */
     public void batchSaveRecommendDatasByCityCode(String evn, String cityCode, List<UploadRecommendPointRequest<RecommendPoint>> record) {
-        if (record==null&&!record.isEmpty()){
+        if (record == null && !record.isEmpty()) {
             logger.error("record can not be null");
             return;
         }
@@ -446,11 +448,9 @@ public class RPHandleManager {
     }
 
     // 查询范围内每个区域的数量
-    public List<PointList.Point> queryAreaPointCounts(double north, double east, double south, double west, String dev,
-                                                      String tableRecommondPonitPrefix, String groupKey, String sGeom) {
+    public List<PointList.Point> queryAreaPointCounts(String dev, String tableRecommondPonitPrefix,
+                                                      String groupKey, List<String> areaKeyList) {
         List<PointList.Point> points = new ArrayList<>();
-        String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)", sGeom, north,
-                east, south, west);
 
         int pointType = 0;
         if (MyStringUtils.isEqueals(tableRecommondPonitPrefix, GeoTable.TABLE_RECOMMOND_PONIT_PREFIX)) {
@@ -463,17 +463,15 @@ public class RPHandleManager {
             String tableName = tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
 
             if (HbaseDbHandler.hasTable(tableName)) {
-                // 区域对应数量（可见区域内）
-                Map<String, Integer> areaPointCountMap = GeoDbHandler.queryGroupCount(tableName, cqlBox, groupKey);
                 StringBuilder sb = new StringBuilder();
-                for (String key : areaPointCountMap.keySet()) {
+                for (String key : areaKeyList) {
                     sb.append(groupKey + "=" + key + " or ");
                 }
                 String cqlCount = sb.substring(0, sb.length() - 4);
                 // 区域对应数量
-                areaPointCountMap = GeoDbHandler.queryGroupCount(tableName, cqlCount, groupKey);
+                Map<String, Integer> areaPointCountMap = GeoDbHandler.queryGroupCount(tableName, cqlCount, groupKey);
 
-                logger.info("areaPointCountMap:" + areaPointCountMap);
+                logger.info("areaPointCountMap all:" + areaPointCountMap);
                 logger.info("areaPointCountMap.keySet():" + areaPointCountMap.keySet());
                 for (String key : areaPointCountMap.keySet()) {
                     // 区域编码后面两位为0的话是城市编码了，应该是错误的，抛弃
@@ -484,7 +482,7 @@ public class RPHandleManager {
                         continue;
                     }
                     PointList.Point point = new PointList.Point(CityUtil.getCenterLngLat(key), pointType,
-                            CityUtil.getCityName(key), areaPointCountMap.get(key));
+                            CityUtil.getCityName(key), areaPointCountMap.get(key), key);
                     points.add(point);
                 }
             } else {

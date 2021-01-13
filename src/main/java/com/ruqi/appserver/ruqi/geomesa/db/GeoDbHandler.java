@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendRecordDataUpdater;
-import com.ruqi.appserver.ruqi.utils.EnvUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.*;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -20,7 +19,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.math.Ordering;
 
 import java.io.IOException;
 import java.util.*;
@@ -94,12 +92,12 @@ public class GeoDbHandler {
                         if (iUpdateDataListener != null) {
                             SimpleFeature oldSf = tempDatas.get(next.getID());
                             tempDatas.remove(next.getID());//移除旧的key的数据
-                            if (oldSf!=null){
+                            if (oldSf != null) {
                                 iUpdateDataListener.updateData(next, oldSf);
                                 writer.write();
                             } else {
-                                if (IS_DB_DEBUG){
-                                    logger.error("id:"+next.getID()+"can not find in new Feature");
+                                if (IS_DB_DEBUG) {
+                                    logger.error("id:" + next.getID() + "can not find in new Feature");
                                 }
                                 //nothing contiue next one
                             }
@@ -307,6 +305,51 @@ public class GeoDbHandler {
         return -1;
     }
 
+    // 查询表内的group by 的Key的集合
+    public static List<String> queryGroupKeys(String tableName, String cqlFilter, String groupKey) {
+        List<String> keyList = new LinkedList<>();
+        if (!StringUtils.isEmpty(tableName)) {
+            try {
+                DataStore datastore = MesaDataConnectManager.getIns().getDataStore(tableName);
+                if (datastore != null) {
+                    Query query = new Query(MesaDataConnectManager.getIns().getTableTypeName(tableName));
+                    query.getHints().put(QueryHints.STATS_STRING(), "Enumeration(\"" + groupKey + "\")");
+                    try {
+                        if (!StringUtils.isEmpty(cqlFilter)) {
+                            logger.info("count table " + tableName + " with filter:" + cqlFilter);
+                            query.setFilter(ECQL.toFilter(cqlFilter));
+                        }
+                    } catch (CQLException e) {
+                        e.printStackTrace();
+                    }
+                    logger.info("--->query:" + query);
+                    List<SimpleFeature> queryResults = queryFeature(datastore, Arrays.asList(query));
+//                    logger.info("--->queryResults:" + queryResults);
+                    if (queryResults != null && queryResults.size() > 0) {
+                        SimpleFeature feature = queryResults.get(0);
+                        if ("stat".equals(feature.getID())) {
+                            for (Property property : feature.getValue()) {
+                                if ("stats".equals(property.getName().getURI())) {
+                                    JsonObject jsonObject = (JsonObject) JsonParser.parseString((String) property.getValue());
+                                    for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                                        String groupKeyValue = entry.getKey();
+                                        keyList.add(groupKeyValue);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    logger.error("[" + tableName + "] can not get dataAccess ,and Filter is:" + cqlFilter);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return keyList;
+    }
+
     // 查询表内的group by 的统计总量
     public static Map<String, Integer> queryGroupCount(String tableName, String cqlFilter, String groupKey) {
         Map<String, Integer> countMap = new HashMap<>();
@@ -317,15 +360,20 @@ public class GeoDbHandler {
                     String typeName = MesaDataConnectManager.getIns().getTableTypeName(tableName);
                     Query query = new Query(typeName);
                     query.getHints().put(QueryHints.STATS_STRING(), "GroupBy(\"" + groupKey + "\",Count())");
+                    logger.info("--->query:" + query);
+                    logger.info("--->query.getHints():" + query.getHints());
                     try {
                         if (!StringUtils.isEmpty(cqlFilter)) {
-                            logger.info("count table" + tableName + "with filter:" + cqlFilter);
+                            logger.info("count table " + tableName + " with filter:" + cqlFilter);
                             query.setFilter(ECQL.toFilter(cqlFilter));
                         }
                     } catch (CQLException e) {
                         e.printStackTrace();
                     }
+                    long time1 = System.currentTimeMillis();
                     List<SimpleFeature> queryResults = queryFeature(datastore, Arrays.asList(query));
+                    long time2 = System.currentTimeMillis();
+                    logger.info("--->queryFeature time=" + (time2 - time1) / 1000);
                     if (queryResults != null && queryResults.size() > 0) {
 //                        logger.info("--->queryGroupCount queryResults.size():" + queryResults.size());
 //                        for (SimpleFeature feature : queryResults) {
