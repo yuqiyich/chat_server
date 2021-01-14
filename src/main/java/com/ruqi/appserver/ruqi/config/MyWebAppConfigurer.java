@@ -42,6 +42,7 @@ public class MyWebAppConfigurer implements WebMvcConfigurer {
                     .excludePathPatterns("/record/uploadData", "/record/uploadDotEventData") // 排除安全上报、埋点上报等接口
                     .excludePathPatterns("/point/queryRecommendPoint", "/point/uploadRecommendPoint") // 排除推荐上车点等接口
                     .excludePathPatterns("/sign/obtain") // 排除获取sign等接口
+                    .excludePathPatterns("/tool/**") // 排除获取工具类接口
                     .excludePathPatterns("/user/login", "/user/newlogin") // 排除登录接口
                     .excludePathPatterns("/config/**") // 排除通用配置接口
                     .excludePathPatterns("/miniProgram/**") // 排除小程序接口
@@ -56,6 +57,7 @@ public class MyWebAppConfigurer implements WebMvcConfigurer {
                     .excludePathPatterns("/point/**") // 排除推荐上车点等接口
                     .excludePathPatterns("/sign/obtain") // 排除获取sign等接口
                     .excludePathPatterns("/user/login", "/user/newlogin") // 排除登录接口
+                    .excludePathPatterns("/tool/**") // 排除获取工具类接口
                     .excludePathPatterns("/config/**") // 排除通用配置接口
                     .excludePathPatterns("/miniProgram/**") // 排除小程序接口
                     .excludePathPatterns("/wechatH5/authorize", "/wechatH5/redirectUri") // 微信公众号需要

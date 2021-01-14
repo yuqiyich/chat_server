@@ -355,7 +355,7 @@ public class RPHandleManager {
      *
      * @param tableNamePrefix 表名前缀  例如下面的值
      * @param cqlFilter       cql的语句 like下面的方法
-     * @param isDetail
+     * @param isDetail        是否需要查看统计明细
      * @param canEndWithEarth 是否查全球表的
      * @return
      * @see GeoTable#TABLE_RECOMMOND_PONIT_PREFIX
@@ -386,6 +386,12 @@ public class RPHandleManager {
         } else {
             return counts;
         }
+    }
+
+      public Map<String, Integer> staticCountByAdCodeBeforeToday(String tableNamePrefix, String env){
+          String fullTableEarthName= tableNamePrefix +env +"_"+WORLD_CODE;
+        return  GeoDbHandler.queryGroupCount(fullTableEarthName,getBeforeTodayFilter(),"adCode");
+
     }
 
     /**

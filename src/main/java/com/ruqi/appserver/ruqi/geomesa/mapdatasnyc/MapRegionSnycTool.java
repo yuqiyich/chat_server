@@ -24,6 +24,7 @@ import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.*;
 public class MapRegionSnycTool {
 
 
+
     //通用的表字段的定义
     private static final String ATTR_KEY_PARENT_CODE = "parentCode:Integer:index=true";//父级别的adcode
     private static final String ATTR_KEY_LEVEL = "level:String:index=true";//区域级别
@@ -40,10 +41,21 @@ public class MapRegionSnycTool {
 
 //        storeAdInfoByProvince("广东省");
 
-        queryAllData();
+//        queryAllData();
 
-
+          storeChinaAdCodeInfo();
     }
+
+    /**
+     * 存储中国所有的行政区域的信息
+     */
+    public static District storeChinaAdCodeInfo() {
+        String url = "https://restapi.amap.com/v3/config/district?keywords=中国&extensions=base&subdistrict=3&key=" + MAP_KEY;
+        String res = BaseHttpClient.sendGet(url, "");
+        System.out.println("res:" + res);
+       return JsonUtil.jsonStrToBean(District.class, res);
+    }
+
 
 
     /**

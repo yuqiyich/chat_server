@@ -1,9 +1,6 @@
 package com.ruqi.appserver.ruqi.service;
 
-import com.ruqi.appserver.ruqi.bean.BaseCodeMsgBean;
-import com.ruqi.appserver.ruqi.bean.RecommendPoint;
-import com.ruqi.appserver.ruqi.bean.RecommendPointList;
-import com.ruqi.appserver.ruqi.bean.RecommentPointStaticsInfo;
+import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
@@ -18,6 +15,7 @@ import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import com.ruqi.appserver.ruqi.utils.ThreadUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,9 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     RecommendPointWrapper recommendPointWrapper;
     @Autowired
     DotEventInfoWrapper dotEventInfoWrapper;
+
+    @Autowired
+    BaseConfigAreaService baseConfigAreaService;
 
     @Override
     @Async("taskExecutor")
@@ -142,20 +143,22 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
             boolean isCity = queryPointsRequest.getAreaType() == PointList.TYPE_AREA_CITY;
             String groupKey = isCity ? GeoTable.KEY_CITY_CODE : GeoTable.KEY_AD_CODE;
             // 如果需要查询原始点，则会以原始点的那些区去查询推荐点的区的数量
-            List<String> areaKeyList = new LinkedList<>();
+            ArrayList<String> areaKeyList = new ArrayList<>();
             String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)", GeoTable.KEY_POINT_ORIGIN, queryPointsRequest.north,
                     queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west);
             String tableName = GeoTable.TABLE_RECOMMEND_DATA_PREFIX + dataEnv + "_" + WORLD_CODE;
             try {
                 if (HbaseDbHandler.hasTable(tableName)) {
                     // 区域对应数量（可见区域内）
-                    areaKeyList = GeoDbHandler.queryGroupKeys(tableName, cqlBox, groupKey);
+                    areaKeyList = (ArrayList<String>) GeoDbHandler.queryGroupKeys(tableName, cqlBox, groupKey);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
+              dataList.addAll(convertStaticBeanToPointBean(getStaticBean(queryPointsRequest.getEnvType(),areaKeyList)));
+
+            /*if (queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ALL ||
                     queryPointsRequest.pointType == QueryPointsRequest.POINT_TYPE_ORIGIN) {
                 dataList.addAll(RPHandleManager.getIns().queryAreaPointCounts(dataEnv,
                         GeoTable.TABLE_RECOMMEND_DATA_PREFIX,
@@ -166,9 +169,39 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 dataList.addAll(RPHandleManager.getIns().queryAreaPointCounts(dataEnv,
                         GeoTable.TABLE_RECOMMOND_PONIT_PREFIX,
                         groupKey, areaKeyList));
-            }
+            }*/
         }
         return dataList;
+    }
+
+    private List<PointList.Point> convertStaticBeanToPointBean(List<RecommentPointStaticsInfo> staticBean) {
+        List<PointList.Point> results=new ArrayList<>();
+        if (staticBean!=null&&!staticBean.isEmpty()){
+            for (RecommentPointStaticsInfo bean:staticBean) {
+                PointList.Point item=new PointList.Point();
+                item.code=bean.getCityCode();
+                item.title=bean.getCityName();
+                item.pointRecommendCount=bean.getTotalRecmdPointNum();
+                item.pointSelectCount=bean.getTotalOriginPointNum();
+                item.pointRecordCount =bean.getTotalRecordNum();
+            }
+        }
+        return results;
+    }
+
+    private List<RecommentPointStaticsInfo> getStaticBean(String env,ArrayList<String> areaKeyList) {
+      //SELECT * FROM recommend_point_statics where (ad_code='440105' or ad_code='440106') and env = 'pro' and  date(`date`)= DATE_SUB(curdate(),INTERVAL 1 DAY)
+        StringBuilder adCodeWhereCause=new StringBuilder();
+        if (areaKeyList!=null &&areaKeyList.isEmpty()){
+            adCodeWhereCause.append("(");
+            int size =areaKeyList.size();
+            for (int i = 0; i < size; i++) {
+                adCodeWhereCause.append( "ad_code="+areaKeyList.get(i)+" ");
+                adCodeWhereCause.append(i==size-1?" ":"or ");
+            }
+            adCodeWhereCause.append(")");
+        }
+        return  recommendPointWrapper.getRecmdPointStaticBeforeToday(env,adCodeWhereCause.toString());
     }
 
 //    @Override
@@ -305,7 +338,10 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 }
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
                 recommentPointStaticsInfo.setCityCode(cityCode);
-                recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
+                AreaAdInfo adInfo=baseConfigAreaService.getAreaAdInfo(cityCode);
+                if (adInfo!=null && !StringUtils.isEmpty(adInfo.getAdName())){
+                    recommentPointStaticsInfo.setCityName(adInfo.getAdName());
+                }
                 recommentPointStaticsInfo.setEnv(DEV);
                 recommentPointStaticsInfo.setTotalRecmdPointNum(recommendPointCountDev);
                 recommentPointStaticsInfo.setTotalOriginPointNum(recommendDataCountDev);
@@ -340,7 +376,10 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 }
                 RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
                 recommentPointStaticsInfo.setCityCode(cityCode);
-                recommentPointStaticsInfo.setCityName(CityUtil.getCityName(cityCode));
+                AreaAdInfo adInfo=baseConfigAreaService.getAreaAdInfo(cityCode);
+                if (adInfo!=null && !StringUtils.isEmpty(adInfo.getAdName())){
+                    recommentPointStaticsInfo.setCityName(adInfo.getAdName());
+                }
                 recommentPointStaticsInfo.setEnv(PRO);
                 recommentPointStaticsInfo.setTotalRecmdPointNum(recommendPointCountPro);
                 recommentPointStaticsInfo.setTotalOriginPointNum(recommendDataCountPro);
@@ -356,6 +395,98 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 logger.info("插入统计好的PRO数据" + JsonUtil.beanToJsonStr(recommentPointStaticsInfo));
                 int result = recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
                 logger.info("插入PRO结果" + result);
+            }
+        }
+
+    }
+
+    @Override
+    public void staticRecommendPointByAdCode() {
+        //截止昨天，上报的原始记录次数
+        Map<String, Integer> lastUploadTimesDev = RPHandleManager.getIns().staticCountByAdCodeBeforeToday(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX,DEV);
+        Map<String, Integer> lastUploadTimesPro = RPHandleManager.getIns().staticCountByAdCodeBeforeToday(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX,PRO);
+
+        //截止昨天，扎针点和推荐关系表 数量
+        Map<String, Integer> lastdayRecommendDataCountDev = RPHandleManager.getIns().staticCountByAdCodeBeforeToday(GeoTable.TABLE_RECOMMEND_DATA_PREFIX,DEV);
+        Map<String, Integer> lastdayRecommendDataCountPro = RPHandleManager.getIns().staticCountByAdCodeBeforeToday(GeoTable.TABLE_RECOMMEND_DATA_PREFIX,PRO);
+
+        //截止昨天，推荐点数目
+        Map<String, Integer> lastDayRecommendPointCountDev = RPHandleManager.getIns().staticCountByAdCodeBeforeToday(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, DEV);
+        Map<String, Integer> lastDayRecommendPointCountPro = RPHandleManager.getIns().staticCountByAdCodeBeforeToday(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX, PRO);
+
+        if (lastUploadTimesDev != null &&
+                lastdayRecommendDataCountDev != null &&
+                lastDayRecommendPointCountDev != null) {
+            for (Map.Entry<String, Integer> entry : lastUploadTimesDev.entrySet()) {
+                String cityCode = entry.getKey();
+                int uplaodTimesDev = entry.getValue();
+                int recommendDataCountDev = 0;
+                if (lastdayRecommendDataCountDev.containsKey(cityCode)) {
+                    recommendDataCountDev = lastdayRecommendDataCountDev.get(cityCode);
+                }
+                int recommendPointCountDev = 0;
+                if (lastDayRecommendPointCountDev.containsKey(cityCode)) {
+                    recommendPointCountDev = lastDayRecommendPointCountDev.get(cityCode);
+                }
+                RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
+                recommentPointStaticsInfo.setCityCode(cityCode);
+                AreaAdInfo adInfo=baseConfigAreaService.getAreaAdInfo(cityCode);
+                if (adInfo!=null && !StringUtils.isEmpty(adInfo.getAdName())){
+                    recommentPointStaticsInfo.setCityName(adInfo.getAdName());
+                }
+                recommentPointStaticsInfo.setEnv(DEV);
+                recommentPointStaticsInfo.setTotalRecmdPointNum(recommendPointCountDev);
+                recommentPointStaticsInfo.setTotalOriginPointNum(recommendDataCountDev);
+                recommentPointStaticsInfo.setTotalRecordNum(uplaodTimesDev);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -1);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                Date time = cal.getTime();
+                recommentPointStaticsInfo.setStaticsDate(time);
+                logger.info("adcode插入统计好的DEV数据" + JsonUtil.beanToJsonStr(recommentPointStaticsInfo));
+                int result = recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
+                logger.info("adcode插入DEV结果" + result);
+            }
+        }
+
+        if (lastUploadTimesPro != null &&
+                lastdayRecommendDataCountPro != null &&
+                lastDayRecommendPointCountPro != null) {
+            for (Map.Entry<String, Integer> entry : lastUploadTimesPro.entrySet()) {
+                String cityCode = entry.getKey();
+                int uplaodTimesPro = entry.getValue();
+                int recommendDataCountPro = 0;
+                if (lastdayRecommendDataCountPro.containsKey(cityCode)) {
+                    recommendDataCountPro = lastdayRecommendDataCountPro.get(cityCode);
+                }
+                int recommendPointCountPro = 0;
+                if (lastDayRecommendPointCountPro.containsKey(cityCode)) {
+                    recommendPointCountPro = lastDayRecommendPointCountPro.get(cityCode);
+                }
+                RecommentPointStaticsInfo recommentPointStaticsInfo = new RecommentPointStaticsInfo();
+                recommentPointStaticsInfo.setCityCode(cityCode);
+                AreaAdInfo adInfo=baseConfigAreaService.getAreaAdInfo(cityCode);
+                if (adInfo!=null && !StringUtils.isEmpty(adInfo.getAdName())){
+                    recommentPointStaticsInfo.setCityName(adInfo.getAdName());
+                }
+                recommentPointStaticsInfo.setEnv(PRO);
+                recommentPointStaticsInfo.setTotalRecmdPointNum(recommendPointCountPro);
+                recommentPointStaticsInfo.setTotalOriginPointNum(recommendDataCountPro);
+                recommentPointStaticsInfo.setTotalRecordNum(uplaodTimesPro);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -1);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                Date time = cal.getTime();
+                recommentPointStaticsInfo.setStaticsDate(time);
+                logger.info("adcode插入统计好的PRO数据" + JsonUtil.beanToJsonStr(recommentPointStaticsInfo));
+                int result = recommendPointWrapper.insertRecommendPoint(recommentPointStaticsInfo);
+                logger.info("adcode插入PRO结果" + result);
             }
         }
 

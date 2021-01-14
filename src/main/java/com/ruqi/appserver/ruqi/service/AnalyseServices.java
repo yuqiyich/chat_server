@@ -88,10 +88,11 @@ public class AnalyseServices {
 
     @Scheduled(cron = CRON_STATIC)
     public void periodStaticRecommendData() throws InterruptedException {
-        analyseRecommendData(DEV);
-        analyseRecommendData(PRO);
+//        analyseRecommendData(DEV);
+//        analyseRecommendData(PRO);
         logger.info("定时更新推荐上车点数据");
         iPointRecommendService.staticRecommendPoint();
+        iPointRecommendService.staticRecommendPointByAdCode();
 
         // 统计前一天的乘客推荐点事件数据
         analyseRecPointYesterdayData();

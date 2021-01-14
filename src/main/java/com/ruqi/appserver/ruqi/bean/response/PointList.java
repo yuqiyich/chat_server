@@ -41,12 +41,15 @@ public class PointList {
         public static final int TYPE_POINT_ORIGIN = 1;
         public static final int TYPE_POINT_RECMD = 2;
 
-        public String code;
+        public String code;//adcode
         public String lnglat;
         public String title;
         @ApiModelProperty(value = "点位类型，1：原始点 2：推荐点")
         public int pointType;
         public int pointCount = -1;
+        public int pointRecommendCount = -1;
+        public int pointSelectCount = -1;
+        public int pointRecordCount = -1;
     }
 }
 
