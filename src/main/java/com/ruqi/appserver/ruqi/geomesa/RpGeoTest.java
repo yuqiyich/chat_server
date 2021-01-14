@@ -4,6 +4,7 @@ import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.geomesa.db.*;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
+import com.ruqi.appserver.ruqi.utils.ThreadUtils;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -21,12 +22,16 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -48,11 +53,31 @@ public class RpGeoTest {
     public static void main(String[] args) {
         GeoDbHandler.setDebug(true);
 //        initAllTableIfNotExist(Arrays.asList(INIT_TABLE_CITYS));
-//         RPHandleManager.getIns().saveRecommendDatasByCityCode("dev",CITY_CODE,getTestData());
+//         RPHandleManager.getIns().batchSaveRecommendDatasByCityCode("dev",CITY_CODE,getListTestData());
 //         queryAllData("pro");
 //           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412,"pro");
-        RPHandleManager.getIns().queryRecommendPoints(113.3348123,23.1067123,"pro");
-        RPHandleManager.getIns().queryRecommendPoints(113.3352123,23.1064123,"pro");
+//        RPHandleManager.getIns().queryRecommendPoints(113.3348123,23.1067123,"pro");
+//        RPHandleManager.getIns().queryRecommendPoints(113.3352123,23.1064123,"pro");
+//
+        try {
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(TABLE_RECOMMOND_PONIT_PREFIX+ "dev_"+GeoTable.WORLD_CODE),getTestQueries(TYPE_RECOMMEND_POINT_ALL));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+//        ExecutorService service= Executors.newFixedThreadPool(10);
+//        for (int i = 0; i <3 ; i++) {
+//            service.submit(new InsertTask());
+//        }
+    }
+
+    public static  class InsertTask implements Runnable{
+
+        @Override
+        public void run() {
+            RPHandleManager.getIns().batchSaveRecommendDatasByCityCode("dev",CITY_CODE,getListTestData());
+        }
     }
 
     /**
@@ -151,14 +176,14 @@ public class RpGeoTest {
                 String dateequal = "dtg DURING 2019-12-31T00:00:00.000Z/2022-01-02T00:00:00.000Z";
                 String channel = "channel=2";
                 //bbox rule  lng,lat,lng,lat
-                String idrule="rpId = '122.984662_23.986662'";
+                String idrule="rpId = '113.33505_23.10702'";
                 String bbox = "bbox(sGeom,113.11344,23.11344,113.11344,23.11344)";
                 String equals=" EQUALS(sGeom,POINT(113.103284 23.120406))";
                 String contains=" CONTAINS(sGeom,SRID=4326;POINT(113.3348 23.1067))";
                 String exist="rrId EXISTS";
                String withIn=" DWITHIN( sGeom , POINT(113.3348 23.1067) , 100 , meters )";
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(idrule)));
-                query.add(new Query(sftypeName, ECQL.toFilter(withIn)));
+                query.add(new Query(sftypeName, ECQL.toFilter(idrule)));
 //                query.add(queryTableRowCount(sftypeName));
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains+" AND " +during)));
                 // bounding box over most of the united states
@@ -185,6 +210,15 @@ public class RpGeoTest {
         return queries;
     }
 
+    public static List<UploadRecommendPointRequest<RecommendPoint>> getListTestData(){
+        List<UploadRecommendPointRequest<RecommendPoint>> dataSet= new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            dataSet.add(getTestData());
+        }
+
+        return dataSet;
+    }
+
 
     public static UploadRecommendPointRequest<RecommendPoint>  getTestData(){
        UploadRecommendPointRequest<RecommendPoint>   testData= new UploadRecommendPointRequest<RecommendPoint>();
@@ -201,12 +235,12 @@ public class RpGeoTest {
 
     private static List<RecommendPoint> getTestRecommendDatas() {
         List<RecommendPoint> data=new ArrayList<>();
-        for (int i = 0; i < 1 ; i++) {
+        for (int i = 0; i < 2 ; i++) {
             RecommendPoint recommendPoint=new RecommendPoint();
             recommendPoint.setAddress("ruqi_test"+i);
             recommendPoint.setTitle("ruqi_test_title"+i);
-            recommendPoint.setLat(GeoMesaUtil.getPrecisionDouble(23.111111+0.000001*(i+1),6));
-            recommendPoint.setLng(GeoMesaUtil.getPrecisionDouble(122.111111+0.000001*(i+1),6));
+            recommendPoint.setLat(23.10702);
+            recommendPoint.setLng(113.33505);
             data.add(recommendPoint);
         }
         return data;

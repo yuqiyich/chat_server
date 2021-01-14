@@ -93,6 +93,7 @@ public class GeoDbHandler {
                             SimpleFeature oldSf = tempDatas.get(next.getID());
                             tempDatas.remove(next.getID());//移除旧的key的数据
                             if (oldSf != null) {
+                                logger.debug("update old data id:"+next.getID());
                                 iUpdateDataListener.updateData(next, oldSf);
                                 writer.write();
                             } else {
@@ -116,7 +117,7 @@ public class GeoDbHandler {
             } catch (IOException | CQLException e) {
                 e.printStackTrace();
             }
-            logger.info("updateExistDataOrInsert--> update " + features.size() + " features for " + sft.getTypeName());
+            logger.info("updateExistDataOrInsert--> update " + features.size() + " features for " + sft.getTypeName()+"newData:"+newData.size());
             if (newData.size() > 0) {
                 try {
                     //FIXME 如果新增数据中有fid一样的数据，怎么处理
