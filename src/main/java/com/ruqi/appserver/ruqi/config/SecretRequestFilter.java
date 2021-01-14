@@ -38,7 +38,7 @@ import java.io.PrintWriter;
 /**
  * 注册过滤器
  * */
-@WebFilter(filterName = "SecretRequestFilter", urlPatterns = "/point/*")
+@WebFilter(filterName = "SecretRequestFilter", urlPatterns = {"/point/*","/sentry/*"})
 public class SecretRequestFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(SecretRequestFilter.class);
     private static final String REQ = "req";
