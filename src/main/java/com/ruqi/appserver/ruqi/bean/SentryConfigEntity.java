@@ -8,6 +8,7 @@ package com.ruqi.appserver.ruqi.bean;
 public class SentryConfigEntity {
     private String sentrySwitch;
     private String level;
+    private String dns;
 
     public String getSentrySwitch() {
         return sentrySwitch;
@@ -23,5 +24,13 @@ public class SentryConfigEntity {
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    public void setDns(String dns) {
+        this.dns = dns;
+    }
+
+    public String getDns() {
+        return dns;
     }
 }

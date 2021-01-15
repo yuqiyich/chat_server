@@ -22,9 +22,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.DEV;
-import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.PRO;
-
 @Configuration
 @EnableScheduling   // 1.开启定时任务
 public class AnalyseServices {
@@ -98,11 +95,11 @@ public class AnalyseServices {
         analyseRecPointYesterdayData();
     }
 
-    @Scheduled(cron = "0 17 * * * ?")
-    public void test() {
-        iPointRecommendService.staticRecommendPointByAdCode();
-        iPointRecommendService.staticRecommendPoint();
-    }
+//    @Scheduled(cron = "0 17 * * * ?")
+//    public void test() {
+//        iPointRecommendService.staticRecommendPointByAdCode();
+//        iPointRecommendService.staticRecommendPoint();
+//    }
 
     private void analyseRecPointYesterdayData() {
         queryAndSaveRecPointYesterdayData(EnvUtils.APP_CLIENT);
