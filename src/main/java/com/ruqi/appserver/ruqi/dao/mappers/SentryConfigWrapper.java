@@ -26,6 +26,7 @@ public interface SentryConfigWrapper {
 
     @Select("SELECT * FROM sentry_switch")
     @Results({@Result(property = "sentrySwitch", column = "switch"),
+            @Result(property = "dns", column = "dns"),
             @Result(property = "level", column = "level")})
     List<SentryConfigEntity> getSentryConfig();
 }

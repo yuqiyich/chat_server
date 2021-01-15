@@ -14,11 +14,7 @@ import java.util.List;
 @Service
 public class SentryConfigServiceImpl implements ISentryConfigService {
     Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String ANDROID_PLATFORM = "android";
-    private static final String IOS_PLATFORM = "ios";
-    private static final String DEV_ENV = "dev";
-    private static final String TEST_ENV = "test";
-    private static final String PRO_ENV = "pro";
+    private static final String DNS = "https://a938191ab6fc49cbb2216b1e7a672e88@poseidon-report.ruqimobility.com/2";
 
     @Autowired
     SentryConfigWrapper sentryConfigWrapper;
@@ -28,6 +24,7 @@ public class SentryConfigServiceImpl implements ISentryConfigService {
         SentryConfigEntity sentryConfigEntity = new SentryConfigEntity();
         sentryConfigEntity.setSentrySwitch("0");
         sentryConfigEntity.setLevel("d");
+        sentryConfigEntity.setDns(DNS);
         List<SentryConfigEntity> sentryConfigEntities = sentryConfigWrapper.getSentryConfig();
         if(sentryConfigEntities != null && sentryConfigEntities.size() > 0){
             SentryConfigEntity sentryConfigEntity1 = sentryConfigEntities.get(0);
