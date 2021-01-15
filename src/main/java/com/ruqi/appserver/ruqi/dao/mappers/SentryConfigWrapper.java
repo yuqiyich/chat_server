@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface SentryConfigWrapper {
 
-    @Select("SELECT * FROM sentry_area where areacode = #{areacode} and citycode = #{citycode}")
+    @Select("SELECT * FROM sentry_area where areacode = #{areacode} or citycode = #{citycode}")
     @Results({@Result(property = "citycode", column = "citycode"),
             @Result(property = "areacode", column = "areacode")})
     List<SentryAreaEntity> getSentryArea(@Param("areacode") String areacode, @Param("citycode") String citycode);
