@@ -56,11 +56,6 @@ public interface IPointRecommendService {
     List<PointList.Point> queryPoints(QueryPointsRequest queryPointsRequest);
 
     /**
-     * 默认是已城市code来区分
-     */
-    void staticRecommendPoint();
-
-    /**
      *  以adCode为纬度的统计
      *
      */
