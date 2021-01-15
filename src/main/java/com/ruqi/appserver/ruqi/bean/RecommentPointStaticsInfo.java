@@ -8,8 +8,10 @@ import java.util.Date;
  * Description:
  */
 public class RecommentPointStaticsInfo {
-    private String cityCode;
-    private String cityName;
+    private String adCode;
+    private String adName;
+    private double centerLat;
+    private double centerLng;
     /**
      * 所有用户扎针点的推荐上车点的数据量（用户扎针点为索引）
      */
@@ -31,14 +33,6 @@ public class RecommentPointStaticsInfo {
 
     public String getEnv() {
         return env;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
-
-    public String getCityName() {
-        return cityName;
     }
 
     public void setTotalOriginPointNum(int totalOriginPointNum) {
@@ -73,11 +67,35 @@ public class RecommentPointStaticsInfo {
         return staticsDate;
     }
 
-    public void setCityCode(String cityCode) {
-        this.cityCode = cityCode;
+    public String getAdCode() {
+        return adCode;
     }
 
-    public String getCityCode() {
-        return cityCode;
+    public void setAdCode(String adCode) {
+        this.adCode = adCode;
+    }
+
+    public String getAdName() {
+        return adName;
+    }
+
+    public void setAdName(String adName) {
+        this.adName = adName;
+    }
+
+    public double getCenterLat() {
+        return centerLat;
+    }
+
+    public void setCenterLat(double centerLat) {
+        this.centerLat = centerLat;
+    }
+
+    public double getCenterLng() {
+        return centerLng;
+    }
+
+    public void setCenterLng(double centerLng) {
+        this.centerLng = centerLng;
     }
 }
