@@ -9,8 +9,6 @@ import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
 import com.ruqi.appserver.ruqi.request.*;
-import com.ruqi.appserver.ruqi.utils.CityUtil;
-import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import com.ruqi.appserver.ruqi.utils.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,26 +81,7 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
     @Override
     public RecommendPointList<RecommentPointStaticsInfo> queryStaticsRecommendPoint(QueryStaticRecommendPointsRequest queryStaticRecommendPointsRequest) {
         RecommendPointList<RecommentPointStaticsInfo> recommentPointStaticsInfoRecommendPointList = new RecommendPointList<>();
-        List<RecommentPointStaticsInfo> recommentPointStaticsInfoList;
-        recommentPointStaticsInfoList = recommendPointWrapper.getRecommendPointLastWeek(queryStaticRecommendPointsRequest.getEnv(), queryStaticRecommendPointsRequest.getCityCode());
-        if (null != recommentPointStaticsInfoList && recommentPointStaticsInfoList.size() > 0) {
-            for (int i = recommentPointStaticsInfoList.size() - 1; i >= 0; i--) {
-                RecommentPointStaticsInfo recommentPointStaticsInfo = recommentPointStaticsInfoList.get(i);
-                if (recommentPointStaticsInfo.getAdCode().length() != 6) { // citycode、adcode都应该是6位数
-                    recommentPointStaticsInfoList.remove(i);
-                } else if (MyStringUtils.isEmpty(CityUtil.getCityName(recommentPointStaticsInfo.getAdCode()))) {
-                    recommentPointStaticsInfoList.remove(i);
-                }
-            }
-        }
-        // 暂时没维护全国所有的的市区数据，所以有些会临时以未知保存到数据库
-        for (RecommentPointStaticsInfo recommentPointStaticsInfo : recommentPointStaticsInfoList) {
-            if ((MyStringUtils.isEmpty(recommentPointStaticsInfo.getAdName())
-                    || MyStringUtils.isEqueals(recommentPointStaticsInfo.getAdName(), "未知"))
-                    && !MyStringUtils.isEmpty(recommentPointStaticsInfo.getAdCode())) {
-                recommentPointStaticsInfo.setAdCode(CityUtil.getCityName(recommentPointStaticsInfo.getAdCode()));
-            }
-        }
+        List<RecommentPointStaticsInfo> recommentPointStaticsInfoList = recommendPointWrapper.getRecommendPointLastWeek(queryStaticRecommendPointsRequest.getEnv(), queryStaticRecommendPointsRequest.getCityCode());
         recommentPointStaticsInfoRecommendPointList.setPointList(recommentPointStaticsInfoList);
         return recommentPointStaticsInfoRecommendPointList;
     }

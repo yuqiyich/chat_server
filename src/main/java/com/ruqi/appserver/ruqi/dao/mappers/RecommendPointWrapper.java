@@ -25,7 +25,7 @@ public interface RecommendPointWrapper {
     @Select({"<script>",
             "SELECT * FROM recommend_point_statics where env = #{env}",
             "<if test='adCode!=null and adCode!=\"\"'> AND ad_code = #{adCode}</if>",
-            " AND date >= date_sub(curdate(), INTERVAL 7 DAY)",
+            " AND LENGTH(ad_code) = 6 AND date >= date_sub(curdate(), INTERVAL 7 DAY)",
             "</script>"})
     @Results({@Result(property = "adCode", column = "ad_code"),
             @Result(property = "adName", column = "ad_name"),
