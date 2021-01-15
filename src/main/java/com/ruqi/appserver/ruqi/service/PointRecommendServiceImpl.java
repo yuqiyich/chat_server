@@ -7,9 +7,7 @@ import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.RecommendPointWrapper;
 import com.ruqi.appserver.ruqi.dao.mappers.UserMapper;
 import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
-import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
-import com.ruqi.appserver.ruqi.geomesa.db.HbaseDbHandler;
 import com.ruqi.appserver.ruqi.request.*;
 import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
@@ -22,12 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 
 import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.DEV;
 import static com.ruqi.appserver.ruqi.geomesa.RPHandleManager.PRO;
-import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
 
 @Service
 public class PointRecommendServiceImpl implements IPointRecommendService {
@@ -137,22 +133,8 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         } else if (queryPointsRequest.getAreaType() == PointList.TYPE_AREA_DISTRICT
                 || queryPointsRequest.getAreaType() == PointList.TYPE_AREA_CITY) {
             boolean isCity = queryPointsRequest.getAreaType() == PointList.TYPE_AREA_CITY;
-            String groupKey = isCity ? GeoTable.KEY_CITY_CODE : GeoTable.KEY_AD_CODE;
-            // 推荐点数目可能更少，这里读取推荐点得到区域内的adCode，数量需要>10来过滤部分错误数据
-            ArrayList<String> areaKeyList = new ArrayList<>();
-            String cqlBox = String.format("BBOX(%s, %s, %s, %s, %s)", GeoTable.KEY_POINT_RECMD, queryPointsRequest.north,
-                    queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west);
-            String tableName = GeoTable.TABLE_RECOMMOND_PONIT_PREFIX + dataEnv + "_" + WORLD_CODE;
-            try {
-                if (HbaseDbHandler.hasTable(tableName)) {
-                    // 区域对应数量（可见区域内）
-                    areaKeyList = (ArrayList<String>) GeoDbHandler.queryGroupKeys(tableName, cqlBox, groupKey, 10);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            dataList.addAll(convertStaticBeanToPointBean(getStaticBean(queryPointsRequest.getEnvType(), areaKeyList)));
+            dataList.addAll(convertStaticBeanToPointBean(getStaticBean(queryPointsRequest.getEnvType(), isCity, queryPointsRequest.north,
+                    queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west)));
         }
         return dataList;
     }
@@ -170,124 +152,21 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         return results;
     }
 
-    private List<RecommentPointStaticsInfo> getStaticBean(String env, ArrayList<String> areaKeyList) {
-        //SELECT * FROM recommend_point_statics where (ad_code='440105' or ad_code='440106') and env = 'pro' and  date(`date`)= DATE_SUB(curdate(),INTERVAL 1 DAY)
+    // 指定市还是区，上下左右坐标范围查询数据
+    private List<RecommentPointStaticsInfo> getStaticBean(String env, boolean isCity, double north,
+                                                          double east, double south, double west) {
         StringBuilder adCodeWhereCause = new StringBuilder();
-        if (areaKeyList != null && !areaKeyList.isEmpty()) {
-            adCodeWhereCause.append("(");
-            int size = areaKeyList.size();
-            for (int i = 0; i < size; i++) {
-                adCodeWhereCause.append("ad_code='" + areaKeyList.get(i) + "' ");
-                adCodeWhereCause.append(i == size - 1 ? " " : "or ");
-            }
-            adCodeWhereCause.append(")");
+        adCodeWhereCause.append("(");
+        if (isCity) {
+            adCodeWhereCause.append("ad_code LIKE '%00'");
+        } else {
+            adCodeWhereCause.append("ad_code NOT LIKE '%00'");
         }
+        adCodeWhereCause.append(String.format(" AND center_lng > %s AND center_lng < %s AND center_lat > %s AND center_lat < %s",
+                south, north, west, east));
+        adCodeWhereCause.append(")");
         return recommendPointWrapper.getRecmdPointStaticBeforeToday(env, adCodeWhereCause.toString());
     }
-
-//    @Override
-//    public List<PointList.Point> queryPoints(QueryPointsRequest queryPointsRequest) {
-//        List<PointList.Point> dataList = new ArrayList<>();
-//        if (null == queryPointsRequest) {
-//            return dataList;
-//        }
-//        // 查询全部的城市表的全部数据。暂时固定死查询广州、佛山的。
-//        String dataEnv = queryPointsRequest.getEnvType();
-//        List<String> cityCodeList = new ArrayList<>();
-//        cityCodeList.add("440100"); // 广州
-//        cityCodeList.add("440600"); // 佛山
-//        String recmdCqlBbox = null;
-//        String originCqlBbox = null;
-//        if (0 != queryPointsRequest.north && 0 != queryPointsRequest.east && 0 != queryPointsRequest.south && 0 != queryPointsRequest.west) {
-//            originCqlBbox = String.format("BBOX(%s, %s, %s, %s, %s)", GeoTable.KEY_POINT_ORIGIN, queryPointsRequest.north,
-//                    queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west);
-//            recmdCqlBbox = String.format("BBOX(%s, %s, %s, %s, %s)", GeoTable.KEY_POINT_RECMD, queryPointsRequest.north,
-//                    queryPointsRequest.east, queryPointsRequest.south, queryPointsRequest.west);
-//        }
-//        boolean needOriginData = false;
-//        boolean needRecmdData = false;
-//        switch (queryPointsRequest.pointType) {
-//            case QueryPointsRequest.POINT_TYPE_ALL:
-//                needOriginData = true;
-//                needRecmdData = true;
-//                break;
-//            case QueryPointsRequest.POINT_TYPE_ORIGIN:
-//                needOriginData = true;
-//                break;
-//            case QueryPointsRequest.POINT_TYPE_RECMD:
-//                needRecmdData = true;
-//                break;
-//        }
-//        if (needOriginData) {
-//            try {
-//                for (String cityCode : cityCodeList) {
-//                    DataStore originDataStore = GeoDbHandler.getHbaseTableDataStore(
-//                            GeoTable.TABLE_RECOMMEND_DATA_PREFIX + dataEnv + "_" + cityCode);
-//                    dataList.addAll(queryPointsFromDataStore(originDataStore, PointList.Point.TYPE_POINT_ORIGIN, originCqlBbox));
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        if (needRecmdData) {
-//            try {
-//                for (String cityCode : cityCodeList) {
-//                    DataStore recmdDataStore = GeoDbHandler.getHbaseTableDataStore(
-//                            GeoTable.TABLE_RECOMMOND_PONIT_PREFIX + dataEnv + "_" + cityCode);
-//                    dataList.addAll(queryPointsFromDataStore(recmdDataStore, PointList.Point.TYPE_POINT_RECMD, recmdCqlBbox));
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return dataList;
-//    }
-
-//    private Collection<? extends PointList.Point> queryPointsFromDataStore(DataStore dataStore,
-//                                                                           int pointType, String cqlBbox)
-//            throws IOException {
-//        List<PointList.Point> dataList = new ArrayList<>();
-//        List<Query> queries = new ArrayList<>();
-//        String[] typeNames = dataStore.getTypeNames();
-//        if (null != typeNames && typeNames.length >= 1) {
-//            Query query = new Query(typeNames[0]);
-////        String dateequal = "dtg DURING 2019-12-31T00:00:00.000Z/2021-10-18T00:00:00.000Z";
-////        try {
-////            query.setFilter(ECQL.toFilter(dateequal));
-////        } catch (CQLException e) {
-////            e.printStackTrace();
-////        }
-//
-//            if (!MyStringUtils.isEmpty(cqlBbox)) {
-//                try {
-//                    query.setFilter(ECQL.toFilter(cqlBbox));
-//                } catch (CQLException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            queries.add(query);
-//            List<SimpleFeature> featureList = GeoDbHandler.queryFeature(dataStore, queries);
-//            logger.info("featureList size:" + featureList.size());
-//            int i = 0;
-//            for (SimpleFeature simpleFeature : featureList) {
-//                PointList.Point point = new PointList.Point();
-//                point.pointType = pointType;
-//                if (pointType == PointList.Point.TYPE_POINT_RECMD) {
-//                    point.title = simpleFeature.getAttribute(GeoTable.KEY_TITLE).toString();
-//                    Point recmdPoint = (Point) simpleFeature.getAttribute(GeoTable.KEY_POINT_RECMD);
-//                    point.lnglat = recmdPoint.getCoordinate().x + "," + recmdPoint.getCoordinate().y;
-//                } else if (pointType == PointList.Point.TYPE_POINT_ORIGIN) {
-//                    Point originPoint = (Point) simpleFeature.getAttribute(GeoTable.KEY_POINT_ORIGIN);
-//                    point.lnglat = originPoint.getCoordinate().x + "," + originPoint.getCoordinate().y;
-//                }
-//
-//                dataList.add(point);
-////                logger.info("featureList " + i++ + ":" + DataUtilities.encodeFeature(simpleFeature));
-//            }
-//        }
-//        return dataList;
-//    }
 
     @Override
     public void staticRecommendPoint() {
@@ -478,6 +357,5 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
                 logger.info("adcode插入PRO结果" + result);
             }
         }
-
     }
 }
