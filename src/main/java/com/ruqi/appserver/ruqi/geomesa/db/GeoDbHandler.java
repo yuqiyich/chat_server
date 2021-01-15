@@ -84,6 +84,7 @@ public class GeoDbHandler {
             }
             cql.deleteCharAt(cql.length() - 1);
             cql.append(")");
+            logger.info("check fid in db cql:"+cql.toString());
             try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                          datastore.getFeatureWriter(sft.getTypeName(), ECQL.toFilter(cql.toString()), Transaction.AUTO_COMMIT)) {
                 while (writer.hasNext()) {
