@@ -12,7 +12,6 @@ import com.ruqi.appserver.ruqi.geomesa.recommendpoint.base.PointQueryConfig;
 import com.ruqi.appserver.ruqi.geomesa.recommendpoint.pointquerystrategy.KnnQueryStrategy;
 import com.ruqi.appserver.ruqi.request.UploadRecommendPointRequest;
 import com.ruqi.appserver.ruqi.utils.BusinessException;
-import com.ruqi.appserver.ruqi.utils.CityUtil;
 import com.ruqi.appserver.ruqi.utils.DateTimeUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import org.apache.commons.lang.StringUtils;
@@ -388,9 +387,9 @@ public class RPHandleManager {
         }
     }
 
-      public Map<String, Integer> staticCountByAdCodeBeforeToday(String tableNamePrefix, String env){
-          String fullTableEarthName= tableNamePrefix +env +"_"+WORLD_CODE;
-        return  GeoDbHandler.queryGroupCount(fullTableEarthName,getBeforeTodayFilter(),"adCode");
+    public Map<String, Integer> staticCountByAdCodeBeforeToday(String tableNamePrefix, String env) {
+        String fullTableEarthName = tableNamePrefix + env + "_" + WORLD_CODE;
+        return GeoDbHandler.queryGroupCount(fullTableEarthName, getBeforeTodayFilter(), "adCode");
 
     }
 
@@ -448,53 +447,6 @@ public class RPHandleManager {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CQLException e) {
-            e.printStackTrace();
-        }
-        return points;
-    }
-
-    // 查询范围内每个区域的数量
-    public List<PointList.Point> queryAreaPointCounts(String dev, String tableRecommondPonitPrefix,
-                                                      String groupKey, List<String> areaKeyList) {
-        List<PointList.Point> points = new ArrayList<>();
-
-        int pointType = 0;
-        if (MyStringUtils.isEqueals(tableRecommondPonitPrefix, GeoTable.TABLE_RECOMMOND_PONIT_PREFIX)) {
-            pointType = 2;
-        } else if (MyStringUtils.isEqueals(tableRecommondPonitPrefix, GeoTable.TABLE_RECOMMEND_DATA_PREFIX)) {
-            pointType = 1;
-        }
-
-        try {
-            String tableName = tableRecommondPonitPrefix + dev + "_" + WORLD_CODE;
-
-            if (HbaseDbHandler.hasTable(tableName)) {
-                StringBuilder sb = new StringBuilder();
-                for (String key : areaKeyList) {
-                    sb.append(groupKey + "=" + key + " or ");
-                }
-                String cqlCount = sb.substring(0, sb.length() - 4);
-                // 区域对应数量
-                Map<String, Integer> areaPointCountMap = GeoDbHandler.queryGroupCount(tableName, cqlCount, groupKey);
-
-                logger.info("areaPointCountMap all:" + areaPointCountMap);
-                logger.info("areaPointCountMap.keySet():" + areaPointCountMap.keySet());
-                for (String key : areaPointCountMap.keySet()) {
-                    // 区域编码后面两位为0的话是城市编码了，应该是错误的，抛弃
-                    if (MyStringUtils.isEqueals(groupKey, GeoTable.KEY_AD_CODE) && key.endsWith("00")) {
-                        continue;
-                    }
-                    if (MyStringUtils.isEqueals("0,0", CityUtil.getCenterLngLat(key))) {
-                        continue;
-                    }
-                    PointList.Point point = new PointList.Point(CityUtil.getCenterLngLat(key), pointType,
-                            CityUtil.getCityName(key), areaPointCountMap.get(key), key);
-                    points.add(point);
-                }
-            } else {
-                logger.error("[" + tableName + "] table not exists in hbase");
-            }
-        } catch (IOException e) {
             e.printStackTrace();
         }
         return points;

@@ -30,23 +30,20 @@ public class PointList {
             this.title = title;
         }
 
-        public Point(String lnglat, int type, String title, int pointCount, String code) {
+        public Point(String lnglat, String title, String code, int pointRecordCount, int pointSelectCount, int pointRecommendCount) {
             this.lnglat = lnglat;
-            pointType = type;
             this.title = title;
-            this.pointCount = pointCount;
             this.code = code;
+            this.pointRecordCount = pointRecordCount;
+            this.pointSelectCount = pointSelectCount;
+            this.pointRecommendCount = pointRecommendCount;
         }
-
-        public static final int TYPE_POINT_ORIGIN = 1;
-        public static final int TYPE_POINT_RECMD = 2;
 
         public String code;//adcode
         public String lnglat;
         public String title;
-        @ApiModelProperty(value = "点位类型，1：原始点 2：推荐点")
+        @ApiModelProperty(value = "点位类型，0：默认 1：原始点 2：推荐点")
         public int pointType;
-        public int pointCount = -1;
         public int pointRecommendCount = -1;
         public int pointSelectCount = -1;
         public int pointRecordCount = -1;

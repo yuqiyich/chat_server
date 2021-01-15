@@ -8,6 +8,9 @@ import java.util.List;
  * Description: 明文请求实体
  */
 public class UploadRecommendPointRequest<T> extends BaseRequest{
+    public static final int CHANNEL_TX = 2;
+    public static final int CHANNEL_DIDI = 1;
+
     private int channel;
     private double selectLat;
     private double selectLng;

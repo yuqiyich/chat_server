@@ -232,7 +232,8 @@ public class GeoDbHandler {
                 while (reader.hasNext()) {
                     SimpleFeature feature = reader.next();
                     if (IS_DB_DEBUG) {
-                        if (n++ < 100) {
+                        n++;
+                        if (n < 100) {
                             // use geotools data utilities to get a printable string
                             logger.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
                         } else if (n == 100) {
@@ -306,14 +307,15 @@ public class GeoDbHandler {
     }
 
     // 查询表内的group by 的Key的集合
-    public static List<String> queryGroupKeys(String tableName, String cqlFilter, String groupKey) {
-        List<String> keyList = new LinkedList<>();
+    public static List<String> queryGroupKeys(String tableName, String cqlFilter, String groupKey, int minSize) {
+        List<String> keyList = new ArrayList<>();
         if (!StringUtils.isEmpty(tableName)) {
             try {
                 DataStore datastore = MesaDataConnectManager.getIns().getDataStore(tableName);
                 if (datastore != null) {
                     Query query = new Query(MesaDataConnectManager.getIns().getTableTypeName(tableName));
-                    query.getHints().put(QueryHints.STATS_STRING(), "Enumeration(\"" + groupKey + "\")");
+//                    query.getHints().put(QueryHints.STATS_STRING(), "Enumeration(\"" + groupKey + "\")");
+                    query.getHints().put(QueryHints.STATS_STRING(), "GroupBy(\"" + groupKey + "\",Count())");
                     try {
                         if (!StringUtils.isEmpty(cqlFilter)) {
                             logger.info("count table " + tableName + " with filter:" + cqlFilter);
@@ -333,6 +335,10 @@ public class GeoDbHandler {
                                     JsonObject jsonObject = (JsonObject) JsonParser.parseString((String) property.getValue());
                                     for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                                         String groupKeyValue = entry.getKey();
+                                        int count = ((JsonObject) entry.getValue()).get("count").getAsInt();
+                                        if (count < minSize || (groupKeyValue.endsWith("00") && groupKey == GeoTable.KEY_AD_CODE)) {
+                                            continue;
+                                        }
                                         keyList.add(groupKeyValue);
                                     }
                                 }
@@ -389,8 +395,10 @@ public class GeoDbHandler {
 //                                    {"440100":{"count":400},"440600":{"count":7}}
                                     for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                                         String groupKeyValue = entry.getKey();
-                                        int count = ((JsonObject) entry.getValue()).get("count").getAsInt();
-                                        countMap.put(groupKeyValue, count);
+                                        if (null != groupKeyValue && groupKeyValue.length() == 6) { // code正常是6位数
+                                            int count = ((JsonObject) entry.getValue()).get("count").getAsInt();
+                                            countMap.put(groupKeyValue, count);
+                                        }
                                     }
                                 }
                             }
