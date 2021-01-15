@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendRecordDataUpdater;
 import org.apache.commons.lang.StringUtils;
+import org.checkerframework.common.value.qual.StringVal;
 import org.geotools.data.*;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.text.cql2.CQLException;
@@ -357,7 +358,7 @@ public class GeoDbHandler {
     }
 
     // 查询表内的group by 的统计总量
-    public static Map<String, Integer> queryGroupCount(String tableName, String cqlFilter, String groupKey) {
+    public static Map<String, Integer> queryGroupCount(String tableName, String cqlFilter, @StringVal({GeoTable.KEY_AD_CODE, KEY_CITY_CODE}) String groupKey) {
         Map<String, Integer> countMap = new HashMap<>();
         if (!StringUtils.isEmpty(tableName)) {
             try {
@@ -395,7 +396,11 @@ public class GeoDbHandler {
 //                                    {"440100":{"count":400},"440600":{"count":7}}
                                     for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                                         String groupKeyValue = entry.getKey();
-                                        if (null != groupKeyValue && groupKeyValue.length() == 6) { // code正常是6位数
+                                        if (null != groupKeyValue && groupKeyValue.length() == 6) {  // code正常是6位数。
+                                            if ((groupKey == GeoTable.KEY_AD_CODE && groupKeyValue.endsWith("00"))
+                                                    || (groupKey == GeoTable.KEY_CITY_CODE && !groupKeyValue.endsWith("00"))) {
+                                                continue;
+                                            }
                                             int count = ((JsonObject) entry.getValue()).get("count").getAsInt();
                                             countMap.put(groupKeyValue, count);
                                         }

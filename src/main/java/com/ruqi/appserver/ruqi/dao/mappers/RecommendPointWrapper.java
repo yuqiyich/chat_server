@@ -12,12 +12,15 @@ public interface RecommendPointWrapper {
     @Insert({"<script>",
             "replace into recommend_point_statics(ad_code, ad_name, total_record_num, total_recmd_point_num,",
             " total_origin_point_num,date, env, center_lng, center_lat)",
-            " values(#{recommentPointStaticsInfo.adCode}, #{recommentPointStaticsInfo.adName},",
+            " values ",
+            " <foreach collection='recommentPointStaticsInfoList' item='recommentPointStaticsInfo' separator=','>",
+            "(#{recommentPointStaticsInfo.adCode}, #{recommentPointStaticsInfo.adName},",
             " #{recommentPointStaticsInfo.totalRecordNum}, #{recommentPointStaticsInfo.totalRecmdPointNum},",
             " #{recommentPointStaticsInfo.totalOriginPointNum}, #{recommentPointStaticsInfo.staticsDate},",
             " #{recommentPointStaticsInfo.env}, #{recommentPointStaticsInfo.centerLng}, #{recommentPointStaticsInfo.centerLat})",
+            "</foreach> ",
             "</script>"})
-    int insertRecommendPoint(@Param("recommentPointStaticsInfo") RecommentPointStaticsInfo recommentPointStaticsInfo);
+    int insertRecommendPoint(@Param("recommentPointStaticsInfoList") List<RecommentPointStaticsInfo> recommentPointStaticsInfoList);
 
     @Select({"<script>",
             "SELECT * FROM recommend_point_statics where env = #{env}",
