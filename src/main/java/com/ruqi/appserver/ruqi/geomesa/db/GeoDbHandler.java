@@ -85,6 +85,7 @@ public class GeoDbHandler {
             }
             cql.deleteCharAt(cql.length() - 1);
             cql.append(")");
+            logger.info("check fid in db cql:"+cql.toString());
             try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                          datastore.getFeatureWriter(sft.getTypeName(), ECQL.toFilter(cql.toString()), Transaction.AUTO_COMMIT)) {
                 while (writer.hasNext()) {
@@ -94,6 +95,7 @@ public class GeoDbHandler {
                             SimpleFeature oldSf = tempDatas.get(next.getID());
                             tempDatas.remove(next.getID());//移除旧的key的数据
                             if (oldSf != null) {
+                                logger.debug("update old data id:"+next.getID());
                                 iUpdateDataListener.updateData(next, oldSf);
                                 writer.write();
                             } else {
@@ -117,7 +119,7 @@ public class GeoDbHandler {
             } catch (IOException | CQLException e) {
                 e.printStackTrace();
             }
-            logger.info("updateExistDataOrInsert--> update " + features.size() + " features for " + sft.getTypeName());
+            logger.info("updateExistDataOrInsert--> update " + features.size() + " features for " + sft.getTypeName()+"newData:"+newData.size());
             if (newData.size() > 0) {
                 try {
                     //FIXME 如果新增数据中有fid一样的数据，怎么处理
@@ -148,7 +150,7 @@ public class GeoDbHandler {
             try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                          datastore.getFeatureWriterAppend(sft.getTypeName(), Transaction.AUTO_COMMIT)) {
                 for (SimpleFeature feature : features) {
-                    logger.debug("start  write  features for type:" + sft.getTypeName() + ";" + DataUtilities.encodeFeature(feature));
+                    logger.info("start  write  features for type:" + sft.getTypeName() + ";" + DataUtilities.encodeFeature(feature));
                     // using a geotools writer, you have to get a feature, modify it, then commit it
                     // appending writers will always return 'false' for haveNext, so we don't need to bother checking
 //                    logger.info("Writing test data start");
