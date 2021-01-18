@@ -230,22 +230,33 @@ public class GeoDbHandler {
                          datastore.getFeatureReader(query, Transaction.AUTO_COMMIT)) {
                 // loop through all results, only print out the first 10
                 int n = 0;
+                long time1 = System.currentTimeMillis();
                 while (reader.hasNext()) {
-                    SimpleFeature feature = reader.next();
+                    long time2 = System.currentTimeMillis();
                     if (IS_DB_DEBUG) {
+                        logger.info("--->ttt1: " + (time2 - time1) + ", index=" + n);
+                    }
+                    SimpleFeature feature = reader.next();
+                    time1 = System.currentTimeMillis();
+                    if (IS_DB_DEBUG) {
+                        logger.info("--->ttt2: " + (time1 - time2) + ", index=" + n);
+                    }
+
+                    sfs.add(feature);
+
+                    int printLimit = 100;
+                    if (IS_DB_DEBUG && n < printLimit) {
                         n++;
-                        if (n < 100) {
+                        if (n < printLimit) {
                             // use geotools data utilities to get a printable string
                             logger.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
-                        } else if (n == 100) {
+                        } else if (n == printLimit) {
                             logger.info("...");
                         }
                     }
-                    sfs.add(feature);
                 }
                 if (IS_DB_DEBUG) {
                     logger.info("Returned " + n + " total features");
-
                 }
             } catch (IOException e) {
                 logger.error("query error", e);
