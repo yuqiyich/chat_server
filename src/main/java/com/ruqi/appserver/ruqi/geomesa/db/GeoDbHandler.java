@@ -174,7 +174,9 @@ public class GeoDbHandler {
                     // and add the USE_PROVIDED_FID hint to the user data
                     ((FeatureIdImpl) toWrite.getIdentifier()).setID(feature.getID());
                     toWrite.getUserData().put(Hints.USE_PROVIDED_FID, Boolean.TRUE);
-
+                    if (feature.getID().equals("113.33599_23.1074")){
+                        logger.error("xxxx113.33599_23.1074xxxx can not be create ,becasue it is in Db");
+                    }
                     // alternatively, you can use the PROVIDED_FID hint directly
                     // toWrite.getUserData().put(Hints.PROVIDED_FID, feature.getID());
 
