@@ -54,8 +54,8 @@ public class RpGeoTest {
         GeoDbHandler.setDebug(true);
 //        initAllTableIfNotExist(Arrays.asList(INIT_TABLE_CITYS));
 //         RPHandleManager.getIns().batchSaveRecommendDatasByCityCode("dev",CITY_CODE,getListTestData());
-         queryAllData("dev");
-//           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412,"pro");
+//         queryAllData("dev");
+           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412,"pro");
 //        RPHandleManager.getIns().queryRecommendPoints(113.3348123,23.1067123,"pro");
 //        RPHandleManager.getIns().queryRecommendPoints(113.3352123,23.1064123,"pro");
 //

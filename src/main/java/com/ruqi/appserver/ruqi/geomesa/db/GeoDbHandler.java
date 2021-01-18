@@ -150,7 +150,7 @@ public class GeoDbHandler {
             try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                          datastore.getFeatureWriterAppend(sft.getTypeName(), Transaction.AUTO_COMMIT)) {
                 for (SimpleFeature feature : features) {
-                    logger.debug("start  write  features for type:" + sft.getTypeName() + ";" + DataUtilities.encodeFeature(feature));
+                    logger.info("start  write  features for type:" + sft.getTypeName() + ";" + DataUtilities.encodeFeature(feature));
                     // using a geotools writer, you have to get a feature, modify it, then commit it
                     // appending writers will always return 'false' for haveNext, so we don't need to bother checking
 //                    logger.info("Writing test data start");
