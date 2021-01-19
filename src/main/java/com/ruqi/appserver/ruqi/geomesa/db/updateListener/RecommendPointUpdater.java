@@ -19,7 +19,8 @@ public class RecommendPointUpdater implements GeoDbHandler.IUpdateDataListener {
         int newChannel= (int) oldData.getAttribute(GeoTable.KEY_CHANNEL);
         oldData.setAttribute(GeoTable.KEY_CHANNEL,newChannel|oldChannel);
         oldData.setAttribute(GeoTable.KEY_UPDATE_COUNT,updateTime+1);
-        oldData.setAttribute(GeoTable.KEY_DATE,new Date(System.currentTimeMillis()));
+        //FIXME date attribute update may cause some new data,how to  fix?????
+//        oldData.setAttribute(GeoTable.KEY_DATE,new Date(System.currentTimeMillis()));
         oldData.setAttribute(GeoTable.KEY_TITLE,newData.getAttribute(GeoTable.KEY_TITLE));
         oldData.setAttribute(GeoTable.KEY_ADDRESS,newData.getAttribute(GeoTable.KEY_ADDRESS));
         oldData.setAttribute(GeoTable.KEY_AD_CODE,newData.getAttribute(GeoTable.KEY_AD_CODE));

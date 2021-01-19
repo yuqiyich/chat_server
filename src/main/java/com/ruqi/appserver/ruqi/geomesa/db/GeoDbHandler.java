@@ -99,7 +99,7 @@ public class GeoDbHandler {
                                 iUpdateDataListener.updateData(next, oldSf);
                                 writer.write();
                             } else {
-                                 logger.error("id:" + next.getID() + "can not find in new Feature");
+//                                 logger.error("id:" + next.getID() + "can not find in new Feature");
                                 //nothing contiue next one
                             }
 

@@ -31,7 +31,8 @@ public class RecommendDataUpdater implements GeoDbHandler.IUpdateDataListener {
         MultiPoint mergeMultiPoint=new MultiPoint(arrays,new GeometryFactory());
         oldData.setAttribute(GeoTable.KEY_CHANNEL,newChannel|oldChannel);
         oldData.setAttribute("rGeoms",mergeMultiPoint);
-        oldData.setAttribute(GeoTable.KEY_DATE,new Date(System.currentTimeMillis()));
+        //FIXME date attribute update may cause some new data,how to  fix?????
+//        oldData.setAttribute(GeoTable.KEY_DATE,new Date(System.currentTimeMillis()));
         oldData.setAttribute(GeoTable.KEY_AD_CODE,newData.getAttribute(GeoTable.KEY_AD_CODE));
         if (oldData.getFeatureType().indexOf(GeoTable.KEY_CITY_CODE)>0){
             oldData.setAttribute(GeoTable.KEY_CITY_CODE,newData.getAttribute(GeoTable.KEY_CITY_CODE));
