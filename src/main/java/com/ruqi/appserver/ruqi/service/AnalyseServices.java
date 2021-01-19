@@ -95,9 +95,18 @@ public class AnalyseServices {
     }
 
     // 测试
-//    @Scheduled(cron = "0 48 * * * ?")
+//    @Scheduled(cron = "0 33 * * * ?")
 //    public void test() {
 //        iPointRecommendService.staticRecommendPointByAdCode();
+
+//        int appId = EnvUtils.APP_CLIENT;
+//        for (int i = 192; i >= 1 ;i--) {
+//            DBEventDayDataRecPoint dbEventDayDataRecPoint = dotEventInfoWrapper.queryRecPointYesterdayData(appId,
+//                    DateTimeUtils.getGapDayStartDate(-i), DateTimeUtils.getGapDayEndDate(-i));
+//            dbEventDayDataRecPoint.date = DateTimeUtils.getGapDayStartDate(-i);
+//            dbEventDayDataRecPoint.env = EnvUtils.getAppEnvStr(appId);
+//            dotEventInfoWrapper.saveRecPointDayData(dbEventDayDataRecPoint);
+//        }
 //    }
 
     private void analyseRecPointYesterdayData() {

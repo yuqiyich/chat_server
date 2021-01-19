@@ -172,7 +172,7 @@ public class GeoDbHandler {
                     // and add the USE_PROVIDED_FID hint to the user data
                     ((FeatureIdImpl) toWrite.getIdentifier()).setID(feature.getID());
                     toWrite.getUserData().put(Hints.USE_PROVIDED_FID, Boolean.TRUE);
-                    if (feature.getID().equals("113.33599_23.1074")){
+                    if (feature.getID().equals("113.33599_23.1074")) {
                         logger.error("xxxx113.33599_23.1074xxxx can not be create ,becasue it is in Db");
                     }
                     // alternatively, you can use the PROVIDED_FID hint directly
@@ -248,8 +248,8 @@ public class GeoDbHandler {
                     sfs.add(feature);
 
                     int printLimit = 100;
+                    n++;
                     if (IS_DB_DEBUG && n < printLimit) {
-                        n++;
                         if (n < printLimit) {
                             // use geotools data utilities to get a printable string
                             logger.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
