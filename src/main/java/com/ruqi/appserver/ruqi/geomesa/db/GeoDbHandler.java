@@ -95,7 +95,7 @@ public class GeoDbHandler {
                             SimpleFeature oldSf = tempDatas.get(next.getID());
                             tempDatas.remove(next.getID());//移除旧的key的数据
                             if (oldSf != null) {
-                                logger.debug("update old data id:" + next.getID());
+                                logger.info("update old data id:" + next.getID());
                                 iUpdateDataListener.updateData(next, oldSf);
                                 writer.write();
                             } else {

@@ -180,7 +180,7 @@ public class RpGeoTest {
                 String dateequal = "dtg DURING 2019-12-31T00:00:00.000Z/2022-06-02T00:00:00.000Z";
                 String channel = "channel=2";
                 //bbox rule  lng,lat,lng,lat
-                String idrule="rpId = '113.33599_23.1074'";
+                String idrule="rpId  IN ('113.33599_23.1074','113.33599_23.1074','113.33599_23.1074')";
 //                recommendPoint.setLat(23.10703);
 //                recommendPoint.setLng(113.33505);
 //                String idrule="rpId = '113.33505_23.10703'";
