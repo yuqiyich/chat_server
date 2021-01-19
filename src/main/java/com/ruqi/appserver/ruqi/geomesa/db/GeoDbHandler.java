@@ -85,7 +85,7 @@ public class GeoDbHandler {
             }
             cql.deleteCharAt(cql.length() - 1);
             cql.append(")");
-            logger.info("check fid in db cql:"+cql.toString());
+            logger.info("check fid in db cql:" + cql.toString());
             try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                          datastore.getFeatureWriter(sft.getTypeName(), ECQL.toFilter(cql.toString()), Transaction.AUTO_COMMIT)) {
                 while (writer.hasNext()) {
@@ -95,7 +95,7 @@ public class GeoDbHandler {
                             SimpleFeature oldSf = tempDatas.get(next.getID());
                             tempDatas.remove(next.getID());//移除旧的key的数据
                             if (oldSf != null) {
-                                logger.debug("update old data id:"+next.getID());
+                                logger.debug("update old data id:" + next.getID());
                                 iUpdateDataListener.updateData(next, oldSf);
                                 writer.write();
                             } else {
@@ -119,7 +119,7 @@ public class GeoDbHandler {
             } catch (IOException | CQLException e) {
                 e.printStackTrace();
             }
-            logger.info("updateExistDataOrInsert--> update " + features.size() + " features for " + sft.getTypeName()+"newData:"+newData.size());
+            logger.info("updateExistDataOrInsert--> update " + features.size() + " features for " + sft.getTypeName() + "newData:" + newData.size());
             if (newData.size() > 0) {
                 try {
                     //FIXME 如果新增数据中有fid一样的数据，怎么处理
@@ -233,16 +233,17 @@ public class GeoDbHandler {
                 // loop through all results, only print out the first 10
                 int n = 0;
                 long time1 = System.currentTimeMillis();
+                // 1000条数据左右，存在1S左右的卡顿耗时 hasNext、next
                 while (reader.hasNext()) {
                     long time2 = System.currentTimeMillis();
-                    if (IS_DB_DEBUG) {
-                        logger.info("--->ttt1: " + (time2 - time1) + ", index=" + n);
-                    }
+//                    if (IS_DB_DEBUG) {
+//                        logger.info("--->ttt1: " + (time2 - time1) + ", index=" + n);
+//                    }
                     SimpleFeature feature = reader.next();
-                    time1 = System.currentTimeMillis();
-                    if (IS_DB_DEBUG) {
-                        logger.info("--->ttt2: " + (time1 - time2) + ", index=" + n);
-                    }
+//                    time1 = System.currentTimeMillis();
+//                    if (IS_DB_DEBUG) {
+//                        logger.info("--->ttt2: " + (time1 - time2) + ", index=" + n);
+//                    }
 
                     sfs.add(feature);
 
