@@ -80,12 +80,15 @@ public class GeoDbHandler {
             Map<String, SimpleFeature> tempDatas = new HashMap<>();
             StringBuilder cql = new StringBuilder(fiDName + " IN (");
             for (SimpleFeature feature : features) {
-                tempDatas.put(feature.getID(), feature);
-                cql.append("'" + feature.getID() + "'" + ",");
+                tempDatas.put(feature.getID(), feature);//相同Fid被最前面的数据顶掉
+                if (!cql.toString().contains(feature.getID())){//相同fid的数据要去重
+                    cql.append("'" + feature.getID() + "'" + ",");
+                }
             }
             cql.deleteCharAt(cql.length() - 1);
             cql.append(")");
             logger.info("check fid in db cql:" + cql.toString());
+            StringBuilder hasUpdateIds=new StringBuilder();
             try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                          datastore.getFeatureWriter(sft.getTypeName(), ECQL.toFilter(cql.toString()), Transaction.AUTO_COMMIT)) {
                 while (writer.hasNext()) {
@@ -95,14 +98,18 @@ public class GeoDbHandler {
                             SimpleFeature oldSf = tempDatas.get(next.getID());
                             tempDatas.remove(next.getID());//移除旧的key的数据
                             if (oldSf != null) {
-                                logger.info("update old data id:" + next.getID());
+                                logger.info("update old data fid:" + next.getID());
+                                hasUpdateIds.append(next.getID()+"xxxx");
                                 iUpdateDataListener.updateData(next, oldSf);
                                 writer.write();
                             } else {
-//                                 logger.error("id:" + next.getID() + "can not find in new Feature");
+                                if (hasUpdateIds.toString().contains(next.getID())){//there are so many same data , so delete it
+                                    logger.info("delete same  data  fid:" + next.getID());
+                                    writer.remove();
+                                }
+//                               logger.error("id:" + next.getID() + "can not find in new Feature");
                                 //nothing contiue next one
                             }
-
                         } else {
                             //or throw error ?
                             logger.error("no iUpdateData listener，then return");
