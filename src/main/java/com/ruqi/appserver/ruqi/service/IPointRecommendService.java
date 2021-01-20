@@ -4,10 +4,9 @@ import com.ruqi.appserver.ruqi.bean.BaseCodeMsgBean;
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
 import com.ruqi.appserver.ruqi.bean.RecommendPointList;
 import com.ruqi.appserver.ruqi.bean.RecommentPointStaticsInfo;
-import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataRecPoint;
+import com.ruqi.appserver.ruqi.bean.response.EventStaticsDataRecPoint;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
-import com.ruqi.appserver.ruqi.bean.response.RecPointDayDataList;
 import com.ruqi.appserver.ruqi.request.*;
 
 import java.util.List;
@@ -56,12 +55,13 @@ public interface IPointRecommendService {
     List<PointList.Point> queryPoints(QueryPointsRequest queryPointsRequest);
 
     /**
-     *  以adCode为纬度的统计
-     *
+     * 以adCode为纬度的统计
      */
-    void  staticRecommendPointByAdCode();
+    void staticRecommendPointByAdCode();
 
     RecommendPointList<RecommendPoint> queryRecommendPointForWeb(QueryRecommendPointForWebRequest queryRecommendPointForWebRequest, String env);
 
     List<RecPointDayData> queryDayStaticsRecPointDatas(QueryDayStaticRecPointDatasRequest queryDayStaticRecPointDatasRequest);
+
+    EventStaticsDataRecPoint queryStaticsRecPointDatas(QueryDayStaticRecPointDatasRequest queryDayStaticRecPointDatasRequest);
 }

@@ -1,6 +1,7 @@
 package com.ruqi.appserver.ruqi.service;
 
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.response.EventStaticsDataRecPoint;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
@@ -76,6 +77,14 @@ public class PointRecommendServiceImpl implements IPointRecommendService {
         }
         List<RecPointDayData> resultList = dotEventInfoWrapper.queryDayStaticsRecPointDatas(queryDayStaticRecPointDatasRequest.env);
         return resultList;
+    }
+
+    @Override
+    public EventStaticsDataRecPoint queryStaticsRecPointDatas(QueryDayStaticRecPointDatasRequest queryDayStaticRecPointDatasRequest) {
+        if (null == queryDayStaticRecPointDatasRequest) {
+            return null;
+        }
+        return dotEventInfoWrapper.queryStaticsRecPointDatas(queryDayStaticRecPointDatasRequest.env);
     }
 
     @Override

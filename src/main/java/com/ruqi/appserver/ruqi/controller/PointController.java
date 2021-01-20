@@ -3,6 +3,7 @@ package com.ruqi.appserver.ruqi.controller;
 import com.ruqi.appserver.ruqi.aspect.ApiVersion;
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.*;
+import com.ruqi.appserver.ruqi.bean.response.EventStaticsDataRecPoint;
 import com.ruqi.appserver.ruqi.bean.response.PointList;
 import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
 import com.ruqi.appserver.ruqi.bean.response.RecPointDayDataList;
@@ -210,6 +211,29 @@ public class PointController extends BaseController {
             result.errorMsg = ErrorCode.ERROR_SYSTEM.errorMsg;
             return result;
         }
+    }
+
+    @ApiOperation(value = "查询乘客推荐上车点事件统计数据", notes = "")
+    @RequestMapping(value = "/{apiVersion}/queryStaticsRecPointDatas", method = RequestMethod.POST)
+    @ResponseBody
+    @CrossOrigin
+    @ApiVersion()
+    public BaseBean<EventStaticsDataRecPoint> queryStaticsRecPointDatas(
+            @Validated @RequestBody QueryDayStaticRecPointDatasRequest queryDayStaticRecPointDatasRequest, BindingResult bindingResult) {
+        BaseBean<EventStaticsDataRecPoint> result = checkRequestInvalid(bindingResult);
+        if (null == result) {
+            result = new BaseBean<>();
+            try {
+                result.data = pointRecommendService.queryStaticsRecPointDatas(queryDayStaticRecPointDatasRequest);
+                return result;
+            } catch (Exception e) {
+                result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
+                result.errorMsg = MyStringUtils.isEmpty(e.getMessage()) ? ErrorCode.ERROR_SYSTEM.errorMsg : e.getMessage();
+                logger.error("queryStaticsRecPointDatas error:" + e);
+                return result;
+            }
+        }
+        return result;
     }
 
     @ApiOperation(value = "查询推荐上车点事件日统计数据V1", notes = "15天")

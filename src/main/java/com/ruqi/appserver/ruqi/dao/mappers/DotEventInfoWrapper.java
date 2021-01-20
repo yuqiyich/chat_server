@@ -4,6 +4,7 @@ import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.dbbean.*;
 import com.ruqi.appserver.ruqi.bean.request.NewEventKeyRequest;
 import com.ruqi.appserver.ruqi.bean.request.NewEventTypeRequest;
+import com.ruqi.appserver.ruqi.bean.response.EventStaticsDataRecPoint;
 import com.ruqi.appserver.ruqi.bean.response.RecPointDayData;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -388,4 +389,44 @@ public interface DotEventInfoWrapper {
             " AND env = #{env} order by date",
             "</script>"})
     List<RecPointDayData> queryDayStaticsRecPointDatas(@Param("env") String env);
+
+    @Select({"<script>",
+            "SELECT env, DATE_FORMAT(MIN(date), '%Y-%m-%d') as firstDate, DATE_FORMAT(MAX(date), '%Y-%m-%d') as endDate,",
+            " SUM(didi_total_count_android) as didiTotalCountAndroid,",
+            " SUM(didi_order_count_android) as didiOrderCountAndroid,",
+            " SUM(didi_total_count_ios) as didiTotalCountIOS,",
+            " SUM(didi_order_count_ios) as didiOrderCountIOS,",
+            "",
+            " SUM(tencent_total_count_android) as tencentTotalCountAndroid,",
+            " SUM(tencent_order_count_android) as tencentOrderCountAndroid,",
+            " SUM(tencent_total_count_ios) as tencentTotalCountIOS,",
+            " SUM(tencent_order_count_ios) as tencentOrderCountIOS,",
+            "",
+            " SUM(gaia_total_count_android) as gaiaTotalCountAndroid,",
+            " SUM(gaia_order_count_android) as gaiaOrderCountAndroid,",
+            " SUM(gaia_total_count_ios) as gaiaTotalCountIOS,",
+            " SUM(gaia_order_count_ios) as gaiaOrderCountIOS,",
+            "",
+            " SUM(tx_geo_total_count_android) as txGeoTotalCountAndroid,",
+            " SUM(tx_geo_order_count_android) as txGeoOrderCountAndroid,",
+            " SUM(tx_geo_total_count_ios) as txGeoTotalCountIOS,",
+            " SUM(tx_geo_order_count_ios) as txGeoOrderCountIOS,",
+            "",
+            " SUM(app_total_count_android) as appTotalCountAndroid,",
+            " SUM(app_order_count_android) as appOrderCountAndroid,",
+            " SUM(app_total_count_ios) as appTotalCountIOS,",
+            " SUM(app_order_count_ios) as appOrderCountIOS,",
+            "",
+            " SUM(app_geo_total_count_android) as appGeoTotalCountAndroid,",
+            " SUM(app_geo_order_count_android) as appGeoOrderCountAndroid,",
+            " SUM(app_geo_total_count_ios) as appGeoTotalCountIOS,",
+            " SUM(app_geo_order_count_ios) as appGeoOrderCountIOS,",
+            "",
+            " SUM(fail_count_android) as failCountAndroid,",
+            " SUM(fail_count_ios) as failCountIOS",
+            "",
+            " FROM rec_point_event_statics",
+            " WHERE env=#{env}",
+            "</script>"})
+    EventStaticsDataRecPoint queryStaticsRecPointDatas(@Param("env") String env);
 }
