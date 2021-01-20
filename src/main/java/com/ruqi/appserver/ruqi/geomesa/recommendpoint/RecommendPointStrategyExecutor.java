@@ -44,7 +44,7 @@ public class RecommendPointStrategyExecutor implements IPointQueryStrategy, IPoi
     @Override
     public List<SimpleFeature> doFilter(double lng, double lat, List<SimpleFeature> inputPoints, String env) {
         List<SimpleFeature> features = null;
-        if (pointFilterChain != null) {
+        if (pointFilterChain != null && null != inputPoints && inputPoints.size() > 0) {
             features = pointFilterChain.filtersWork(lng, lat, inputPoints, env);
         }
         return features == null || features.size() == 0 ? inputPoints : features;

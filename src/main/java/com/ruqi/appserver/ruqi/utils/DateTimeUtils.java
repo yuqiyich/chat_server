@@ -64,22 +64,30 @@ public class DateTimeUtils {
         return cal.getTime();
     }
 
-    public static Date getYesterdayStartDate() {
+    public static Date getGapDayStartDate(int gapDay) {
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1);
+        cal.add(Calendar.DATE, gapDay);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         return cal.getTime();
     }
 
-    public static Date getYesterdayEndDate() {
+    public static Date getYesterdayStartDate() {
+        return getGapDayStartDate(-1);
+    }
+
+    public static Date getGapDayEndDate(int gapDay) {
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1);
+        cal.add(Calendar.DATE, gapDay);
         cal.set(Calendar.HOUR_OF_DAY, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
         return cal.getTime();
+    }
+
+    public static Date getYesterdayEndDate() {
+        return getGapDayEndDate(-1);
     }
 
 }

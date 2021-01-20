@@ -93,7 +93,7 @@ public class PointController extends BaseController {
             BaseBean<RecommendPointList<RecommendPoint>> result = new BaseBean<>();
             result.errorCode = ErrorCode.ERROR_SYSTEM.errorCode;
             result.errorMsg = e.getMessage();
-            logger.error("uploadRecommendPoint error. content:" + JsonUtil.beanToJsonStr(queryRecommendPointRequest) + ", e:" + e);
+            logger.error("queryRecommendPoint error. content:" + JsonUtil.beanToJsonStr(queryRecommendPointRequest) + ", e:" + e);
             return result;
         }
     }
