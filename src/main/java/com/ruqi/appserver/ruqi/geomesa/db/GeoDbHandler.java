@@ -14,6 +14,7 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
 import org.locationtech.geomesa.hbase.data.HBaseDataStore;
 import org.locationtech.geomesa.index.conf.QueryHints;
+import org.locationtech.jts.geom.Coordinate;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -77,43 +78,51 @@ public class GeoDbHandler {
             }
             List<SimpleFeature> newData = new ArrayList<>();
             //ID IN ('river.1', 'river.2') INFO 这里一定要写好CQL语句要不然会很慢，之前用的每一个ID查一下，就会超级慢
-            Map<String, SimpleFeature> tempDatas = new HashMap<>();
+            Map<String, SimpleFeature> inputSimpleFeatureDatas = new HashMap<>();
             StringBuilder cql = new StringBuilder(fiDName + " IN (");
             for (SimpleFeature feature : features) {
-                tempDatas.put(feature.getID(), feature);
-                cql.append("'" + feature.getID() + "'" + ",");
+                inputSimpleFeatureDatas.put(feature.getID(), feature);//相同Fid被最前面的数据顶掉
+                if (!cql.toString().contains(feature.getID())){//相同fid的数据要去重
+                    cql.append("'" + feature.getID() + "'" + ",");
+                }
             }
             cql.deleteCharAt(cql.length() - 1);
             cql.append(")");
-            logger.info("check fid in db cql:" + cql.toString());
+            logger.info("query fid in geomesa ，and cql:" + cql.toString());
+            StringBuilder hasUpdateIds=new StringBuilder();
             try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
                          datastore.getFeatureWriter(sft.getTypeName(), ECQL.toFilter(cql.toString()), Transaction.AUTO_COMMIT)) {
                 while (writer.hasNext()) {
-                    SimpleFeature next = writer.next();
-                    if (next != null) {
+                    SimpleFeature simpleFeatureFromQueryResults = writer.next();
+                    if (simpleFeatureFromQueryResults != null) {
                         if (iUpdateDataListener != null) {
-                            SimpleFeature oldSf = tempDatas.get(next.getID());
-                            tempDatas.remove(next.getID());//移除旧的key的数据
-                            if (oldSf != null) {
-                                logger.info("update old data id:" + next.getID());
-                                iUpdateDataListener.updateData(next, oldSf);
+                            SimpleFeature oldInputSf = inputSimpleFeatureDatas.get(simpleFeatureFromQueryResults.getID());
+                            inputSimpleFeatureDatas.remove(simpleFeatureFromQueryResults.getID());//
+                            if (oldInputSf != null) {
+                                logger.info("update old data fid:" + simpleFeatureFromQueryResults.getID());
+                                hasUpdateIds.append(simpleFeatureFromQueryResults.getID()+"xxxx");
+                                iUpdateDataListener.updateData(simpleFeatureFromQueryResults, oldInputSf);
                                 writer.write();
                             } else {
-//                                 logger.error("id:" + next.getID() + "can not find in new Feature");
-                                //nothing contiue next one
+                                //there are so many same data , so delete it
+                                if (hasUpdateIds.toString().contains(simpleFeatureFromQueryResults.getID())){
+                                    logger.info("delete same  data  fid:" + simpleFeatureFromQueryResults.getID());
+                                    writer.remove();
+                                }
+//                               logger.error("id:" + simpleFeatureFromQueryResults.getID() + "can not find in new Feature");
+                                //nothing contiue simpleFeatureFromQueryResults one
                             }
-
                         } else {
                             //or throw error ?
                             logger.error("no iUpdateData listener，then return");
                             return;
                         }
                     }
-//                     next.setAttribute("cityName", "武汉是");
+//                     simpleFeatureFromQueryResults.setAttribute("cityName", "武汉是");
 //                     writer.write(); // or, to delete it: writer.remove();
                 }
                 //添加新的数据到新的列表中
-                tempDatas.forEach((k, v) -> newData.add(v));
+                inputSimpleFeatureDatas.forEach((k, v) -> newData.add(v));
             } catch (IOException | CQLException e) {
                 e.printStackTrace();
             }
@@ -451,6 +460,56 @@ public class GeoDbHandler {
         features.add(builder.buildFeature(rrid));
         GeoDbHandler.updateExistDataOrInsert(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMEND_RECORD_PREFIX + env + "_" + GeoTable.WORLD_CODE),
                 sft, features, PRIMARY_KEY_TYPE_RECOMMEND_RECORD, new RecommendRecordDataUpdater());
+    }
+
+    /**
+     *会删除fid重复的数据并且只留一个的Fid的数据
+     *
+     * @param fidList
+     * @param tableName
+     * @param fiDName
+     */
+    public static void deleteMulitFidDatas(DataStore datastore,String typeName,Set<String> fidList,String tableName,String fiDName) {
+        if (!StringUtils.isEmpty(fiDName)) {
+            StringBuilder cqlPoint = new StringBuilder(fiDName + " IN (");
+            int fidCount =fidList.size();
+            for (String id:fidList) {
+                cqlPoint.append("'" + id + "'" + ",");
+            }
+            if (fidCount>0){
+                cqlPoint=cqlPoint.deleteCharAt(cqlPoint.length() - 1);
+            }
+            cqlPoint.append(")");
+            logger.info("deleteMulitFidDatas==query fid in db cql:" + cqlPoint.toString());
+            StringBuilder hasUpdateIds=new StringBuilder();
+            try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                         datastore.getFeatureWriter(typeName, ECQL.toFilter(cqlPoint.toString()), Transaction.AUTO_COMMIT)) {
+                while (writer.hasNext()) {
+                    SimpleFeature next = writer.next();
+                    if (next != null) {
+                             String existFid=next.getID();
+                            if (!StringUtils.isEmpty(existFid)&&!hasUpdateIds.toString().contains(existFid)) {
+                                logger.info("deleteMulitFidDatas===there is old data fid:" + existFid);
+                                hasUpdateIds.append(next.getID()+"xxxx");
+                                writer.write();
+                            } else {
+                              //there are so many same data , so delete it
+                              logger.info("deleteMulitFidDatas==delete same  data  fid:" + existFid);
+                                writer.remove();
+//                               logger.error("id:" + next.getID() + "can not find in new Feature");
+                                //nothing contiue next one
+                            }
+                    }
+//                     next.setAttribute("cityName", "武汉是");
+//                     writer.write(); // or, to delete it: writer.remove();
+                }
+            } catch (IOException | CQLException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            logger.error("no fid meta data ");
+        }
     }
 
 }

@@ -34,7 +34,7 @@ public class DefeatPointFilter implements IPointFilter {
         //根据属性重名去除点位
         List<SimpleFeature> filterDatas = inputPoints.stream().filter(distinctByKey(b -> b.getAttribute(GeoTable.KEY_TITLE))).collect(Collectors.toList());
         //去除距离非常相近的点
-        PointQueryMonitor.i("点集合距离相为[" + MAX_DISTANCE + "]之外计算开始 点数："+filterDatas.size());
+        PointQueryMonitor.i("点集合距离相为[" + MAX_DISTANCE + "]米之外计算开始 点数："+filterDatas.size());
         int originSize = filterDatas.size();
         int randomIndex = random.nextInt(originSize);
         List<SimpleFeature> distanceSimpleFeatures = new ArrayList<>();

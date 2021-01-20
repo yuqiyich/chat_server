@@ -56,17 +56,19 @@ public class RecommendPointStrategyExecutor implements IPointQueryStrategy, IPoi
         //FIXME 多条策略：是否需要线程池多线程并发来提升效率？
         for (IPointQueryStrategy item : pointQueryStrategyWrappers) {
             List<SimpleFeature> simpleFeatures = item.queryRecommendPoints(lng, lat, env);
-            if (null != simpleFeatures) {
+            if (simpleFeatures!=null){
                 featuresResults.addAll(simpleFeatures);
             }
         }
-        for (int i = featuresResults.size() - 1; i >= 0; i--) {
-            SimpleFeature map = featuresResults.get(i);
-            for (int j = i + 1; j < featuresResults.size(); j++) {
-                SimpleFeature map2 = featuresResults.get(j);
-                if (map.getAttribute(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT).equals(map2.getAttribute(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT))) {
-                    featuresResults.remove(i);
-                    continue;
+        if (featuresResults.size()>0){
+            for (int i = featuresResults.size() - 1; i >= 0; i--) {
+                SimpleFeature map = featuresResults.get(i);
+                for (int j = i + 1; j < featuresResults.size(); j++) {
+                    SimpleFeature map2 = featuresResults.get(j);
+                    if (map.getAttribute(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT).equals(map2.getAttribute(GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT))) {
+                        featuresResults.remove(i);
+                        continue;
+                    }
                 }
             }
         }

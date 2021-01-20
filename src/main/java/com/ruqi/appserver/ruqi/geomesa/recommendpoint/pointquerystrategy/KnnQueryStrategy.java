@@ -1,12 +1,14 @@
 package com.ruqi.appserver.ruqi.geomesa.recommendpoint.pointquerystrategy;
 
 import com.ruqi.appserver.ruqi.bean.RecommendPoint;
+import com.ruqi.appserver.ruqi.geomesa.RPHandleManager;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoDbHandler;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoMesaUtil;
 import com.ruqi.appserver.ruqi.geomesa.db.GeoTable;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.recommendpoint.PointQueryMonitor;
 import com.ruqi.appserver.ruqi.geomesa.recommendpoint.base.IPointQueryStrategy;
+import it.geosolutions.imageio.utilities.MapEntry;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -24,11 +26,9 @@ import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.TABLE_RECORD_PRIMARY_KEY_PRECISION;
 import static com.ruqi.appserver.ruqi.geomesa.db.GeoTable.WORLD_CODE;
@@ -49,10 +49,12 @@ public class KnnQueryStrategy implements IPointQueryStrategy {
         if (dataStore != null && !StringUtils.isEmpty(typeName)) {
             try {
                 String geoPointStr = "POINT(" + GeoMesaUtil.getPrecision(lng, TABLE_RECORD_PRIMARY_KEY_PRECISION) + " " + GeoMesaUtil.getPrecision(lat, TABLE_RECORD_PRIMARY_KEY_PRECISION) + ")";
+                //FIXME ？？？此处的cql 在2021-01-20 加入了 dtg字段的过滤，因为不加时间的过滤会导致有一些fid一样的数据产生导致查询缓慢
                 List<SimpleFeature> features = GeoDbHandler.queryFeature(dataStore,
-                        Arrays.asList(new Query(typeName, ECQL.toFilter(" DWITHIN( sGeom , " + geoPointStr + " , 100 , meters )"))));
+                        Arrays.asList(new Query(typeName, ECQL.toFilter(" DWITHIN( sGeom , " + geoPointStr + " , 100 , meters ) and dtg DURING 2021-01-19T07:14:04.693Z/"+GeoMesaUtil.getGeoMesaTimeStr(new Date())))));
+                List<SimpleFeature>  finalResult= RPHandleManager.getIns().getUniqueFidListAndDeleteMulitFidDatas(dataStore,typeName,recommonDatatableName,GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_DATA,features);
                 //通过KNN算法算出最近的扎针点，取得扎针点的值
-                SimpleFeature simpleFeature = filterByProcess(features, geoPointStr);
+                SimpleFeature simpleFeature = filterByProcess(finalResult, geoPointStr);
                 if (simpleFeature != null) {
                     MultiPoint points = (MultiPoint) simpleFeature.getAttribute("rGeoms");
                     //根据多点查具体信息
@@ -122,8 +124,17 @@ public class KnnQueryStrategy implements IPointQueryStrategy {
 
         DataStore dataStorePoint = GeoDbHandler.getHbaseTableDataStore(recommonPointtableName);
         try {
-            return GeoDbHandler.queryFeature(dataStorePoint,
+            List<SimpleFeature> resultPoints= GeoDbHandler.queryFeature(dataStorePoint,
                     Arrays.asList(new Query(typeName, ECQL.toFilter(cqlPoint.toString()))));
+            int resultPointsCount=resultPoints.size();
+            if (numPoints==resultPointsCount){
+                 // may bingo , point are exists ,and no mulit points todo may alse has same data?
+            } else if (resultPointsCount>numPoints){
+                //there many result more than expected,we should delete same data
+                //check mulit data ,and delete it!!!
+             return RPHandleManager.getIns().getUniqueFidListAndDeleteMulitFidDatas(dataStorePoint,typeName,recommonPointtableName,GeoTable.PRIMARY_KEY_TYPE_RECOMMEND_POINT,resultPoints);
+            }
+            return resultPoints;
         } catch (IOException | CQLException e) {
             e.printStackTrace();
         }
@@ -131,4 +142,5 @@ public class KnnQueryStrategy implements IPointQueryStrategy {
         return null;
 
     }
+
 }
