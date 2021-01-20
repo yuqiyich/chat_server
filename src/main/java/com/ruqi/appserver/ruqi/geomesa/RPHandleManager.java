@@ -7,6 +7,7 @@ import com.ruqi.appserver.ruqi.geomesa.db.*;
 import com.ruqi.appserver.ruqi.geomesa.db.connect.MesaDataConnectManager;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendDataUpdater;
 import com.ruqi.appserver.ruqi.geomesa.db.updateListener.RecommendPointUpdater;
+import com.ruqi.appserver.ruqi.geomesa.recommendpoint.PointQueryMonitor;
 import com.ruqi.appserver.ruqi.geomesa.recommendpoint.RecommendPointStrategyExecutor;
 import com.ruqi.appserver.ruqi.geomesa.recommendpoint.base.PointQueryConfig;
 import com.ruqi.appserver.ruqi.geomesa.recommendpoint.pointquerystrategy.KnnQueryStrategy;
@@ -412,6 +413,37 @@ public class RPHandleManager {
         }
         logger.error("mRecommendPointStrategyExecutor is null");
         return null;
+    }
+
+   public List<SimpleFeature> getUniqueFidListAndDeleteMulitFidDatas(DataStore dataStorePoint,String typeName,String tableName,String fidName,List<SimpleFeature> resultPoints){
+        if (resultPoints!=null){
+            int resultPointsCount=resultPoints.size();
+            HashMap<String,Integer> resultIds=new HashMap<>();
+            HashMap<String,SimpleFeature> finalResultsPointsMap=new HashMap<>();
+            HashSet<String> resultRepeatedIds=new HashSet<>();
+            for (int i = 0; i < resultPointsCount; i++) {
+                String id=resultPoints.get(i).getID();
+                int count =resultIds.get(id)==null?0:resultIds.get(id);
+                resultIds.put(id,(count+1));
+                finalResultsPointsMap.put(id,resultPoints.get(i));
+            }
+            StringBuilder repeatIdStr=new StringBuilder();
+            for (String id:resultIds.keySet()) {
+                if (resultIds.get(id)>1){
+                    resultRepeatedIds.add(id);
+                    repeatIdStr.append(id).append("==");
+                }
+            }
+            List<SimpleFeature> finalResultsPoints = new ArrayList<>(finalResultsPointsMap.values());
+            if (resultRepeatedIds.size()>0){
+                GeoDbHandler.deleteMulitFidDatas(dataStorePoint,typeName,resultRepeatedIds,tableName,fidName);
+            }
+            logger.info("表结构名："+typeName+"；表名"+tableName+"；查询出数据有："+resultPointsCount+"个;根据Fid去重之后还有："+resultIds.size()+"个，重复的数据有："+resultRepeatedIds.size()+"个,分别id为："+repeatIdStr.toString());
+            return finalResultsPoints;
+        }
+
+        return resultPoints;
+
     }
 
 }

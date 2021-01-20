@@ -54,9 +54,11 @@ public class RpGeoTest {
         GeoDbHandler.setDebug(true);
 //        initAllTableIfNotExist(Arrays.asList(INIT_TABLE_CITYS));
 //         RPHandleManager.getIns().batchSaveRecommendDatasByCityCode("dev",CITY_CODE,getListTestData());
-         queryAllData("pro");
+//         queryAllData("pro");
 //           RPHandleManager.getIns().queryRecommendPoints(113.582381f, 22.751412,"pro");
-//        RPHandleManager.getIns().queryRecommendPoints(113.3348123,23.1067123,"pro");
+        //广报中心的点"lat":23.107456,"lng":113.336115
+
+        RPHandleManager.getIns().queryRecommendPoints(113.336115,23.107456,"pro");
 //        RPHandleManager.getIns().queryRecommendPoints(113.3352123,23.1064123,"pro");
 //
 //        try {
@@ -132,7 +134,7 @@ public class RpGeoTest {
 //            //推荐点的表
             System.out.println("==============================推荐点的表=============================");
         try {
-            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(GeoTable.TABLE_RECOMMOND_PONIT_PREFIX+env+"_"+ WORLD_CODE),getTestQueries(GeoTable.TYPE_RECOMMEND_POINT+WORLD_CODE));
+            GeoDbHandler.queryFeature(GeoDbHandler.getHbaseTableDataStore(TABLE_RECOMMEND_DATA_PREFIX+env+"_"+ WORLD_CODE),getTestQueries(TYPE_RECOMMEND_DATA+WORLD_CODE));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -180,17 +182,20 @@ public class RpGeoTest {
                 String dateequal = "dtg DURING 2019-12-31T00:00:00.000Z/2022-06-02T00:00:00.000Z";
                 String channel = "channel=2";
                 //bbox rule  lng,lat,lng,lat
-                String idrule="rpId  IN ('113.33599_23.1074','113.33599_23.1074','113.33599_23.1074')";
+//                String idrule="rpId  IN ('113.33599_23.1074','113.33599_23.1074','113.33599_23.1074')";
 //                recommendPoint.setLat(23.10703);
 //                recommendPoint.setLng(113.33505);
 //                String idrule="rpId = '113.33505_23.10703'";
+                String idrule="rrId = '113.3353_23.1067'";
                 String bbox = "bbox(sGeom,113.11344,23.11344,113.11344,23.11344)";
                 String equals=" EQUALS(sGeom,POINT(113.103284 23.120406))";
                 String contains=" CONTAINS(sGeom,SRID=4326;POINT(113.3348 23.1067))";
                 String exist="rrId EXISTS";
-               String withIn=" DWITHIN( sGeom , POINT(113.3348 23.1067) , 100 , meters )";
+               String withIn=" DWITHIN( sGeom , POINT(113.3348 23.1067) , 100 , meters )  "
+                       + " and dtg DURING 2020-01-17T11:00:48.716Z/2021-02-19T12:10:50.716Z"
+                       ;
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(idrule)));
-                query.add(new Query(sftypeName, ECQL.toFilter(idrule)));
+                query.add(new Query(sftypeName, ECQL.toFilter(withIn)));
 //                query.add(queryTableRowCount(sftypeName));
 //                query.add(new Query(GeoTable.TYPE_RECOMMEND_RECORD, ECQL.toFilter(contains+" AND " +during)));
                 // bounding box over most of the united states
