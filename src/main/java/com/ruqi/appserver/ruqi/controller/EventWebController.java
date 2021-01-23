@@ -10,6 +10,7 @@ import com.ruqi.appserver.ruqi.dao.entity.UserInfoEntity;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
 import com.ruqi.appserver.ruqi.request.ModifyEventStatusRequest;
 import com.ruqi.appserver.ruqi.service.EventService;
+import com.ruqi.appserver.ruqi.utils.DotEventDataUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class EventWebController extends BaseController {
         if (null == result) {
             result = new BaseBean<>();
             // 已存在则提示已存在，否则新增
-            if (eventService.isEventTypeExists(newEventTypeRequest.typeKey)) {
+            if (DotEventDataUtils.getInstance().isEventTypeExists(newEventTypeRequest.typeKey)) {
                 result.errorCode = ErrorCodeMsg.ERROR_EXIETS_PARAMS.errorCode;
                 result.errorMsg = "typeKey已存在，请检查";
             } else {
@@ -64,10 +65,10 @@ public class EventWebController extends BaseController {
         if (null == result) {
             result = new BaseBean<>();
             // 已存在则提示已存在，否则新增
-            if (!eventService.isEventTypeIdExists(newEventKeyRequest.typeId)) {
+            if (!DotEventDataUtils.getInstance().isEventTypeIdExists(newEventKeyRequest.typeId)) {
                 result.errorCode = ErrorCodeMsg.ERROR_EXIETS_PARAMS.errorCode;
                 result.errorMsg = "typeId不存在，请检查";
-            } else if (eventService.isEventKeyExists(newEventKeyRequest.eventKey)) {
+            } else if (DotEventDataUtils.getInstance().isEventKeyExists(newEventKeyRequest.eventKey)) {
                 result.errorCode = ErrorCodeMsg.ERROR_EXIETS_PARAMS.errorCode;
                 result.errorMsg = "eventKey已存在，请检查";
             } else {
@@ -88,7 +89,7 @@ public class EventWebController extends BaseController {
     @CrossOrigin
     public BaseBean<EventTypeKeyListResp> getEventTypeKeyList() {
         BaseBean<EventTypeKeyListResp> result = new BaseBean();
-        result.data = eventService.getEventTypeKeys(false);
+        result.data = DotEventDataUtils.getInstance().getEventTypeKeys(false);
         return result;
     }
 

@@ -10,6 +10,7 @@ import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
 import com.ruqi.appserver.ruqi.service.EventService;
 import com.ruqi.appserver.ruqi.service.IRecordService;
+import com.ruqi.appserver.ruqi.utils.DotEventDataUtils;
 import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
@@ -148,7 +149,7 @@ public class RecordController extends BaseController {
         BaseCodeMsgBean result = new BaseCodeMsgBean();
 
         // 如果被禁用埋点type或者key，直接返回错误
-        if (null != content && null != content.getContent() && eventService.isExistsAndInvalid(null, content.getContent().eventKey)) {
+        if (null != content && null != content.getContent() && DotEventDataUtils.getInstance().isExistsAndInvalid(null, content.getContent().eventKey)) {
             result.errorCode = ErrorCodeMsg.ERROR_INVALID_EVENT_KEY.errorCode;
             result.errorMsg = ErrorCodeMsg.ERROR_INVALID_EVENT_KEY.errorMsg;
         } else {
