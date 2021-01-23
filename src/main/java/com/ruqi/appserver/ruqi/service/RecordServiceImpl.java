@@ -153,15 +153,31 @@ public class RecordServiceImpl implements IRecordService {
 
     @Override
     public List<RecordDotEventInfo> queryCommonEventListForLayui(int pageIndex, int limit, RecordInfo<DotEventInfo> params) {
+        if (isTypeKeyExitsAndInValid(params)) {
+            return new ArrayList<>();
+        }
         return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params, getEventTypeStr(params));
+    }
+
+    // 如果eventType有值且存在但是被禁用了或者下面的key全都被禁用了，则不应该有返回结果数据了。
+    private boolean isTypeKeyExitsAndInValid(RecordInfo<DotEventInfo> params) {
+        if (null != params && null != params.getContent()) {
+            String eventKey = params.getContent().eventKey;
+            String eventType = params.getContent().eventType;
+            if (eventService.isExistsAndInvalid(eventType, eventKey)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getEventTypeStr(RecordInfo<DotEventInfo> params) {
         if (null != params && null != params.getContent() && !MyStringUtils.isEmpty(params.getContent().eventType)) {
-            return DotEventDataUtils.getInstance().getSqlStr(params.getContent().eventType, eventService.getEventTypeKeys());
+            return DotEventDataUtils.getInstance().getSqlStr(params.getContent().eventType, eventService.getEventTypeKeys(true));
         }
         return null;
     }
+
 
 //    @Override
 //    public List<String> queryEventDetails(String key) {
@@ -184,17 +200,18 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
-    public long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> recordInfo) {
-        return dotEventInfoWrapper.queryTotalSizeCommonEvent(recordInfo, getEventTypeStr(recordInfo));
-    }
-
-    @Override
     public long queryEventTotalUserSize(RecordInfo<DotEventInfo> recordInfo) {
+        if (isTypeKeyExitsAndInValid(recordInfo)) {
+            return 0;
+        }
         return dotEventInfoWrapper.queryEventTotalUserSize(recordInfo, getEventTypeStr(recordInfo));
     }
 
     @Override
     public long queryEventTotalOrderSize(RecordInfo<DotEventInfo> recordInfo) {
+        if (isTypeKeyExitsAndInValid(recordInfo)) {
+            return 0;
+        }
         return dotEventInfoWrapper.queryEventTotalOrderSize(recordInfo, getEventTypeStr(recordInfo));
     }
 

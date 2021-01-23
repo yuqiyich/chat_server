@@ -1,5 +1,6 @@
 package com.ruqi.appserver.ruqi.controller;
 
+import com.ruqi.appserver.ruqi.aspect.ApiVersion;
 import com.ruqi.appserver.ruqi.aspect.LogAnnotation;
 import com.ruqi.appserver.ruqi.bean.BaseBean;
 import com.ruqi.appserver.ruqi.bean.request.NewEventKeyRequest;
@@ -7,6 +8,7 @@ import com.ruqi.appserver.ruqi.bean.request.NewEventTypeRequest;
 import com.ruqi.appserver.ruqi.bean.response.EventTypeKeyListResp;
 import com.ruqi.appserver.ruqi.dao.entity.UserInfoEntity;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
+import com.ruqi.appserver.ruqi.request.ModifyEventStatusRequest;
 import com.ruqi.appserver.ruqi.service.EventService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -82,11 +84,30 @@ public class EventWebController extends BaseController {
     @ApiOperation(value = "埋点分类事件查询接口")
     @RequestMapping(value = "v1/eventTypeKey/list", method = RequestMethod.POST)
     @ResponseBody
-    @LogAnnotation
+//    @LogAnnotation
     @CrossOrigin
     public BaseBean<EventTypeKeyListResp> getEventTypeKeyList() {
         BaseBean<EventTypeKeyListResp> result = new BaseBean();
-        result.data = eventService.getEventTypeKeys();
+        result.data = eventService.getEventTypeKeys(false);
         return result;
     }
+
+    @ApiOperation(value = "更改埋点事件类型的启用状态")
+    @RequestMapping(value = "{apiVersion}/eventTypeKey/modifyStatus", method = RequestMethod.POST)
+    @ResponseBody
+    @LogAnnotation
+    @CrossOrigin
+    @ApiVersion()
+    public BaseBean modifyStatus(@Validated @RequestBody ModifyEventStatusRequest modifyEventStatusRequest, BindingResult bindingResult) {
+        BaseBean result = checkRequestInvalid(bindingResult);
+        if (null == result) {
+            result = new BaseBean<>();
+            if (!eventService.modifyStatus(modifyEventStatusRequest)) {
+                result.errorCode = ErrorCodeMsg.ERROR_NOT_EXIETS_PARAMS.errorCode;
+                result.errorMsg = ErrorCodeMsg.ERROR_NOT_EXIETS_PARAMS.errorMsg;
+            }
+        }
+        return result;
+    }
+
 }

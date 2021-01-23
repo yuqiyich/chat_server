@@ -1,8 +1,6 @@
 package com.ruqi.appserver.ruqi.utils;
 
 import com.ruqi.appserver.ruqi.bean.response.EventTypeKeyListResp;
-import com.ruqi.appserver.ruqi.service.EventService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -26,6 +24,7 @@ public class DotEventDataUtils {
         return instance;
     }
 
+    // 拼接类型匹配的key的查询。
     public String getSqlStr(String eventType, EventTypeKeyListResp eventTypeKeyListResp) {
         if (null != eventTypeKeyListResp && !CollectionUtils.isEmpty(eventTypeKeyListResp.eventTypes)) {
             for (EventTypeKeyListResp.EventType type : eventTypeKeyListResp.eventTypes) {

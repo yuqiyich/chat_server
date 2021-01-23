@@ -55,32 +55,32 @@ public interface DotEventInfoWrapper {
                               @Param("appId") int appId,
                               @Param("requestIp") String requestIp);
 
-    @Select({"<script>",
-            "SELECT count(*) FROM dot_event_record",
-            "WHERE 1=1",
-            "<if test='eventTypeStr!=null and eventTypeStr!=\"\"'>AND (${eventTypeStr}) </if>",
-            "<if test='dotEventInfo.content!=null '>",
-            "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
-            "<if test='dotEventInfo.content.appId!=null and dotEventInfo.content.appId!=\"\" and dotEventInfo.content.appId>0'>AND app_id=#{dotEventInfo.content.appId}  </if>",
-            "<if test='dotEventInfo.content.platform!=null and dotEventInfo.content.platform!=\"\" '>AND platform = #{dotEventInfo.content.platform} </if>",
-            "<if test='dotEventInfo.content.startDate!=null '>AND record_time &gt; #{dotEventInfo.content.startDate}  </if>",
-            "<if test='dotEventInfo.content.endDate!=null '>AND record_time &lt; #{dotEventInfo.content.endDate}  </if>",
-            "<if test='dotEventInfo.content.scene!=null and dotEventInfo.content.scene!=\"\" '>AND scene = #{dotEventInfo.content.scene} </if>",
-            "<if test='dotEventInfo.content.orderIdFilter==\"1\" '>AND order_id IS NOT NULL AND order_id!=''  </if>",
-            "<if test='dotEventInfo.content.orderIdFilter==\"2\" '>AND (order_id IS NULL OR order_id='')  </if>",
-            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.content.userId}  </if>",
-            "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName}  </if>",
-            "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model=#{dotEventInfo.content.deviceModel} </if>",
-            "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand=#{dotEventInfo.content.deviceBrand} </if>",
-            "<if test='dotEventInfo.content.deviceId!=null and dotEventInfo.content.deviceId!=\"\" '>AND device_id=#{dotEventInfo.content.deviceId} </if>",
-            "<if test='dotEventInfo.content.userType!=0'>AND user_type = #{dotEventInfo.content.userType}  </if>",
-            " </if>",
-            "</script>"})
-    /**
-     * 不加temp报错：org.apache.ibatis.reflection.ReflectionException: There is no getter for property named "dotEventInfo"
-     * 使用@Param("dotEventInfo")注解或者大于1个参数时不需要指定
-     */
-    long queryTotalSizeCommonEvent(@Param("dotEventInfo") RecordInfo<DotEventInfo> dotEventInfo, String eventTypeStr);
+//    @Select({"<script>",
+//            "SELECT count(*) FROM dot_event_record",
+//            "WHERE 1=1",
+//            "<if test='eventTypeStr!=null and eventTypeStr!=\"\"'>AND (${eventTypeStr}) </if>",
+//            "<if test='dotEventInfo.content!=null '>",
+//            "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
+//            "<if test='dotEventInfo.content.appId!=null and dotEventInfo.content.appId!=\"\" and dotEventInfo.content.appId>0'>AND app_id=#{dotEventInfo.content.appId}  </if>",
+//            "<if test='dotEventInfo.content.platform!=null and dotEventInfo.content.platform!=\"\" '>AND platform = #{dotEventInfo.content.platform} </if>",
+//            "<if test='dotEventInfo.content.startDate!=null '>AND record_time &gt; #{dotEventInfo.content.startDate}  </if>",
+//            "<if test='dotEventInfo.content.endDate!=null '>AND record_time &lt; #{dotEventInfo.content.endDate}  </if>",
+//            "<if test='dotEventInfo.content.scene!=null and dotEventInfo.content.scene!=\"\" '>AND scene = #{dotEventInfo.content.scene} </if>",
+//            "<if test='dotEventInfo.content.orderIdFilter==\"1\" '>AND order_id IS NOT NULL AND order_id!=''  </if>",
+//            "<if test='dotEventInfo.content.orderIdFilter==\"2\" '>AND (order_id IS NULL OR order_id='')  </if>",
+//            "<if test='dotEventInfo.content.userId!=null and dotEventInfo.content.userId!=\"\" '>AND user_id=#{dotEventInfo.content.userId}  </if>",
+//            "<if test='dotEventInfo.content.appVersionName!=null and dotEventInfo.content.appVersionName!=\"\" '>AND app_versionname = #{dotEventInfo.content.appVersionName}  </if>",
+//            "<if test='dotEventInfo.content.deviceModel!=null and dotEventInfo.content.deviceModel!=\"\" '>AND device_model=#{dotEventInfo.content.deviceModel} </if>",
+//            "<if test='dotEventInfo.content.deviceBrand!=null and dotEventInfo.content.deviceBrand!=\"\" '>AND device_brand=#{dotEventInfo.content.deviceBrand} </if>",
+//            "<if test='dotEventInfo.content.deviceId!=null and dotEventInfo.content.deviceId!=\"\" '>AND device_id=#{dotEventInfo.content.deviceId} </if>",
+//            "<if test='dotEventInfo.content.userType!=0'>AND user_type = #{dotEventInfo.content.userType}  </if>",
+//            " </if>",
+//            "</script>"})
+//    /**
+//     * 不加temp报错：org.apache.ibatis.reflection.ReflectionException: There is no getter for property named "dotEventInfo"
+//     * 使用@Param("dotEventInfo")注解或者大于1个参数时不需要指定
+//     */
+//    long queryTotalSizeCommonEvent(@Param("dotEventInfo") RecordInfo<DotEventInfo> dotEventInfo, String eventTypeStr);
 
     @Select({"<script>",
             "SELECT a.*, event_key.event_key_name, b.app_name, c.totalSize FROM",
@@ -429,4 +429,14 @@ public interface DotEventInfoWrapper {
             " WHERE env=#{env}",
             "</script>"})
     EventStaticsDataRecPoint queryStaticsRecPointDatas(@Param("env") String env);
+
+    @Update({"<script>",
+            "UPDATE ",
+            "<if test='level==\"type\"'> event_type</if>",
+            "<if test='level==\"key\"'> event_key</if>",
+            " SET status=#{status} WHERE",
+            "<if test='level==\"type\"'> type_key=#{name}</if>",
+            "<if test='level==\"key\"'> event_key=#{name}</if>",
+            "</script>"})
+    long updateEventStatus(@Param("level") String level, @Param("name") String name, @Param("status") int status);
 }

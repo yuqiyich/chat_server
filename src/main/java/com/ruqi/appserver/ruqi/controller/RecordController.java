@@ -7,6 +7,8 @@ import com.ruqi.appserver.ruqi.bean.response.EventDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.dao.entity.DeviceRiskOverviewEntity;
 import com.ruqi.appserver.ruqi.network.ErrorCode;
+import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
+import com.ruqi.appserver.ruqi.service.EventService;
 import com.ruqi.appserver.ruqi.service.IRecordService;
 import com.ruqi.appserver.ruqi.utils.EncryptUtils;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
@@ -37,6 +39,9 @@ import java.util.Map;
 @RequestMapping(value = "/record")
 public class RecordController extends BaseController {
     Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    EventService eventService;
 
     @Autowired
     IRecordService recordService;
@@ -142,24 +147,30 @@ public class RecordController extends BaseController {
     private BaseCodeMsgBean saveDotData(UploadRecordInfo<UploadDotEventInfo> content) {
         BaseCodeMsgBean result = new BaseCodeMsgBean();
 
-        //获取RequestAttributes
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        //从获取RequestAttributes中获取HttpServletRequest的信息
-        HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
-        if (null != content && null != content.getContent()) {
-            if (null != content.getContent().eventData) {
-                Map<String, Object> eventData = content.getContent().eventData;
-                if (eventData.containsKey(DotEventInfo.NAME_USER_TYPE)) {
-                    content.getContent().userType = (int) eventData.get(DotEventInfo.NAME_USER_TYPE);
+        // 如果被禁用埋点type或者key，直接返回错误
+        if (null != content && null != content.getContent() && eventService.isExistsAndInvalid(content.getContent().eventKey, null)) {
+            result.errorCode = ErrorCodeMsg.ERROR_INVALID_EVENT_KEY.errorCode;
+            result.errorMsg = ErrorCodeMsg.ERROR_INVALID_EVENT_KEY.errorMsg;
+        } else {
+            //获取RequestAttributes
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            //从获取RequestAttributes中获取HttpServletRequest的信息
+            HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+            if (null != content && null != content.getContent()) {
+                if (null != content.getContent().eventData) {
+                    Map<String, Object> eventData = content.getContent().eventData;
+                    if (eventData.containsKey(DotEventInfo.NAME_USER_TYPE)) {
+                        content.getContent().userType = (int) eventData.get(DotEventInfo.NAME_USER_TYPE);
+                    }
+                    if (eventData.containsKey(DotEventInfo.NAME_START_LNG)) {
+                        content.getContent().startLng = (double) eventData.get(DotEventInfo.NAME_START_LNG);
+                    }
+                    if (eventData.containsKey(DotEventInfo.NAME_START_LAT)) {
+                        content.getContent().startLat = (double) eventData.get(DotEventInfo.NAME_START_LAT);
+                    }
                 }
-                if (eventData.containsKey(DotEventInfo.NAME_START_LNG)) {
-                    content.getContent().startLng = (double) eventData.get(DotEventInfo.NAME_START_LNG);
-                }
-                if (eventData.containsKey(DotEventInfo.NAME_START_LAT)) {
-                    content.getContent().startLat = (double) eventData.get(DotEventInfo.NAME_START_LAT);
-                }
+                recordService.saveDotRecord(content, IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
             }
-            recordService.saveDotRecord(content, IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
         }
 
         return result;

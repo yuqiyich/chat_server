@@ -33,6 +33,10 @@ public class EventTypeKeyListResp {
         @ApiModelProperty(value = "类型下的事件")
         public List<EventKey> eventKeys;
 
+        public boolean isStatusValid() {
+            return 1 == status;
+        }
+
         public static EventType convertFromDBEventType(DBEventType dbEventType) {
             EventType eventType = new EventType();
             if (null != dbEventType) {
@@ -65,6 +69,10 @@ public class EventTypeKeyListResp {
         public String createUserName;
         @ApiModelProperty(value = "创建时间")
         public String createTime;
+
+        public boolean isStatusValid() {
+            return 1 == status;
+        }
 
         public static EventKey convertFromDBEventKey(DBEventKey dbEventKey) {
             EventKey eventKey = new EventKey();
