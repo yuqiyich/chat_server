@@ -148,7 +148,7 @@ public class RecordController extends BaseController {
         BaseCodeMsgBean result = new BaseCodeMsgBean();
 
         // 如果被禁用埋点type或者key，直接返回错误
-        if (null != content && null != content.getContent() && eventService.isExistsAndInvalid(content.getContent().eventKey, null)) {
+        if (null != content && null != content.getContent() && eventService.isExistsAndInvalid(null, content.getContent().eventKey)) {
             result.errorCode = ErrorCodeMsg.ERROR_INVALID_EVENT_KEY.errorCode;
             result.errorMsg = ErrorCodeMsg.ERROR_INVALID_EVENT_KEY.errorMsg;
         } else {
