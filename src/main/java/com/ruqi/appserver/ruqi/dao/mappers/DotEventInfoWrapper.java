@@ -189,20 +189,30 @@ public interface DotEventInfoWrapper {
             "select date(record_time) as date, platform, event_key as eventKey, count(*) as totalCount",
             "  from dot_event_record",
             "where record_time >= date_sub(curdate(), interval 6 day)",
-            "AND (event_key='H5_HYBRID_LOAD_SUCCESS' or event_key='H5_HYBRID_RELOAD_SUCCESS' ",
-            "or event_key='H5_HYBRID_LOAD_FAIL' or event_key='H5_HYBRID_RELOAD_FAIL') AND app_id=1",
-            "  group by date(record_time), platform, event_key",
+            "AND event_key IN ('H5_HYBRID_LOAD_SUCCESS', 'H5_HYBRID_RELOAD_SUCCESS', 'H5_HYBRID_LOAD_FAIL', 'H5_HYBRID_RELOAD_FAIL')",
+            " AND app_id=1 group by date(record_time), platform, event_key",
             "</script>"})
     List<DBEventDayItemDataH5Hybrid> queryWeekDataH5Hybrid();
 
     @Select({"<script>",
-            "select date(record_time) as date, platform, user_id as userId, count(*) as failCount",
-            "from dot_event_record",
-            "where record_time >= date_sub(curdate(), interval 6 day)",
-            "AND (event_key='H5_HYBRID_LOAD_FAIL' or event_key='H5_HYBRID_RELOAD_FAIL') AND app_id=1",
-            "group by date(record_time), platform, user_id ORDER BY count(*) DESC",
+            "SELECT a.* FROM",
+            " (select date(record_time) as date, platform, user_id as userId, count(*) as failCount",
+            " from dot_event_record",
+            " where record_time >= date_sub(curdate(), interval 6 day)",
+            " AND event_key IN ('H5_HYBRID_LOAD_FAIL', 'H5_HYBRID_RELOAD_FAIL') AND app_id=1",
+            " group by date(record_time), platform, user_id ORDER BY date(record_time) DESC, count(*) DESC",
+            " ) as a GROUP BY a.date ORDER BY a.date DESC",
             "</script>"})
-    List<DBEventDayDataH5Hybrid> queryWeekDataUserCountH5Hybrid();
+    List<DBEventDayDataH5Hybrid> queryWeekDataKeyCountH5Hybrid();
+
+    @Select({"<script>",
+            "select date(record_time) as date, platform, count(*) as failUserCount",
+            " from dot_event_record",
+            " where record_time >= date_sub(curdate(), interval 6 day)",
+            " AND event_key IN ('H5_HYBRID_LOAD_FAIL', 'H5_HYBRID_RELOAD_FAIL') AND app_id=1",
+            " group by date(record_time), platform",
+            "</script>"})
+    List<DBEventDayUserDataH5Hybrid> queryWeekDataUserCountH5Hybrid();
 
     @Select({"<script>",
             " select date(record_time) as date, platform, event_key as eventKey, count(*) as totalCount",
@@ -414,4 +424,11 @@ public interface DotEventInfoWrapper {
             "<if test='level==\"key\"'> event_key=#{name}</if>",
             "</script>"})
     long updateEventStatus(@Param("level") String level, @Param("name") String name, @Param("status") int status);
+
+    @Delete({"<script>",
+            "DELETE FROM dot_event_record",
+            " WHERE record_time &lt; date_sub(curdate(), interval #{gapDay} day)",
+            "<if test='eventTypeStr!=null and eventTypeStr!=\"\"'>AND (${eventTypeStr}) </if>",
+            "</script>"})
+    long deleteEventData(String eventTypeStr, int gapDay);
 }

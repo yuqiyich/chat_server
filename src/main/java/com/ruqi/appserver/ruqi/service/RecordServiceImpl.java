@@ -4,6 +4,7 @@ import com.ruqi.appserver.ruqi.bean.*;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayItemDataH5Hybrid;
+import com.ruqi.appserver.ruqi.bean.dbbean.DBEventDayUserDataH5Hybrid;
 import com.ruqi.appserver.ruqi.bean.response.EventDataGaiaRecmd;
 import com.ruqi.appserver.ruqi.bean.response.EventDayDataH5Hybrid;
 import com.ruqi.appserver.ruqi.constans.DotEventKey;
@@ -241,8 +242,7 @@ public class RecordServiceImpl implements IRecordService {
             resultList.add(item);
         }
         // sql查到相应数据，查询每天失败次数最多的用户，处理成接口需要返回的数据
-//        int userDataCount = 0;
-        List<DBEventDayDataH5Hybrid> dbEventDayDataH5HybridList = dotEventInfoWrapper.queryWeekDataUserCountH5Hybrid();
+        List<DBEventDayDataH5Hybrid> dbEventDayDataH5HybridList = dotEventInfoWrapper.queryWeekDataKeyCountH5Hybrid();
         for (DBEventDayDataH5Hybrid item : dbEventDayDataH5HybridList) {
             // 每一条数据，需要变更返回结果中的某一条
             int dataindex = daysBetwwen.indexOf(item.date);
@@ -253,17 +253,22 @@ public class RecordServiceImpl implements IRecordService {
                     eventDayUserH5Hybrid.moreFailCount = item.failCount;
                     eventDayUserH5Hybrid.moreFailUserId = item.userId;
                     eventDayUserH5Hybrid.moreFailPlatform = item.platform;
-//                    userDataCount++;
-//                    if (userDataCount == resultList.size()) {
-//                        break;
-//                    }
                 }
-                // 区分平台，用户数+1
-                eventDayUserH5Hybrid.failUserCountTotal++;
+            }
+        }
+        List<DBEventDayUserDataH5Hybrid> userDataH5HybridList = dotEventInfoWrapper.queryWeekDataUserCountH5Hybrid();
+        for (DBEventDayUserDataH5Hybrid item : userDataH5HybridList) {
+            // 每一条数据，需要变更返回结果中的某一条
+            int dataindex = daysBetwwen.indexOf(item.date);
+            if (-1 != dataindex) {
+                EventDayDataH5Hybrid eventDayUserH5Hybrid = resultList.get(dataindex);
+
                 if (BaseRecordInfo.PLATFORM_IOS.equals(item.platform)) {
-                    eventDayUserH5Hybrid.failUserCountIOS++;
+                    eventDayUserH5Hybrid.failUserCountIOS = item.failUserCount;
+                    eventDayUserH5Hybrid.failUserCountTotal += eventDayUserH5Hybrid.failUserCountIOS;
                 } else if (BaseRecordInfo.PLATFORM_ANDROID.equals(item.platform)) {
-                    eventDayUserH5Hybrid.failUserCountAndroid++;
+                    eventDayUserH5Hybrid.failUserCountAndroid = item.failUserCount;
+                    eventDayUserH5Hybrid.failUserCountTotal += eventDayUserH5Hybrid.failUserCountAndroid;
                 }
             }
         }
