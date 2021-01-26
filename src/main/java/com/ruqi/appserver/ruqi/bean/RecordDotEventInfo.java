@@ -13,7 +13,7 @@ public class RecordDotEventInfo {
     public long userId;
     public String nickName;
     public int riskLevel;
-//    public String userPhone;
+    //    public String userPhone;
     public String eventKey;
     public String eventKeyName;
     //device info
@@ -37,8 +37,6 @@ public class RecordDotEventInfo {
     public String scene;
     public String orderId;
     public int userType;
-
-    public long totalSize;
 
     public double startLng;
     public double startLat;

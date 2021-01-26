@@ -5,6 +5,7 @@ import com.ruqi.appserver.ruqi.bean.dbbean.DBEventType;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,6 +33,20 @@ public class EventTypeKeyListResp {
         public String createTime;
         @ApiModelProperty(value = "类型下的事件")
         public List<EventKey> eventKeys;
+
+        public EventType() {
+        }
+
+        public EventType(EventType eventType) {
+            this.id = eventType.id;
+            this.typeKey = eventType.typeKey;
+            this.typeKeyName = eventType.typeKeyName;
+            this.remark = eventType.remark;
+            this.status = eventType.status;
+            this.createUserName = eventType.createUserName;
+            this.createTime = eventType.createTime;
+            this.eventKeys = new LinkedList<>();
+        }
 
         public boolean isStatusValid() {
             return 1 == status;

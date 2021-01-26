@@ -3,6 +3,7 @@ package com.ruqi.appserver.ruqi.utils;
 import com.ruqi.appserver.ruqi.bean.response.EventTypeKeyListResp;
 import org.springframework.util.CollectionUtils;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,10 +37,14 @@ public class DotEventDataUtils {
                     if (!CollectionUtils.isEmpty(type.eventKeys)) {
                         StringBuilder sb = new StringBuilder();
                         for (EventTypeKeyListResp.EventKey key : type.eventKeys) {
-                            sb.append("event_key='" + key.eventKey + "' or ");
+                            if (sb.length() > 0) {
+                                sb.append(", '" + key.eventKey + "'");
+                            } else {
+                                sb.append("event_key in ('" + key.eventKey + "'");
+                            }
                         }
-                        if (sb.length() > 4) {
-                            return sb.substring(0, sb.length() - 4);
+                        if (sb.length() > 0) {
+                            return sb.append(")").toString();
                         }
                     } else {
                         return null;
@@ -57,20 +62,25 @@ public class DotEventDataUtils {
 
     public EventTypeKeyListResp getEventTypeKeys(boolean isOnlyValid) {
         if (isOnlyValid && null != eventTypeKeyListResp && !CollectionUtils.isEmpty(eventTypeKeyListResp.eventTypes)) {
-            for (int i = eventTypeKeyListResp.eventTypes.size() - 1; i >= 0; i--) {
-                if (null == eventTypeKeyListResp.eventTypes.get(i) || !eventTypeKeyListResp.eventTypes.get(i).isStatusValid()) {
-                    eventTypeKeyListResp.eventTypes.remove(i);
-                } else if (!CollectionUtils.isEmpty(eventTypeKeyListResp.eventTypes.get(i).eventKeys)) {
-                    List<EventTypeKeyListResp.EventKey> eventKeys = eventTypeKeyListResp.eventTypes.get(i).eventKeys;
-                    for (int j = eventKeys.size() - 1; j >= 0; j--) {
-                        if (null == eventKeys.get(j) || !eventKeys.get(j).isStatusValid()) {
-                            eventKeys.remove(j);
+            EventTypeKeyListResp validDataList = new EventTypeKeyListResp();
+            validDataList.eventTypes = new LinkedList<>();
+            for (int i = 0; i < eventTypeKeyListResp.eventTypes.size(); i++) {
+                if (null != eventTypeKeyListResp.eventTypes.get(i) && eventTypeKeyListResp.eventTypes.get(i).isStatusValid()) {
+                    EventTypeKeyListResp.EventType eventType = new EventTypeKeyListResp.EventType(eventTypeKeyListResp.eventTypes.get(i));
+                    List<EventTypeKeyListResp.EventKey> eventKeys = new LinkedList<>();
+                    for (int j = 0; j < eventTypeKeyListResp.eventTypes.get(i).eventKeys.size(); j++) {
+                        if (eventTypeKeyListResp.eventTypes.get(i).eventKeys.get(j).isStatusValid()) {
+                            eventKeys.add(eventTypeKeyListResp.eventTypes.get(i).eventKeys.get(j));
                         }
                     }
+                    eventType.eventKeys = eventKeys;
+                    validDataList.eventTypes.add(eventType);
                 }
             }
+            return validDataList;
+        } else {
+            return eventTypeKeyListResp;
         }
-        return eventTypeKeyListResp;
     }
 
     public boolean isEventTypeExists(String typeKey) {
@@ -202,5 +212,21 @@ public class DotEventDataUtils {
             return true;
         }
         return false;
+    }
+
+    public List<String> getEventKeysByType(String type, boolean isOnlyValid) {
+        List<String> eventKeyList = new LinkedList<>();
+        EventTypeKeyListResp data = getEventTypeKeys(isOnlyValid);
+        if (null != data && !CollectionUtils.isEmpty(data.eventTypes)) {
+            for (int i = 0; i < data.eventTypes.size(); i++) {
+                if (MyStringUtils.isEqueals(data.eventTypes.get(i).typeKey, type)) {
+                    for (EventTypeKeyListResp.EventKey key : data.eventTypes.get(i).eventKeys) {
+                        eventKeyList.add(key.eventKey);
+                    }
+                    break;
+                }
+            }
+        }
+        return eventKeyList;
     }
 }

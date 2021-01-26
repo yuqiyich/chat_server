@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -154,6 +155,23 @@ public class RecordServiceImpl implements IRecordService {
             return new ArrayList<>();
         }
         return dotEventInfoWrapper.queryCommonEventListForLayui(pageIndex * limit, limit, params, getEventTypeStr(params));
+    }
+
+    @Override
+    public long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> params) {
+        long size = 0;
+        List<String> eventKeyList = new LinkedList<>();
+        if (null != params && null != params.getContent() && !isTypeKeyExitsAndInValid(params)) {
+            if (!MyStringUtils.isEmpty(params.getContent().eventKey)) {
+                eventKeyList.add(params.getContent().eventKey);
+            } else if (!MyStringUtils.isEmpty(params.getContent().eventType)) {
+                eventKeyList.addAll(DotEventDataUtils.getInstance().getEventKeysByType(params.getContent().eventType, true));
+            }
+            for (String key : eventKeyList) {
+                size += dotEventInfoWrapper.queryCommonEventListSizeForLayui(params, key);
+            }
+        }
+        return size;
     }
 
     // 如果eventType有值且存在但是被禁用了或者下面的key全都被禁用了，则不应该有返回结果数据了。
