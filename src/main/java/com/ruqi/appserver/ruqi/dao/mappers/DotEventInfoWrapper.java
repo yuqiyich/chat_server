@@ -59,7 +59,7 @@ public interface DotEventInfoWrapper {
             "SELECT a.*, event_key.event_key_name, b.app_name FROM",
             "(SELECT * FROM dot_event_record",
             "WHERE 1=1",
-            "<if test='eventTypeStr!=null and eventTypeStr!=\"\"'>AND (${eventTypeStr}) </if>",
+            "<if test='(dotEventInfo.content==null or dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and (eventTypeStr!=null and eventTypeStr!=\"\")'>AND (${eventTypeStr}) </if>",
             "<if test='dotEventInfo.content!=null '>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\"'>AND event_key = #{dotEventInfo.content.eventKey} </if>",
             "<if test='dotEventInfo.content.appId!=null and dotEventInfo.content.appId!=\"\" and dotEventInfo.content.appId>0'>AND app_id=#{dotEventInfo.content.appId}  </if>",
@@ -77,7 +77,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.deviceId!=null and dotEventInfo.content.deviceId!=\"\" '>AND device_id=#{dotEventInfo.content.deviceId} </if>",
             "<if test='dotEventInfo.content.userType!=0'>AND user_type=#{dotEventInfo.content.userType} </if>",
             " </if>",
-            "order by record_time desc limit #{pageIndex}, #{limit}) as a,",
+            "order by id desc limit #{pageIndex}, #{limit}) as a,",
             "app_info as b",
             " , event_key",
             " where a.app_id =b.app_id and a.event_key = event_key.event_key;",
@@ -156,7 +156,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.userType!=0'>AND user_type=#{dotEventInfo.content.userType} </if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
             " </if>",
-            "<if test='eventTypeStr!=null and eventTypeStr!=\"\"'>AND (${eventTypeStr}) </if>",
+            "<if test='(dotEventInfo.content==null or dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and (eventTypeStr!=null and eventTypeStr!=\"\")'>AND (${eventTypeStr}) </if>",
             "group by order_id, app_id) as ta",
             "</script>"})
     long queryEventTotalOrderSize(@Param("dotEventInfo") RecordInfo<DotEventInfo> dotEventInfo, String eventTypeStr);
@@ -180,7 +180,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.userType!=0'>AND user_type=#{dotEventInfo.content.userType} </if>",
             "<if test='dotEventInfo.content.eventKey!=null and dotEventInfo.content.eventKey!=\"\" '>AND event_key = #{dotEventInfo.content.eventKey} </if>",
             " </if>",
-            "<if test='eventTypeStr!=null and eventTypeStr!=\"\"'>AND (${eventTypeStr}) </if>",
+            "<if test='(dotEventInfo.content==null or dotEventInfo.content.eventKey==null or dotEventInfo.content.eventKey==\"\") and (eventTypeStr!=null and eventTypeStr!=\"\")'>AND (${eventTypeStr}) </if>",
             "group by user_id, app_id) as ta",
             "</script>"})
     long queryEventTotalUserSize(@Param("dotEventInfo") RecordInfo<DotEventInfo> dotEventInfo, String eventTypeStr);

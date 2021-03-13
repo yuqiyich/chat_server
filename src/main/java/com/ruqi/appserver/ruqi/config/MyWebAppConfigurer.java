@@ -63,7 +63,6 @@ public class MyWebAppConfigurer implements WebMvcConfigurer {
                     .excludePathPatterns("/config/**") // 排除通用配置接口
                     .excludePathPatterns("/miniProgram/**") // 排除小程序接口
                     .excludePathPatterns("/wechatH5/authorize", "/wechatH5/redirectUri") // 微信公众号需要
-                    .excludePathPatterns("/web/**")
             ;
         }
     }
