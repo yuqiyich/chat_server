@@ -77,7 +77,7 @@ public interface DotEventInfoWrapper {
             "<if test='dotEventInfo.content.deviceId!=null and dotEventInfo.content.deviceId!=\"\" '>AND device_id=#{dotEventInfo.content.deviceId} </if>",
             "<if test='dotEventInfo.content.userType!=0'>AND user_type=#{dotEventInfo.content.userType} </if>",
             " </if>",
-            "order by id desc limit #{pageIndex}, #{limit}) as a,",
+            "order by record_time desc limit #{pageIndex}, #{limit}) as a,",
             "app_info as b",
             " , event_key",
             " where a.app_id =b.app_id and a.event_key = event_key.event_key;",
