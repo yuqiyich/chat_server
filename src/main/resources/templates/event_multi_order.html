@@ -1,290 +1,290 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>多开不预付费订单记录</title>
-    <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">
-    <style>
-        body {
-            padding: 20px;
-        }
-    </style>
-</head>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="utf-8">-->
+<!--    <meta name="viewport"-->
+<!--          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
+<!--    <title>多开不预付费订单记录</title>-->
+<!--    <link rel="stylesheet" href="js/layui2.5.6/css/layui.css">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            padding: 20px;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
 
-<body>
-<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>
+<!--<body>-->
+<!--<script src="js/jquery-3.4.1.min.js" charset="utf-8"></script>-->
 
-<form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">
-    <div class="layui-form-item">
-        <div class="layui-inline">
-            <label class="layui-form-label">应用类型</label>
-            <div class="layui-input-inline" style="width: 120px;">
-                <select id="appIdSelect">
-                    <option value="2">如祺乘客</option>
-                    <option value="3">如祺乘客dev</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">app版本</label>
-            <div class="layui-input-inline" style="width: 100px;">
-                <select id="appVersion">
-                    <option value="">所有版本</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">设备型号</label>
-            <div class="layui-input-inline" style="width: 100px;">
-                <input type="text" maxlength="10" id="deviceModel" name="deviceModel"
-                       lay-verify="deviceModel"
-                       autocomplete="off"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">设备品牌</label>
-            <div class="layui-input-inline" style="width: 100px;">
-                <input type="text" maxlength="20" id="deviceBrand" name="deviceBrand" lay-verify="deviceBrand"
-                       autocomplete="off"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">用户ID</label>
-            <div class="layui-input-inline" style="width: 100px;">
-                <input type="text" class="layui-input" id="userId">
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">设备ID</label>
-            <div class="layui-input-inline" style="width: 100px;">
-                <input type="text" class="layui-input" id="deviceID">
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">上传时间段</label>
-            <div class="layui-input-inline" style="width: 300px;">
-                <input type="text" id="duringTime" name="duringTime"
-                       lay-verify="duringTime"
-                       class="layui-input">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-inline">
-            <div class="layui-input-block">
-                <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>
-                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="resetSearch">重置
-                </button>
-            </div>
-        </div>
-    </div>
-</form>
+<!--<form id="filterForm" name="filterForm" class="layui-form" style="margin-top: 0%;" action="">-->
+<!--    <div class="layui-form-item">-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">应用类型</label>-->
+<!--            <div class="layui-input-inline" style="width: 120px;">-->
+<!--                <select id="appIdSelect">-->
+<!--                    <option value="2">如祺乘客</option>-->
+<!--                    <option value="3">如祺乘客dev</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">app版本</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <select id="appVersion">-->
+<!--                    <option value="">所有版本</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">设备型号</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" maxlength="10" id="deviceModel" name="deviceModel"-->
+<!--                       lay-verify="deviceModel"-->
+<!--                       autocomplete="off"-->
+<!--                       class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">设备品牌</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" maxlength="20" id="deviceBrand" name="deviceBrand" lay-verify="deviceBrand"-->
+<!--                       autocomplete="off"-->
+<!--                       class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">用户ID</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" class="layui-input" id="userId">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">设备ID</label>-->
+<!--            <div class="layui-input-inline" style="width: 100px;">-->
+<!--                <input type="text" class="layui-input" id="deviceID">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-inline">-->
+<!--            <label class="layui-form-label">上传时间段</label>-->
+<!--            <div class="layui-input-inline" style="width: 300px;">-->
+<!--                <input type="text" id="duringTime" name="duringTime"-->
+<!--                       lay-verify="duringTime"-->
+<!--                       class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="layui-form-item">-->
+<!--        <div class="layui-inline">-->
+<!--            <div class="layui-input-block">-->
+<!--                <button type="submit" class="layui-btn" lay-submit="" lay-filter="search">搜索</button>-->
+<!--                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="resetSearch">重置-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</form>-->
 
-<table id="developerTable" lay-filter="developerTable"></table>
+<!--<table id="developerTable" lay-filter="developerTable"></table>-->
 
-<script src="js/layui2.5.6/layui.js" charset="utf-8"></script>
-<script src="js/base-table-page.js" charset="utf-8"></script>
-<script type="text/html" id="barOperator">
-    <a class="layui-btn layui-btn-xs" lay-event="user_edit">查看</a>
-</script>
-<script>
-    onload = function () {
-        $.ajax({
-            type: "GET",
-            url: "record/queryAppVersionNameForLayui",
-            data: "",//请求的参数
-            dataType: "json",//以json格式返回的数据，不是json就把此行去掉
-            contentType: 'application/json;charset=utf-8',
-            success: function (dataResult) {
-                if (null != dataResult) {
-                    if (dataResult.errorCode == 0) {
-                        let versionList = dataResult.data;
-                        for (var version of versionList) {
-                            $("#appVersion").append("<option value=" + version + ">" + version + "</option>");
-                        }
-                        renderForm();
-                    } else {
-                        console.log("--->result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);
-                    }
-                }
-            }
-        });
-    }
+<!--<script src="js/layui2.5.6/layui.js" charset="utf-8"></script>-->
+<!--<script src="js/base-table-page.js" charset="utf-8"></script>-->
+<!--<script type="text/html" id="barOperator">-->
+<!--    <a class="layui-btn layui-btn-xs" lay-event="user_edit">查看</a>-->
+<!--</script>-->
+<!--<script>-->
+<!--    onload = function () {-->
+<!--        $.ajax({-->
+<!--            type: "GET",-->
+<!--            url: "record/queryAppVersionNameForLayui",-->
+<!--            data: "",//请求的参数-->
+<!--            dataType: "json",//以json格式返回的数据，不是json就把此行去掉-->
+<!--            contentType: 'application/json;charset=utf-8',-->
+<!--            success: function (dataResult) {-->
+<!--                if (null != dataResult) {-->
+<!--                    if (dataResult.errorCode == 0) {-->
+<!--                        let versionList = dataResult.data;-->
+<!--                        for (var version of versionList) {-->
+<!--                            $("#appVersion").append("<option value=" + version + ">" + version + "</option>");-->
+<!--                        }-->
+<!--                        renderForm();-->
+<!--                    } else {-->
+<!--                        console.log("-&ndash;&gt;result code:" + dataResult.errorCode + ", msg:" + dataResult.errorMsg);-->
+<!--                    }-->
+<!--                }-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
 
-    //重新渲染表单
-    function renderForm() {
-        document.getElementById("filterForm").reset();
-    }
-</script>
-<script>
-    layui.use(['form', 'layedit', 'laydate'], function () {
-        var form = layui.form;
+<!--    //重新渲染表单-->
+<!--    function renderForm() {-->
+<!--        document.getElementById("filterForm").reset();-->
+<!--    }-->
+<!--</script>-->
+<!--<script>-->
+<!--    layui.use(['form', 'layedit', 'laydate'], function () {-->
+<!--        var form = layui.form;-->
 
-        //监听提交
-        // 搜索
-        form.on('submit(search)', function (data) {
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload('developerTable', {
-                    page: {curr: 1}
-                    , where: {
-                        "content": {
-                            "appId": $("#appIdSelect").val(),
-                            "userId": $("#userId").val(),
-                            "appVersionName": $("#appVersion").val(),
-                            "duringTime": $("#duringTime").val(),
-                            "deviceModel": $("#deviceModel").val(),
-                            "deviceBrand": $("#deviceBrand").val(),
-                            "deviceId": $("#deviceID").val(),
-                            "eventKey": "EVENT_MULIT_ORDER"
-                        }
-                    }
-                }, 'data');
-            });
-            return false;
-        });
-        // 重置搜索
-        form.on('submit(resetSearch)', function (data) {
-            document.getElementById("filterForm").reset();
-            layui.use('table', function () {
-                var table = layui.table;
-                table.reload('developerTable', {
-                    page: {curr: 1}
-                    , where: {
-                        "content": {
-                            "appId": $("#appIdSelect").val(),
-                            "userId": $("#userId").val(),
-                            "appVersionName": $("#appVersion").val(),
-                            "duringTime": $("#duringTime").val(),
-                            "deviceModel": $("#deviceModel").val(),
-                            "deviceBrand": $("#deviceBrand").val(),
-                            "deviceId": $("#deviceID").val(),
-                            "eventKey": "EVENT_MULIT_ORDER"
-                        }
-                    }
-                }, 'data');
-            });
-            return false;
-        });
-    });
-</script>
-<script>
-    layui.use('laydate', function () {
-        layui.use('table', function () {
-            var table = layui.table;
+<!--        //监听提交-->
+<!--        // 搜索-->
+<!--        form.on('submit(search)', function (data) {-->
+<!--            layui.use('table', function () {-->
+<!--                var table = layui.table;-->
+<!--                table.reload('developerTable', {-->
+<!--                    page: {curr: 1}-->
+<!--                    , where: {-->
+<!--                        "content": {-->
+<!--                            "appId": $("#appIdSelect").val(),-->
+<!--                            "userId": $("#userId").val(),-->
+<!--                            "appVersionName": $("#appVersion").val(),-->
+<!--                            "duringTime": $("#duringTime").val(),-->
+<!--                            "deviceModel": $("#deviceModel").val(),-->
+<!--                            "deviceBrand": $("#deviceBrand").val(),-->
+<!--                            "deviceId": $("#deviceID").val(),-->
+<!--                            "eventKey": "EVENT_MULIT_ORDER"-->
+<!--                        }-->
+<!--                    }-->
+<!--                }, 'data');-->
+<!--            });-->
+<!--            return false;-->
+<!--        });-->
+<!--        // 重置搜索-->
+<!--        form.on('submit(resetSearch)', function (data) {-->
+<!--            document.getElementById("filterForm").reset();-->
+<!--            layui.use('table', function () {-->
+<!--                var table = layui.table;-->
+<!--                table.reload('developerTable', {-->
+<!--                    page: {curr: 1}-->
+<!--                    , where: {-->
+<!--                        "content": {-->
+<!--                            "appId": $("#appIdSelect").val(),-->
+<!--                            "userId": $("#userId").val(),-->
+<!--                            "appVersionName": $("#appVersion").val(),-->
+<!--                            "duringTime": $("#duringTime").val(),-->
+<!--                            "deviceModel": $("#deviceModel").val(),-->
+<!--                            "deviceBrand": $("#deviceBrand").val(),-->
+<!--                            "deviceId": $("#deviceID").val(),-->
+<!--                            "eventKey": "EVENT_MULIT_ORDER"-->
+<!--                        }-->
+<!--                    }-->
+<!--                }, 'data');-->
+<!--            });-->
+<!--            return false;-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--<script>-->
+<!--    layui.use('laydate', function () {-->
+<!--        layui.use('table', function () {-->
+<!--            var table = layui.table;-->
 
-            var tableIns = table.render({
-                elem: '#developerTable'
-                , title: '推荐点降级生效记录'
-                , url: 'record/queryCommonEventListForLayui'
-                , method: 'post'
-                , contentType: 'application/json'
-                , page: {curr: 1}
-                , limit: 10
-                , limits: [10, 30, 50, 100]
-                , where: {
-                    "content": {
-                        "appId": "2",
-                        "eventKey": "EVENT_MULIT_ORDER"
-                    }
-                }
-                , toolbar: '#toolbarDemo'
-// 右上角工具条
-                , defaultToolbar: ['filter', 'exports', 'print'
-                    , {
-                        title: '刷新'
-                        , layEvent: 'reloadData'
-                        , icon: 'layui-icon-refresh'
-                    }
-                ]
-                , cols: [
-                    [
-                        {
-                            field: 'id',
-                            title: 'ID',
-                            fixed: 'left',
-                            width: 100,
-                            unresize: true,
-                            sort: true,
-                            align: 'center'
-                        }
-                        , {minWidth: 106, field: 'userId', title: '用户id', sort: false, align: 'center'}
-                        , {minWidth: 100, field: 'deviceId', title: '设备id', sort: false, align: 'center'}
-                        , {minWidth: 100, field: 'eventDetail', title: '详情', sort: false, align: 'center'}
-                        , {minWidth: 110, field: 'orderId', title: '订单ID', sort: false, align: 'center'}
-                        , {
-                        minWidth: 180, field: 'createTime', templet: function (d) {
-                            return formatDateTime(d.createTime);
-                        }, title: '上报时间', sort: false, align: 'center'
-                    }
-                        , {minWidth: 80, field: 'systemVersion', title: '系统版本', sort: false, align: 'center'}
-                        , {minWidth: 80, field: 'netState', title: '网络状态', sort: false, align: 'center'}
-                        , {minWidth: 90, field: 'locationLat', title: '经度', sort: false, align: 'center'}
-                        , {minWidth: 90, field: 'locationLng', title: '纬度', sort: false, align: 'center'}
-                        , {minWidth: 90, field: 'channel', title: '渠道', sort: false, align: 'center'}
-                        , {minWidth: 110, field: 'appVersionCode', title: 'app版本id', sort: false, align: 'center'}
-                        , {minWidth: 100, field: 'appVersionName', title: 'app版本名称', sort: false, align: 'center'}
-                        , {minWidth: 110, field: 'appName', title: '应用名称', sort: false, align: 'center'}
-                        , {minWidth: 100, field: 'deviceModel', title: '设备型号', sort: false, align: 'center'}
-                        , {minWidth: 90, field: 'deviceBrand', title: '设备品牌', sort: false, align: 'center'}
-                        , {minWidth: 100, field: 'requestIp', title: '请求ip', sort: false, align: 'center'}
-                        , {minWidth: 100, field: 'ext', title: '备注', sort: false, align: 'center'}
-                    ]
-                ]
-                , parseData: function (res) {
-                    return {
-                        "code": res.errorCode
-                        , "msg": res.errorMsg
-                        , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0
-                        , "data": null != res.data && null != res.data.list ? res.data.list : null
-                    };
-                }
-            });
+<!--            var tableIns = table.render({-->
+<!--                elem: '#developerTable'-->
+<!--                , title: '推荐点降级生效记录'-->
+<!--                , url: 'record/queryCommonEventListForLayui'-->
+<!--                , method: 'post'-->
+<!--                , contentType: 'application/json'-->
+<!--                , page: {curr: 1}-->
+<!--                , limit: 10-->
+<!--                , limits: [10, 30, 50, 100]-->
+<!--                , where: {-->
+<!--                    "content": {-->
+<!--                        "appId": "2",-->
+<!--                        "eventKey": "EVENT_MULIT_ORDER"-->
+<!--                    }-->
+<!--                }-->
+<!--                , toolbar: '#toolbarDemo'-->
+<!--// 右上角工具条-->
+<!--                , defaultToolbar: ['filter', 'exports', 'print'-->
+<!--                    , {-->
+<!--                        title: '刷新'-->
+<!--                        , layEvent: 'reloadData'-->
+<!--                        , icon: 'layui-icon-refresh'-->
+<!--                    }-->
+<!--                ]-->
+<!--                , cols: [-->
+<!--                    [-->
+<!--                        {-->
+<!--                            field: 'id',-->
+<!--                            title: 'ID',-->
+<!--                            fixed: 'left',-->
+<!--                            width: 100,-->
+<!--                            unresize: true,-->
+<!--                            sort: true,-->
+<!--                            align: 'center'-->
+<!--                        }-->
+<!--                        , {minWidth: 106, field: 'userId', title: '用户id', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 100, field: 'deviceId', title: '设备id', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 100, field: 'eventDetail', title: '详情', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 110, field: 'orderId', title: '订单ID', sort: false, align: 'center'}-->
+<!--                        , {-->
+<!--                        minWidth: 180, field: 'createTime', templet: function (d) {-->
+<!--                            return formatDateTime(d.createTime);-->
+<!--                        }, title: '上报时间', sort: false, align: 'center'-->
+<!--                    }-->
+<!--                        , {minWidth: 80, field: 'systemVersion', title: '系统版本', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 80, field: 'netState', title: '网络状态', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 90, field: 'locationLat', title: '经度', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 90, field: 'locationLng', title: '纬度', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 90, field: 'channel', title: '渠道', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 110, field: 'appVersionCode', title: 'app版本id', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 100, field: 'appVersionName', title: 'app版本名称', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 110, field: 'appName', title: '应用名称', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 100, field: 'deviceModel', title: '设备型号', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 90, field: 'deviceBrand', title: '设备品牌', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 100, field: 'requestIp', title: '请求ip', sort: false, align: 'center'}-->
+<!--                        , {minWidth: 100, field: 'ext', title: '备注', sort: false, align: 'center'}-->
+<!--                    ]-->
+<!--                ]-->
+<!--                , parseData: function (res) {-->
+<!--                    return {-->
+<!--                        "code": res.errorCode-->
+<!--                        , "msg": res.errorMsg-->
+<!--                        , "count": null != res.data && null != res.data.totalSize ? res.data.totalSize : 0-->
+<!--                        , "data": null != res.data && null != res.data.list ? res.data.list : null-->
+<!--                    };-->
+<!--                }-->
+<!--            });-->
 
-//工具栏事件
-            table.on('toolbar(developerTable)', function (obj) {
-                switch (obj.event) {
-                    case 'reloadData':
-                        table.reload('developerTable', {
-                            page: {curr: 1}
-                        }, 'data');
-                        break;
-                }
-                ;
-            });
+<!--//工具栏事件-->
+<!--            table.on('toolbar(developerTable)', function (obj) {-->
+<!--                switch (obj.event) {-->
+<!--                    case 'reloadData':-->
+<!--                        table.reload('developerTable', {-->
+<!--                            page: {curr: 1}-->
+<!--                        }, 'data');-->
+<!--                        break;-->
+<!--                }-->
+<!--                ;-->
+<!--            });-->
 
-//监听排序
-            table.on('sort(developerTable)', function (obj) {
-// 本地该页数据排序
-                table.reload('developerTable', {
-                    initSort: obj
-                });
-            });
+<!--//监听排序-->
+<!--            table.on('sort(developerTable)', function (obj) {-->
+<!--// 本地该页数据排序-->
+<!--                table.reload('developerTable', {-->
+<!--                    initSort: obj-->
+<!--                });-->
+<!--            });-->
 
-            var $ = layui.jquery, active = {
-                parseTable: function () {
-                    table.init('parse-table-demo', {
-                        limit: 3
-                    });
-                }
-                , add: function () {
-                    table.addRow('developerTable')
-                }
-            };
-            $('i').on('click', function () {
-                var type = $(this).data('type');
-                active[type] ? active[type].call(this) : '';
-            });
-            $('.layui-btn').on('click', function () {
-                var type = $(this).data('type');
-                active[type] ? active[type].call(this) : '';
-            });
-        })
-    });
-</script>
-</body>
-</html>
+<!--            var $ = layui.jquery, active = {-->
+<!--                parseTable: function () {-->
+<!--                    table.init('parse-table-demo', {-->
+<!--                        limit: 3-->
+<!--                    });-->
+<!--                }-->
+<!--                , add: function () {-->
+<!--                    table.addRow('developerTable')-->
+<!--                }-->
+<!--            };-->
+<!--            $('i').on('click', function () {-->
+<!--                var type = $(this).data('type');-->
+<!--                active[type] ? active[type].call(this) : '';-->
+<!--            });-->
+<!--            $('.layui-btn').on('click', function () {-->
+<!--                var type = $(this).data('type');-->
+<!--                active[type] ? active[type].call(this) : '';-->
+<!--            });-->
+<!--        })-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
