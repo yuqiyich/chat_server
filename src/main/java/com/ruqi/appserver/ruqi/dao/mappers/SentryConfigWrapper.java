@@ -29,4 +29,8 @@ public interface SentryConfigWrapper {
             @Result(property = "dns", column = "dns"),
             @Result(property = "level", column = "level")})
     List<SentryConfigEntity> getSentryConfig();
+
+
+    @Select("SELECT  DISTINCT(tag) FROM sentry_tags where  platform= #{platform}")
+    List<String> getSentryTags(@Param("platform") String platform);
 }

@@ -21,67 +21,32 @@ public class SentryConfigServiceImpl implements ISentryConfigService {
 
     @Override
     public SentryConfigEntity querySentryConfig(SentryConfigRequest sentryConfigRequest) {
-        SentryConfigEntity sentryConfigEntity = new SentryConfigEntity();
-        sentryConfigEntity.setSentrySwitch("0");
-        sentryConfigEntity.setLevel("d");
-        sentryConfigEntity.setDns(DNS);
+        SentryConfigEntity defaultSentryConfigEntity = new SentryConfigEntity(); //默认的配置是不开启sentry的
+        defaultSentryConfigEntity.setSentrySwitch("0");
+        defaultSentryConfigEntity.setLevel("d");
+        defaultSentryConfigEntity.setDns(DNS);
         List<SentryConfigEntity> sentryConfigEntities = sentryConfigWrapper.getSentryConfig();
-        if(sentryConfigEntities != null && sentryConfigEntities.size() > 0){
+        List<String> tags = sentryConfigWrapper.getSentryTags(sentryConfigRequest.getPlatform());
+        if (sentryConfigEntities != null && sentryConfigEntities.size() > 0) {//WARN 目前只是取了第一项配置项
             SentryConfigEntity sentryConfigEntity1 = sentryConfigEntities.get(0);
-            if(!StringUtil.isEmpty(sentryConfigEntity1.getSentrySwitch()) && sentryConfigEntity1.getSentrySwitch().equals("1")){//系统开关打开
+            sentryConfigEntity1.setTags(tags);
+            if (!StringUtil.isEmpty(sentryConfigEntity1.getSentrySwitch()) && sentryConfigEntity1.getSentrySwitch().equals("1")) {//系统开关打开
                 List<SentryPlatformEntity> sentryPlatformEntities = sentryConfigWrapper.getSentryPlatform(sentryConfigRequest.getPlatform(), sentryConfigRequest.getEnvironment());
-                if(sentryPlatformEntities != null && sentryPlatformEntities.size() > 0){
-                    SentryPlatformEntity sentryPlatformEntity = sentryPlatformEntities.get(0);
-                    boolean envEnable = !StringUtil.isEmpty(sentryConfigRequest.getEnvironment())
-                            && !StringUtil.isEmpty(sentryPlatformEntity.getEnvironment())
-                            && sentryConfigRequest.getEnvironment().equals(sentryPlatformEntity.getEnvironment());
-                    boolean platformEnable = !StringUtil.isEmpty(sentryConfigRequest.getPlatform())
-                            && !StringUtil.isEmpty(sentryPlatformEntity.getPlatform())
-                            && sentryConfigRequest.getPlatform().equals(sentryPlatformEntity.getPlatform());
-                    if(envEnable && platformEnable) {
-                        List<SentryAreaEntity> sentryAreaEntities = sentryConfigWrapper.getSentryArea(sentryConfigRequest.getAreaCode(), sentryConfigRequest.getCityCode());
-                        if(sentryAreaEntities != null && sentryAreaEntities.size() > 0){
-                            SentryAreaEntity sentryAreaEntity = sentryAreaEntities.get(0);
-                            boolean areaCodeEnable = !StringUtil.isEmpty(sentryAreaEntity.getAreacode())
-                                    && !StringUtil.isEmpty(sentryConfigRequest.getAreaCode())
-                                    && sentryConfigRequest.getAreaCode().equals(sentryAreaEntity.getAreacode());
-                            boolean cityCodeEnable = !StringUtil.isEmpty(sentryAreaEntity.getCitycode())
-                                    && !StringUtil.isEmpty(sentryConfigRequest.getCityCode())
-                                    && sentryConfigRequest.getCityCode().equals(sentryAreaEntity.getCitycode());
-                            if(cityCodeEnable || areaCodeEnable){
-                                return sentryConfigEntity1;
-                            }else{
-                                List<SentryMonitoringObjectEntity> sentryMonitoringObjectEntityList = sentryConfigWrapper.getSentryMonitoringObject(sentryConfigRequest.getMobile());
-                                if(sentryMonitoringObjectEntityList != null && sentryMonitoringObjectEntityList.size() > 0){//白名单
-                                    return sentryConfigEntity1;
-                                }
-                                return sentryConfigEntity;
-                            }
-                        }else{
-                            List<SentryMonitoringObjectEntity> sentryMonitoringObjectEntityList = sentryConfigWrapper.getSentryMonitoringObject(sentryConfigRequest.getMobile());
-                            if(sentryMonitoringObjectEntityList != null && sentryMonitoringObjectEntityList.size() > 0){//白名单
-                                return sentryConfigEntity1;
-                            }
-                            return sentryConfigEntity;
-                        }
-                    }else{
-                        List<SentryMonitoringObjectEntity> sentryMonitoringObjectEntityList = sentryConfigWrapper.getSentryMonitoringObject(sentryConfigRequest.getMobile());
-                        if(sentryMonitoringObjectEntityList != null && sentryMonitoringObjectEntityList.size() > 0){//白名单
-                            return sentryConfigEntity1;
-                        }
-                        return sentryConfigEntity;
-                    }
-                }else{
+                if (sentryPlatformEntities != null && sentryPlatformEntities.size() > 0) {//获取平台和环境
                     List<SentryMonitoringObjectEntity> sentryMonitoringObjectEntityList = sentryConfigWrapper.getSentryMonitoringObject(sentryConfigRequest.getMobile());
-                    if(sentryMonitoringObjectEntityList != null && sentryMonitoringObjectEntityList.size() > 0){//白名单
+                    if (sentryMonitoringObjectEntityList != null && sentryMonitoringObjectEntityList.size() > 0) {//命中用户白名单
+                        sentryConfigEntity1.setLevel("i");//命中白名单的用户日志级别默认最高
                         return sentryConfigEntity1;
                     }
-                    return sentryConfigEntity;
+                    List<SentryAreaEntity> sentryAreaEntities = sentryConfigWrapper.getSentryArea(sentryConfigRequest.getAreaCode(), sentryConfigRequest.getCityCode());
+                    if (sentryAreaEntities != null && sentryAreaEntities.size() > 0) {
+                        return sentryConfigEntity1;
+                    } else {
+                        return defaultSentryConfigEntity;
+                    }
                 }
-            }else{//系统开关关闭
-                return sentryConfigEntity;
             }
         }
-        return sentryConfigEntity;
+        return defaultSentryConfigEntity;
     }
 }
