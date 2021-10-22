@@ -1,5 +1,7 @@
 package com.ruqi.appserver.ruqi.bean;
 
+import java.util.List;
+
 /**
  * Author:liangbingkun
  * Time:2020/8/21
@@ -9,6 +11,16 @@ public class SentryConfigEntity {
     private String sentrySwitch;
     private String level;
     private String dns;
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    private List<String> tags;
 
     public String getSentrySwitch() {
         return sentrySwitch;
