@@ -99,16 +99,16 @@ public class RPHandleManager {
     }
 
     public void saveRecommendRecordsByCityCode(String evn, String cityCode, List<UploadRecommendPointRequest<RecommendPoint>> records) {
-        String tableTail = cityCode;
-        if (!StringUtils.isEmpty(evn)) {
-            tableTail = evn + "_" + cityCode;
-        }
+//        String tableTail = cityCode;
+//        if (!StringUtils.isEmpty(evn)) {
+//            tableTail = evn + "_" + cityCode;
+//        }
         if (!StringUtils.isEmpty(cityCode)) {
             //目前记录表都是一个表
             List<String> recordIds = saveRecommendPointsRecords(records, evn + "_" + WORLD_CODE);//存储记录总表
-            saveSelectRecommendPoints(records, tableTail);//存储用户选择点和多个推荐点的城市分表的
+//            saveSelectRecommendPoints(records, tableTail);//存储用户选择点和多个推荐点的城市分表的
             saveSelectRecommendPoints(records, evn + "_" + WORLD_CODE);//存储用户选择点和多个推荐点的城市未分表的
-            saveRecommendPoints(records, recordIds, tableTail);//推荐点记录表
+//            saveRecommendPoints(records, recordIds, tableTail);//推荐点记录分表
             saveRecommendPoints(records, recordIds, evn + "_" + WORLD_CODE);//推荐点记录表
         } else {
             logger.error("no cityCode,don't save anything");
