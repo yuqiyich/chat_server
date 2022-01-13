@@ -11,6 +11,8 @@ public class SentryConfigEntity {
     private String sentrySwitch;
     private String level;
     private String dns;
+    private int areaSwitch;
+    private int id;//项目id
 
     public List<String> getTags() {
         return tags;
@@ -18,6 +20,14 @@ public class SentryConfigEntity {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public int getAreaSwitch() {
+        return areaSwitch;
+    }
+
+    public void setAreaSwitch(int areaSwitch) {
+        this.areaSwitch = areaSwitch;
     }
 
     private List<String> tags;
@@ -44,5 +54,13 @@ public class SentryConfigEntity {
 
     public String getDns() {
         return dns;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

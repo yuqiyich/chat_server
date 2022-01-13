@@ -25,6 +25,8 @@ public class SentryConfigRequest extends BaseRequest {
     @NotBlank(message = "longitude不能为空")
     private String longitude;
 
+    private String project;
+
     public String getMobile() {
         return mobile;
     }
@@ -87,5 +89,13 @@ public class SentryConfigRequest extends BaseRequest {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
     }
 }
