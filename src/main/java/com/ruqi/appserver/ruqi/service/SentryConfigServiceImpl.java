@@ -40,6 +40,9 @@ public class SentryConfigServiceImpl implements ISentryConfigService {
             SentryConfigEntity sentryConfigEntity1 = sentryConfigEntities.get(0);
             List<String> tags = sentryConfigWrapper.getSentryTagsByProject(sentryConfigEntity1.getId());
             sentryConfigEntity1.setTags(tags);
+            int count = sentryConfigWrapper.getSentryHttpConfigByProject(sentryConfigEntity1.getId());
+            logger.info("****max api count:"+count);
+            sentryConfigEntity1.setLoopMaxCount(count);
             if (!StringUtil.isEmpty(sentryConfigEntity1.getSentrySwitch()) && sentryConfigEntity1.getSentrySwitch().equals("1")) {//系统开关打开
                 List<SentryMonitoringObjectEntity> sentryMonitoringObjectEntityList = sentryConfigWrapper.getSentryMonitoringObjectByProject(sentryConfigRequest.getMobile(), sentryConfigEntity1.getId());
                 if (sentryMonitoringObjectEntityList != null && sentryMonitoringObjectEntityList.size() > 0) {//命中用户白名单

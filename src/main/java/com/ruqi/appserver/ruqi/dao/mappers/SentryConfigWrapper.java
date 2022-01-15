@@ -71,4 +71,8 @@ public interface SentryConfigWrapper {
 
     @Select("SELECT  DISTINCT(tag) FROM sentry_tags where  project_id= #{project_id}")
     List<String> getSentryTagsByProject(@Param("project_id") int projectId);
+
+
+    @Select("SELECT  loop_max_count FROM sentry_api_static_config where  project_id= #{project_id}")
+    int getSentryHttpConfigByProject(@Param("project_id") int projectId);
 }

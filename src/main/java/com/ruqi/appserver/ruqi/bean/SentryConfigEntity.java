@@ -12,11 +12,21 @@ public class SentryConfigEntity {
     private String level;
     private String dns;
     private int areaSwitch;
+    private int loopMaxCount;
     private int id;//项目id
 
     public List<String> getTags() {
         return tags;
     }
+
+    public int getLoopMaxCount() {
+        return loopMaxCount;
+    }
+
+    public void setLoopMaxCount(int loopMaxCount) {
+        this.loopMaxCount = loopMaxCount;
+    }
+
 
     public void setTags(List<String> tags) {
         this.tags = tags;
