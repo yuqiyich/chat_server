@@ -10,10 +10,7 @@ import com.ruqi.appserver.ruqi.network.ErrorCode;
 import com.ruqi.appserver.ruqi.network.ErrorCodeMsg;
 import com.ruqi.appserver.ruqi.service.EventService;
 import com.ruqi.appserver.ruqi.service.IRecordService;
-import com.ruqi.appserver.ruqi.utils.DotEventDataUtils;
-import com.ruqi.appserver.ruqi.utils.EncryptUtils;
-import com.ruqi.appserver.ruqi.utils.IpUtil;
-import com.ruqi.appserver.ruqi.utils.MyStringUtils;
+import com.ruqi.appserver.ruqi.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -168,6 +165,14 @@ public class RecordController extends BaseController {
                     }
                     if (eventData.containsKey(DotEventInfo.NAME_START_LAT)) {
                         content.getContent().startLat = (double) eventData.get(DotEventInfo.NAME_START_LAT);
+                    }
+                    if (eventData.containsKey(DotEventInfo.NAME_DRIVER_ID)) {
+                        List points = (List) eventData.get("points");
+                        String firstPoints = "";
+                        if (points!=null && points.size()>0){
+                            firstPoints =JsonUtil.beanToJsonStr(points.get(0));
+                        }
+                        content.getContent().eventDetail = eventData.get(DotEventInfo.NAME_DRIVER_ID)+"_"+firstPoints;
                     }
                 }
                 recordService.saveDotRecord(content, IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
