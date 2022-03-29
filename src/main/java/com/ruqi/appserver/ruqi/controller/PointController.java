@@ -87,7 +87,8 @@ public class PointController extends BaseController {
             if (appInfo != null) {
                 int appId = appInfo.getAppId();
                 //硬编码指定环境
-                result.data = pointRecommendService.queryRecommendPoint(queryRecommendPointRequest, (appId == 1 || appId == 2) ? "pro" : "dev");
+                //INFO 这次改成所有环境都查询pro环境的，因为test环境没有上报推荐点，所有test环境也从pro环境拿
+                result.data = pointRecommendService.queryRecommendPoint(queryRecommendPointRequest, (appId == 1 || appId == 2) ? "pro" : "pro");
             }
             return result;
         } catch (Exception e) {
