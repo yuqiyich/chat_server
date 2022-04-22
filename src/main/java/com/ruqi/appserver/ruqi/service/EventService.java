@@ -6,6 +6,8 @@ import com.ruqi.appserver.ruqi.bean.request.NewEventKeyRequest;
 import com.ruqi.appserver.ruqi.bean.request.NewEventTypeRequest;
 import com.ruqi.appserver.ruqi.bean.response.EventTypeKeyListResp;
 import com.ruqi.appserver.ruqi.dao.mappers.DotEventInfoWrapper;
+import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
+import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
 import com.ruqi.appserver.ruqi.request.ModifyEventStatusRequest;
 import com.ruqi.appserver.ruqi.utils.DotEventDataUtils;
 import com.ruqi.appserver.ruqi.utils.MyStringUtils;
@@ -28,6 +30,9 @@ public class EventService {
 
     @Autowired
     DotEventInfoWrapper dotEventInfoWrapper;
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
     public boolean saveEventType(NewEventTypeRequest request, long userId) {
         if (null != request && !MyStringUtils.isEmpty(request.typeKey)) {
@@ -80,6 +85,7 @@ public class EventService {
         EventTypeKeyListResp mEventTypeKeyListResp = new EventTypeKeyListResp();
         List<EventTypeKeyListResp.EventType> eventTypeList = new ArrayList<>();
         List<DBEventType> dbEventTypeList = dotEventInfoWrapper.getEventTypes();
+        kafkaProducer.sendLog(BaseKafkaLogInfo.LogLevel.WARN, "url:http://ruqi6.com;request:[req];response:[res]");
         List<DBEventKey> dbEventKeyList = dotEventInfoWrapper.getEventKeys();
         // 处理类型
         for (DBEventType dbEventType : dbEventTypeList) {

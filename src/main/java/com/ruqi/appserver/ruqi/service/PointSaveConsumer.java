@@ -82,7 +82,7 @@ public class PointSaveConsumer {
                     redisDatas.add(firstData);
                 }
                 printLog("取出的redis数据列表放入单个缓存队列中:" + (redisDatas != null ? redisDatas.size() : 0));
-                if (redisDatas.size() > 0) {
+                if (null != redisDatas && redisDatas.size() > 0) {
                     putIntBuckets(redisDatas);
                     String saveCityCode = getSuitableCityCode();
                     Long checkStartTime = System.currentTimeMillis();

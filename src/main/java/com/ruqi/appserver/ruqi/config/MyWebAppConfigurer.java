@@ -40,6 +40,7 @@ public class MyWebAppConfigurer implements WebMvcConfigurer {
                     .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg")
                     .excludePathPatterns("/css/**", "/js/**", "/img/**")//排除样式、脚本、图片等资源文件
                     .excludePathPatterns("/record/uploadData", "/record/uploadDotEventData") // 排除安全上报、埋点上报等接口
+                    .excludePathPatterns("/recordv2/uploadData", "/recordv2/uploadDotEventData") // 排除安全上报、埋点上报等接口
                     .excludePathPatterns("/point/queryRecommendPoint", "/point/uploadRecommendPoint") // 排除推荐上车点等接口
                     .excludePathPatterns("/sentry/querySentryConfig") // 排除sentry配置等接口
                     .excludePathPatterns("/sign/obtain") // 排除获取sign等接口
@@ -55,6 +56,7 @@ public class MyWebAppConfigurer implements WebMvcConfigurer {
                     .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg")
                     .excludePathPatterns("/css/**", "/js/**", "/img/**")//排除样式、脚本、图片等资源文件
                     .excludePathPatterns("/record/uploadData", "/record/uploadDotEventData") // 排除安全上报、埋点上报等接口
+                    .excludePathPatterns("/recordv2/uploadData", "/recordv2/uploadDotEventData") // 排除安全上报、埋点上报等接口
                     .excludePathPatterns("/point/**") // 排除推荐上车点等接口
                     .excludePathPatterns("/sentry/**") // 排除sentry配置等接口
                     .excludePathPatterns("/sign/obtain") // 排除获取sign等接口
