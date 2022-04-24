@@ -1,5 +1,8 @@
 package com.ruqi.appserver.ruqi.bean;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -7,12 +10,19 @@ import java.util.List;
  * Time:2020/8/21
  * Description: sentry 开关
  */
+@ApiModel(value = "SentryConfigEntity")
 public class SentryConfigEntity {
+    @ApiModelProperty(value = "sentry日志开关，1：开 ，0：关")
     private String sentrySwitch;
+    @ApiModelProperty(value = "上报日志的最高级别，v>d>i>w>e")
     private String level;
+    @ApiModelProperty(value = "sentry上报的地址设置")
     private String dns;
+    @ApiModelProperty(value = "sentry上报的区域限制，如果有，则只上报命中的区域")
     private int areaSwitch;
+    @ApiModelProperty(value = "sentry上报的轮询API的最大次数，默认是100")
     private int loopMaxCount;
+    @ApiModelProperty(value = "项目的id")
     private int id;//项目id
 
     public List<String> getTags() {
