@@ -1,5 +1,6 @@
 package com.ruqi.appserver.ruqi.config;
 
+import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
 import com.google.common.base.Predicates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
+@EnableSwaggerBootstrapUI
 //@EnableAutoConfiguration
 //@Profile({"dev", "test"})//在生产环境不开启
 //@Profile("dev")//在生产环境不开启
