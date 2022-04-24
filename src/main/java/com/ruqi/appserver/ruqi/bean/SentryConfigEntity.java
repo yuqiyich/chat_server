@@ -49,7 +49,7 @@ public class SentryConfigEntity {
     public void setAreaSwitch(int areaSwitch) {
         this.areaSwitch = areaSwitch;
     }
-
+    @ApiModelProperty(value = "上报的日志tag值集合，如果有命中tags集合则上报（在sentrySwitch为1的情况下，则不受其他条件限制）")
     private List<String> tags;
 
     public String getSentrySwitch() {
