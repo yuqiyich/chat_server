@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @RestController
 @Api(tags = "记录埋点数据的入口")
-@RequestMapping(value = "/recordV2")
+@RequestMapping(value = "/recordv2")
 public class RecordV2Controller extends BaseController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
