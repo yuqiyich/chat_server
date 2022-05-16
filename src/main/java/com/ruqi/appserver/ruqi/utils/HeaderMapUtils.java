@@ -18,9 +18,9 @@ public class HeaderMapUtils {
             Enumeration<String> headerNames = request.getHeaderNames();
             while (headerNames.hasMoreElements()) {
                 String headerName = headerNames.nextElement();
-                if (sInfoHeaderNameList.contains(headerName)) {
+//                if (sInfoHeaderNameList.contains(headerName)) {
                     resultMap.put(headerName, request.getHeader(headerName));
-                }
+//                }
             }
         }
         return resultMap;
