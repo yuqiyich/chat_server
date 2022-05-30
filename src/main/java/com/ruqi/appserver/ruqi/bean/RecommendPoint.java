@@ -8,7 +8,7 @@ public class RecommendPoint {
     private double lng;
     private String title;
     private String address;
-    private double distanc;
+    private double distance;
 
     public double getLat() {
         return lat;
@@ -42,12 +42,12 @@ public class RecommendPoint {
         this.address = address;
     }
 
-    public double getDistanc() {
-        return distanc;
+    public double getDistance() {
+        return distance;
     }
 
-    public void setDistanc(double distanc) {
-        this.distanc = distanc;
+    public void setDistance(double distanc) {
+        this.distance = distanc;
     }
 }
 

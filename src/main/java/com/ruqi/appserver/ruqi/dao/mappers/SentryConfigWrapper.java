@@ -57,13 +57,13 @@ public interface SentryConfigWrapper {
             @Result(property = "level", column = "level")})
     List<SentryConfigEntity> getSentryConfig();
 
-    @Select("SELECT * FROM sentry_switch where  project= #{project}  and platform= #{platform}")
+    @Select("SELECT * FROM sentry_switch where  project= #{project}  and platform= #{platform} and env= #{env}")
     @Results({@Result(property = "sentrySwitch", column = "switch"),
             @Result(property = "dns", column = "dns"),
             @Result(property = "id", column = "id"),
             @Result(property = "areaSwitch", column = "area_switch"),
             @Result(property = "level", column = "level")})
-    List<SentryConfigEntity> getSentryConfigByProject(@Param("project") String project, @Param("platform") String platform);
+    List<SentryConfigEntity> getSentryConfigByProject(@Param("project") String project, @Param("platform") String platform,@Param("env") String env);
 
     @Deprecated
     @Select("SELECT  DISTINCT(tag) FROM sentry_tags where  platform= #{platform}")

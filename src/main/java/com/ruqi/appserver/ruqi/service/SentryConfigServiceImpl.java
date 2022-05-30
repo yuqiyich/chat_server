@@ -35,7 +35,7 @@ public class SentryConfigServiceImpl implements ISentryConfigService {
         defaultSentryConfigEntity.setSentrySwitch("0");
         defaultSentryConfigEntity.setLevel("d");
         defaultSentryConfigEntity.setDns(DNS);
-        List<SentryConfigEntity> sentryConfigEntities = sentryConfigWrapper.getSentryConfigByProject(sentryConfigRequest.getProject(),  sentryConfigRequest.getPlatform());
+        List<SentryConfigEntity> sentryConfigEntities = sentryConfigWrapper.getSentryConfigByProject(sentryConfigRequest.getProject(),  sentryConfigRequest.getPlatform(),sentryConfigRequest.getEnvironment());
         if (sentryConfigEntities != null && sentryConfigEntities.size() > 0) {//WARN应该是只有一个配置项
             SentryConfigEntity sentryConfigEntity1 = sentryConfigEntities.get(0);
             List<String> tags = sentryConfigWrapper.getSentryTagsByProject(sentryConfigEntity1.getId());
