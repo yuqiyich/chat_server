@@ -88,11 +88,15 @@ public class SentryConfigServiceImpl implements ISentryConfigService {
                         sentryConfigEntity1.setLevel("i");//命中白名单的用户日志级别默认最高
                         return sentryConfigEntity1;
                     }
-                    List<SentryAreaEntity> sentryAreaEntities = sentryConfigWrapper.getSentryArea(sentryConfigRequest.getAreaCode(), sentryConfigRequest.getCityCode());
-                    if (sentryAreaEntities != null && sentryAreaEntities.size() > 0) {
-                        return sentryConfigEntity1;
+                    if (sentryConfigEntity1.getAreaSwitch() == 1) {//默认是开启
+                        List<SentryAreaEntity> sentryAreaEntities = sentryConfigWrapper.getSentryArea(sentryConfigRequest.getAreaCode(), sentryConfigRequest.getCityCode());
+                        if (sentryAreaEntities != null && sentryAreaEntities.size() > 0) {
+                            return sentryConfigEntity1;
+                        } else {
+                            return defaultSentryConfigEntity;
+                        }
                     } else {
-                        return defaultSentryConfigEntity;
+                        return sentryConfigEntity1;
                     }
                 }
             }
