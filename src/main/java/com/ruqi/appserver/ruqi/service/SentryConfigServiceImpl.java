@@ -35,7 +35,7 @@ public class SentryConfigServiceImpl implements ISentryConfigService {
         defaultSentryConfigEntity.setSentrySwitch("0");
         defaultSentryConfigEntity.setLevel("d");
         defaultSentryConfigEntity.setDns(DNS);
-        List<SentryConfigEntity> sentryConfigEntities = sentryConfigWrapper.getSentryConfigByProject(sentryConfigRequest.getProject(),  sentryConfigRequest.getPlatform());
+        List<SentryConfigEntity> sentryConfigEntities = sentryConfigWrapper.getSentryConfigByProject(sentryConfigRequest.getProject(),  sentryConfigRequest.getPlatform(),sentryConfigRequest.getEnvironment());
         if (sentryConfigEntities != null && sentryConfigEntities.size() > 0) {//WARN应该是只有一个配置项
             SentryConfigEntity sentryConfigEntity1 = sentryConfigEntities.get(0);
             List<String> tags = sentryConfigWrapper.getSentryTagsByProject(sentryConfigEntity1.getId());
@@ -88,11 +88,15 @@ public class SentryConfigServiceImpl implements ISentryConfigService {
                         sentryConfigEntity1.setLevel("i");//命中白名单的用户日志级别默认最高
                         return sentryConfigEntity1;
                     }
-                    List<SentryAreaEntity> sentryAreaEntities = sentryConfigWrapper.getSentryArea(sentryConfigRequest.getAreaCode(), sentryConfigRequest.getCityCode());
-                    if (sentryAreaEntities != null && sentryAreaEntities.size() > 0) {
-                        return sentryConfigEntity1;
+                    if (sentryConfigEntity1.getAreaSwitch() == 1) {//默认是开启
+                        List<SentryAreaEntity> sentryAreaEntities = sentryConfigWrapper.getSentryArea(sentryConfigRequest.getAreaCode(), sentryConfigRequest.getCityCode());
+                        if (sentryAreaEntities != null && sentryAreaEntities.size() > 0) {
+                            return sentryConfigEntity1;
+                        } else {
+                            return defaultSentryConfigEntity;
+                        }
                     } else {
-                        return defaultSentryConfigEntity;
+                        return sentryConfigEntity1;
                     }
                 }
             }
