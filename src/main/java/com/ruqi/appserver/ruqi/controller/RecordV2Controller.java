@@ -9,6 +9,7 @@ import com.ruqi.appserver.ruqi.service.IRecordService;
 import com.ruqi.appserver.ruqi.utils.DotEventDataUtils;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
+import com.ruqi.appserver.ruqi.utils.MyStringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -95,6 +96,13 @@ public class RecordV2Controller extends BaseController {
                             firstPoints = JsonUtil.beanToJsonStr(points.get(0));
                         }
                         content.getContent().eventDetail = eventData.get(DotEventInfo.NAME_DRIVER_ID) + "_" + firstPoints;
+                    }
+                    if (eventData.containsKey(DotEventInfo.NAME_FALLBACK_MILLIS)) {
+                        if (MyStringUtils.isEmpty(content.getContent().eventDetail)) {
+                            content.getContent().eventDetail = JsonUtil.beanToJsonStr(eventData);
+                        } else {
+                            content.getContent().eventDetail += ".eventData=" + JsonUtil.beanToJsonStr(eventData);
+                        }
                     }
                 }
                 recordService.saveDotRecord(content, IpUtil.getIpAddr(request));//通过异步操作，后期加上redis和队列保证并发不会出现问题
