@@ -37,6 +37,10 @@ public interface IRecordService {
 
     long queryTotalSizeCommonEvent(RecordInfo<DotEventInfo> params);
 
+    long querySyncTecentAvgTime(RecordInfo<DotEventInfo> params);
+
+    long querySyncTecentMedianTime(RecordInfo<DotEventInfo> params);
+
     long queryEventTotalUserSize(RecordInfo<DotEventInfo> params);
 
     long queryEventTotalOrderSize(RecordInfo<DotEventInfo> params);

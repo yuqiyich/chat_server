@@ -175,6 +175,26 @@ public class RecordServiceImpl implements IRecordService {
         return size;
     }
 
+    @Override
+    public long querySyncTecentAvgTime(RecordInfo<DotEventInfo> recordInfo) {
+        String data = dotEventInfoWrapper.querySyncTecentAvgTime(recordInfo);
+        try {
+            return Long.valueOf(data.substring(0, data.indexOf('.')));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public long querySyncTecentMedianTime(RecordInfo<DotEventInfo> recordInfo) {
+        String data = dotEventInfoWrapper.querySyncTecentMedianTime(recordInfo);
+        try {
+            return Long.valueOf(data.substring(0, data.indexOf('.')));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     // 如果eventType有值且存在但是被禁用了或者下面的key全都被禁用了，则不应该有返回结果数据了。
     private boolean isTypeKeyExitsAndInValid(RecordInfo<DotEventInfo> params) {
         if (null != params && null != params.getContent()) {

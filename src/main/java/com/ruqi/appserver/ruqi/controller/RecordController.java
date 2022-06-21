@@ -169,10 +169,10 @@ public class RecordController extends BaseController {
                     if (eventData.containsKey(DotEventInfo.NAME_DRIVER_ID)) {
                         List points = (List) eventData.get("points");
                         String firstPoints = "";
-                        if (points!=null && points.size()>0){
-                            firstPoints =JsonUtil.beanToJsonStr(points.get(0));
+                        if (points != null && points.size() > 0) {
+                            firstPoints = JsonUtil.beanToJsonStr(points.get(0));
                         }
-                        content.getContent().eventDetail = eventData.get(DotEventInfo.NAME_DRIVER_ID)+"_"+firstPoints;
+                        content.getContent().eventDetail = eventData.get(DotEventInfo.NAME_DRIVER_ID) + "_" + firstPoints;
                     }
                     if (eventData.containsKey(DotEventInfo.NAME_FALLBACK_MILLIS)) {
                         if (MyStringUtils.isEmpty(content.getContent().eventDetail)) {
@@ -358,6 +358,23 @@ public class RecordController extends BaseController {
         List<RecordDotEventInfo> receiverEntities = recordService.queryCommonEventListForLayui(params.getPage() - 1, params.getLimit(), params);
         long totalSize = recordService.queryTotalSizeCommonEvent(params);
         result.data = new BasePageBean<>(params.getPage() - 1, params.getLimit(), totalSize, receiverEntities);
+        return result;
+    }
+
+    @ApiOperation(value = "司乘同显的腾讯恢复埋点数据耗时的平均数、中位数", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(dataType = "RecordInfo<DotEventInfo>", name = "参数对象", value = "参数类型")
+    })
+    @RequestMapping(value = "/querySyncTecentTimeData", method = RequestMethod.POST)
+    @ResponseBody
+    @CrossOrigin
+    public BaseBean<SyncTecentTimeInfo> querySyncTecentTimeData(@RequestBody RecordInfo<DotEventInfo> params) {
+        logger.info("querySyncTecentTimeData params:" + params);
+        BaseBean<SyncTecentTimeInfo> result = new BaseBean<>();
+        SyncTecentTimeInfo syncTecentTimeInfo = new SyncTecentTimeInfo();
+        syncTecentTimeInfo.avgTime = recordService.querySyncTecentAvgTime(params);
+        syncTecentTimeInfo.medianTime = recordService.querySyncTecentMedianTime(params);
+        result.data = syncTecentTimeInfo;
         return result;
     }
 

@@ -34,7 +34,7 @@ public class DotEventInfo extends BaseRecordInfo {
     public String scene;
 
     /**
-     * 查询时筛选用，1：orderId有值的数据；2：orderId无值的数据；默认其他情况返回所有数据
+     * 查询时筛选用，1：orderId有值的数据；2：orderId无值的数据；3：orderid去重；默认其他情况返回所有数据
      */
     public String orderIdFilter;
     /**
