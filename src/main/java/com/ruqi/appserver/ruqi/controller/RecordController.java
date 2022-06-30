@@ -373,7 +373,22 @@ public class RecordController extends BaseController {
         BaseBean<SyncTecentTimeInfo> result = new BaseBean<>();
         SyncTecentTimeInfo syncTecentTimeInfo = new SyncTecentTimeInfo();
         syncTecentTimeInfo.avgTime = recordService.querySyncTecentAvgTime(params);
-        syncTecentTimeInfo.medianTime = recordService.querySyncTecentMedianTime(params);
+        long size = recordService.querySyncTecentTimeSize(params);
+        // 中位数sql中查询很慢，查询size，然后再查询中间数据
+        if (size == 0) {
+            syncTecentTimeInfo.medianTime = 0;
+        } else {
+            int len = 1;
+            long startIndex = size / 2;
+            if (size % 2 == 0) {
+                len = 2;
+                startIndex = startIndex - 1;
+            }
+            if (startIndex < 0) {
+                startIndex = 0;
+            }
+            syncTecentTimeInfo.medianTime = recordService.querySyncTecentMedianTime(params, startIndex, len);
+        }
         result.data = syncTecentTimeInfo;
         return result;
     }

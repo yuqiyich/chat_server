@@ -39,7 +39,9 @@ public interface IRecordService {
 
     long querySyncTecentAvgTime(RecordInfo<DotEventInfo> params);
 
-    long querySyncTecentMedianTime(RecordInfo<DotEventInfo> params);
+    long querySyncTecentMedianTime(RecordInfo<DotEventInfo> params, long startIndex, int len);
+
+    long querySyncTecentTimeSize(RecordInfo<DotEventInfo> params);
 
     long queryEventTotalUserSize(RecordInfo<DotEventInfo> params);
 

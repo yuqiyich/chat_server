@@ -186,12 +186,17 @@ public class RecordServiceImpl implements IRecordService {
     }
 
     @Override
-    public long querySyncTecentMedianTime(RecordInfo<DotEventInfo> recordInfo) {
-        String data = dotEventInfoWrapper.querySyncTecentMedianTime(recordInfo);
-        try {
-            return Long.valueOf(data.substring(0, data.indexOf('.')));
-        } catch (Exception e) {
-            return 0;
+    public long querySyncTecentTimeSize(RecordInfo<DotEventInfo> recordInfo) {
+        return dotEventInfoWrapper.querySyncTecentTimeSize(recordInfo);
+    }
+
+    @Override
+    public long querySyncTecentMedianTime(RecordInfo<DotEventInfo> recordInfo, long startIndex, int len) {
+        List<Long> data = dotEventInfoWrapper.querySyncTecentMedianTime(recordInfo, startIndex, len);
+        if (data.size() == 2) {
+            return (data.get(0) + data.get(1)) / 2;
+        } else {
+            return data.get(0);
         }
     }
 
