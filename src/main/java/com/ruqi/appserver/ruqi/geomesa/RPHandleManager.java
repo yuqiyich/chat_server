@@ -190,7 +190,8 @@ public class RPHandleManager {
                 }
             }
             if (cityCode.contains(WORLD_CODE)) {
-                saveRecommendPointsRelated(relatedIds, cityCode);
+                //注释掉关系表的
+//                saveRecommendPointsRelated(relatedIds, cityCode);
             }
 
         }
