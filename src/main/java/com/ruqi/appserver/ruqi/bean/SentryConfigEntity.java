@@ -24,6 +24,8 @@ public class SentryConfigEntity {
     private int loopMaxCount;
     @ApiModelProperty(value = "项目的id")
     private int id;//项目id
+    @ApiModelProperty(value = "sentry的采样率")
+    private double sampleRate;//sentry的采样率
 
     public List<String> getTags() {
         return tags;
@@ -83,4 +85,13 @@ public class SentryConfigEntity {
     public void setId(int id) {
         this.id = id;
     }
+
+    public double getSampleRate() {
+        return sampleRate;
+    }
+
+    public void setSampleRate(double sampleRate) {
+        this.sampleRate = sampleRate;
+    }
+
 }

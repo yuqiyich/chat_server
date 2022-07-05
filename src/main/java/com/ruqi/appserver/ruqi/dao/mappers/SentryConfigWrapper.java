@@ -62,6 +62,7 @@ public interface SentryConfigWrapper {
             @Result(property = "dns", column = "dns"),
             @Result(property = "id", column = "id"),
             @Result(property = "areaSwitch", column = "area_switch"),
+            @Result(property = "sampleRate", column = "sample_rate"),
             @Result(property = "level", column = "level")})
     List<SentryConfigEntity> getSentryConfigByProject(@Param("project") String project, @Param("platform") String platform,@Param("env") String env);
 
