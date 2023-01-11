@@ -27,6 +27,27 @@ public class SentryConfigEntity {
     @ApiModelProperty(value = "sentry的采样率")
     private double sampleRate;//sentry的采样率
 
+    @ApiModelProperty(value = "性能采样率, 默认为1")
+    private double tracesSampleRate;
+
+    @ApiModelProperty(value = "是否检测pv/uv数据 默认为true")
+    private boolean  isHandleVisit;
+
+    @ApiModelProperty(value = "pv/uv采样率，目前pv/uv数据全部采集， 默认为1")
+    private double  visitSampleRate;
+
+    @ApiModelProperty(value = "是否检测api接口数据 默认为true")
+    private boolean  isHandleApi;
+
+    @ApiModelProperty(value = "api采样率，目前api数据采样10%，默认为0.1")
+    private double  apiSampleRate;
+
+    @ApiModelProperty(value = "检测静态资源, 默认为true")
+    private boolean  isHandleResource;
+
+    @ApiModelProperty(value = "资源采样率，目前资源数据采样10%，默认为0.1")
+    private double  resourceSampleRate;
+
     public List<String> getTags() {
         return tags;
     }
@@ -92,6 +113,62 @@ public class SentryConfigEntity {
 
     public void setSampleRate(double sampleRate) {
         this.sampleRate = sampleRate;
+    }
+
+    public double getTracesSampleRate() {
+        return tracesSampleRate;
+    }
+
+    public void setTracesSampleRate(double tracesSampleRate) {
+        this.tracesSampleRate = tracesSampleRate;
+    }
+
+    public boolean isHandleVisit() {
+        return isHandleVisit;
+    }
+
+    public void setHandleVisit(boolean handleVisit) {
+        isHandleVisit = handleVisit;
+    }
+
+    public double getVisitSampleRate() {
+        return visitSampleRate;
+    }
+
+    public void setVisitSampleRate(double visitSampleRate) {
+        this.visitSampleRate = visitSampleRate;
+    }
+
+    public boolean isHandleApi() {
+        return isHandleApi;
+    }
+
+    public void setHandleApi(boolean handleApi) {
+        isHandleApi = handleApi;
+    }
+
+    public double getApiSampleRate() {
+        return apiSampleRate;
+    }
+
+    public void setApiSampleRate(double apiSampleRate) {
+        this.apiSampleRate = apiSampleRate;
+    }
+
+    public boolean isHandleResource() {
+        return isHandleResource;
+    }
+
+    public void setHandleResource(boolean handleResource) {
+        isHandleResource = handleResource;
+    }
+
+    public double getResourceSampleRate() {
+        return resourceSampleRate;
+    }
+
+    public void setResourceSampleRate(double resourceSampleRate) {
+        this.resourceSampleRate = resourceSampleRate;
     }
 
 }

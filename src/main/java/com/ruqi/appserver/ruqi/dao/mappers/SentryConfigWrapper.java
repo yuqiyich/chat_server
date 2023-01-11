@@ -63,6 +63,13 @@ public interface SentryConfigWrapper {
             @Result(property = "id", column = "id"),
             @Result(property = "areaSwitch", column = "area_switch"),
             @Result(property = "sampleRate", column = "sample_rate"),
+            @Result(property = "tracesSampleRate", column = "traces_sample_rate"),
+            @Result(property = "isHandleVisit", column = "is_handle_visit"),
+            @Result(property = "visitSampleRate", column = "visit_sample_rate"),
+            @Result(property = "isHandleApi", column = "is_handle_api"),
+            @Result(property = "apiSampleRate", column = "api_sample_rate"),
+            @Result(property = "isHandleResource", column = "is_handle_resource"),
+            @Result(property = "resourceSampleRate", column = "resource_sample_rate"),
             @Result(property = "level", column = "level")})
     List<SentryConfigEntity> getSentryConfigByProject(@Param("project") String project, @Param("platform") String platform,@Param("env") String env);
 
