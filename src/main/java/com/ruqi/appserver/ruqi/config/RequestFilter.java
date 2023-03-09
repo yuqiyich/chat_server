@@ -3,7 +3,6 @@ package com.ruqi.appserver.ruqi.config;
 
 import com.ruqi.appserver.ruqi.network.RequestWrapper;
 import com.ruqi.appserver.ruqi.network.ResponseWrapper;
-import com.ruqi.appserver.ruqi.service.GaiaInitializer;
 import com.ruqi.appserver.ruqi.utils.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,15 +77,11 @@ public class RequestFilter extends OncePerRequestFilter {
     }
 
     public void logInfo(String log){
-        if (GaiaInitializer.DEBUG){
             logger.info(log);
-        }
     }
 
     public void logInfo(String log,Object key){
-        if (GaiaInitializer.DEBUG){
             logger.info(log,key);
-        }
     }
 
 }

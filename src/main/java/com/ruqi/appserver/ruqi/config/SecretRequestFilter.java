@@ -4,12 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ruqi.appserver.ruqi.bean.EncryptResponse;
 import com.ruqi.appserver.ruqi.request.EncryptBaseRequest;
-import com.ruqi.appserver.ruqi.service.GaiaInitializer;
 import com.ruqi.appserver.ruqi.service.RedisUtil;
 import com.ruqi.appserver.ruqi.utils.AESUtils;
-import com.ruqi.appserver.ruqi.utils.Base64Util;
 import com.ruqi.appserver.ruqi.utils.JsonUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,22 +129,16 @@ public class SecretRequestFilter extends OncePerRequestFilter {
     }
 
     public void logInfo(String log){
-        if (GaiaInitializer.DEBUG){
             logger.info(log);
-        }
     }
 
     public void logError(String log){
-        if (GaiaInitializer.DEBUG){
             logger.error(log);
-        }
     }
 
 
     public void logInfo(String log,Object key){
-        if (GaiaInitializer.DEBUG){
             logger.info(log,key);
-        }
     }
 
 }

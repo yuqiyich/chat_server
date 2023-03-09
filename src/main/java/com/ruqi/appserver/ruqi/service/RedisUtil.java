@@ -12,7 +12,6 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.QueryTimeoutException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;

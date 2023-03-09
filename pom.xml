@@ -8,11 +8,11 @@
         <version>2.2.4.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.ruqi.appserver</groupId>
+    <groupId>com.xufuhe.chat</groupId>
     <artifactId>ruqi</artifactId>
     <version>1.0.3-SNAPSHOT</version>
-    <name>appserver</name>
-    <description>APP记录平台</description>
+    <name>chat_server</name>
+    <description>chat</description>
 
     <repositories>
         <repository>
@@ -64,6 +64,16 @@
             <version>1.10.0</version>
         </dependency>
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.10</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
@@ -110,48 +120,7 @@
             </exclusions>
         </dependency>
 
-        <!-- provided -->
-       <!-- <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.abi.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-catalyst_${scala.abi.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.abi.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-yarn_${scala.abi.version}</artifactId>
-            <version>${spark.version}</version>
-            <scope>provided</scope>
-        </dependency>-->
-
-        <!-- 腾讯云短信 -->
-        <!--		<dependency>-->
-        <!--			<groupId>com.github.qcloudsms</groupId>-->
-        <!--			<artifactId>qcloudsms</artifactId>-->
-        <!--			<version>1.0.6</version>-->
-        <!--		</dependency>-->
-        <!-- 阿里云 -->
-<!--        <dependency>-->
-<!--            <groupId>com.aliyun</groupId>-->
-<!--            <artifactId>aliyun-java-sdk-core</artifactId>-->
-<!--            <version>4.1.0</version>-->
-<!--        </dependency>-->
-
-        <!--可以去下面地址查看最近版本-->
-        <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->
-        <dependency>
+          <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>2.9.2</version>
@@ -221,79 +190,18 @@
         <!--            <artifactId>curator-recipes</artifactId>-->
         <!--            <version>4.3.0</version>-->
         <!--        </dependency>-->
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-main</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-hsql</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-cql</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-grid</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-render</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
+
         <!--        <dependency>-->
         <!--            <groupId>org.geotools</groupId>-->
         <!--            <artifactId>gt-swing</artifactId>-->
         <!--            <version>${gt.version}</version>-->
         <!--        </dependency>-->
         <dependency>
-            <groupId>org.locationtech.geomesa</groupId>
-            <artifactId>geomesa-hbase-datastore_2.11</artifactId>
-            <version>${geomesa.version}</version>
-
-        </dependency>
-        <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
             <version>4.3.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-protocol</artifactId>
-            <version>${hbase.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-server</artifactId>
-            <version>${hbase.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-common</artifactId>
-            <version>${hbase.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-client</artifactId>
-            <version>${hbase.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-annotations</artifactId>
-            <version>${hbase.version}</version>
-        </dependency>
+
 
         <!--        <dependency>-->
         <!--            <groupId>org.springframework.boot</groupId>-->
@@ -385,7 +293,7 @@
     </dependencies>
 
     <build>
-        <finalName>ruqi-mobile-manager-${version}</finalName>
+        <finalName>ruqi-caht-manager-${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

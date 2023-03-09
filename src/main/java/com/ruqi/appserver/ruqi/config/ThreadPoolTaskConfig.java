@@ -1,15 +1,9 @@
 package com.ruqi.appserver.ruqi.config;
 
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import com.ruqi.appserver.ruqi.controller.PointController;
-import com.ruqi.appserver.ruqi.kafka.BaseKafkaLogInfo;
-import com.ruqi.appserver.ruqi.kafka.KafkaProducer;
-import com.ruqi.appserver.ruqi.service.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;

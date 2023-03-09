@@ -1,7 +1,5 @@
 package com.ruqi.appserver.ruqi.utils;
 
-import com.ruqi.appserver.ruqi.service.PointSaveConsumer;
-
 public class ThreadUtils {
     public static int  getAllThreadNum(){
         ThreadGroup group = Thread.currentThread().getThreadGroup();
